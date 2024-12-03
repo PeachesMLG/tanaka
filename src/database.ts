@@ -237,10 +237,9 @@ export async function getSpawnLeaderboard(
 ): Promise<LeaderboardEntry[]> {
   try {
     const query = `
-
         SELECT
-            UserClaimed AS UserId,
-            COUNT(*) AS Count
+            UserClaimed AS userId,
+            COUNT(*) AS count
         FROM
             Spawns
         WHERE
