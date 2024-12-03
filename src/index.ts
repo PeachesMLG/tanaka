@@ -70,8 +70,6 @@ client.on('interactionCreate', async (interaction) => {
 
             let userName = 'N/A';
 
-            console.log(`Processing ${claim.userClaimed}`);
-
             if (claim.userClaimed) {
               const user = await interaction.client.users.fetch(
                 claim.userClaimed,
