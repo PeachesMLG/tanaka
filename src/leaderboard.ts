@@ -55,6 +55,6 @@ async function updateLeaderBoard(client: Client, channelId: string) {
 }
 
 export async function startLeaderBoard(client: Client) {
-  await updateLeaderBoard(client, '1272932754530766899');
+  await updateLeaderBoard(client, '1272717571140882572');
   setTimeout(() => startLeaderBoard(client), 10000);
 }
