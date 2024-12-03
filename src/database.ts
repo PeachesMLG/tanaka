@@ -244,7 +244,7 @@ export async function getSpawnLeaderboard(
             Spawns
         WHERE
             UserClaimed IS NOT NULL
-          AND ChannelId = ?
+          AND ServerId = ?
           AND YEAR(DateTime) = YEAR(CURDATE())
           AND MONTH(DateTime) = MONTH(CURDATE())
         GROUP BY UserClaimed
