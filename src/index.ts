@@ -77,14 +77,14 @@ client.on('interactionCreate', async (interaction) => {
               );
               userName = user.username;
             }
+            const cards = JSON.parse(claim.cards) as Card[];
+            const tier = cards[0].tier;
 
             if (claim.status === 'claimed') {
               return `${claim.claimedCard.tier} • **${discordTimestamp}** • #${claim.claimedVersion} • **${claim.claimedCard.name}** • ${userName}`;
             } else if (claim.status === 'active') {
-              return `**${discordTimestamp}** Pending`;
+              return `${tier} • **${discordTimestamp}** Pending`;
             } else {
-              const cards = JSON.parse(claim.cards) as Card[];
-              const tier = cards[0].tier;
               return `${tier} • **${discordTimestamp}** Despawned :c`;
             }
           }),
