@@ -17,9 +17,14 @@ async function updateLeaderBoard(
     if (me === null) {
       return;
     }
+
     const messages = Array.from(
       (await textChannel.messages.fetch()).values(),
     ).filter((message) => message.author.id === me.id);
+
+    const otherMessages = Array.from(
+      (await textChannel.messages.fetch()).values(),
+    ).filter((message) => message.author.id !== me.id);
 
     const message = messages[0];
     const leaderBoard = await getSpawnLeaderboard(serverId);
@@ -63,6 +68,14 @@ async function updateLeaderBoard(
     for (let i = 1; i < messages.length; i++) {
       try {
         await messages[i].delete();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    for (let i = 0; i < otherMessages.length; i++) {
+      try {
+        await otherMessages[i].delete();
       } catch (e) {
         console.error(e);
       }
