@@ -2,7 +2,11 @@ import { Client, TextChannel } from 'discord.js';
 import { getSpawnLeaderboard } from './database';
 import { getEmbedMessage } from './utils';
 
-async function updateLeaderBoard(client: Client, channelId: string) {
+async function updateLeaderBoard(
+  client: Client,
+  channelId: string,
+  serverId: string,
+) {
   try {
     let channel = await client.channels.fetch(channelId);
     if (channel === null) {
@@ -18,7 +22,7 @@ async function updateLeaderBoard(client: Client, channelId: string) {
     ).filter((message) => message.author.id === me.id);
 
     const message = messages[0];
-    const leaderBoard = await getSpawnLeaderboard(channelId);
+    const leaderBoard = await getSpawnLeaderboard(serverId);
 
     console.log(leaderBoard);
 
@@ -55,6 +59,6 @@ async function updateLeaderBoard(client: Client, channelId: string) {
 }
 
 export async function startLeaderBoard(client: Client) {
-  await updateLeaderBoard(client, '1272717571140882572');
+  await updateLeaderBoard(client, '1272932754530766899', '1222204521296691260');
   setTimeout(() => startLeaderBoard(client), 10000);
 }
