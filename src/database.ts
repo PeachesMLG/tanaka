@@ -1,6 +1,7 @@
 import mysql, { Pool } from 'mysql2/promise';
 import { CardClaim, CardDespawn, CardSpawn } from './types/websocketMessage';
 import { RecentClaim } from './types/recentClaim';
+import { LeaderboardEntry } from './types/leaderboardEntry';
 
 let pool: Pool;
 
@@ -227,6 +228,37 @@ export async function getRecentSpawns(
     return rows as RecentClaim[];
   } catch (error) {
     console.error('Error querying cards:', error);
+    return [];
+  }
+}
+
+export async function getSpawnLeaderboard(
+  channelId: string,
+): Promise<LeaderboardEntry[]> {
+  try {
+    const query = `
+
+        SELECT
+            UserClaimed AS UserId,
+            COUNT(*) AS Count
+        FROM
+            Spawns
+        WHERE
+            UserClaimed IS NOT NULL
+          AND ChannelId = ?
+          AND YEAR(DateTime) = YEAR(CURDATE())
+          AND MONTH(DateTime) = MONTH(CURDATE())
+        GROUP BY UserClaimed
+        ORDER BY Count DESC
+        LIMIT 10;
+    `;
+
+    const params = [channelId];
+    const [rows] = await pool.query(query, params);
+
+    return rows as LeaderboardEntry[];
+  } catch (error) {
+    console.error('Error getting leaderboard:', error);
     return [];
   }
 }

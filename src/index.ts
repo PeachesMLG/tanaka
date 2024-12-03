@@ -9,6 +9,7 @@ import websocket from './websocket';
 import * as dotenv from 'dotenv';
 import { getRecentSpawns, initialiseDatabase } from './database';
 import { Card } from './types/websocketMessage';
+import { startLeaderBoard } from './leaderboard';
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ client.once('ready', async () => {
   await client.application?.commands.set(commands);
 
   await initialiseDatabase();
+  await startLeaderBoard(client);
   websocket();
 });
 
