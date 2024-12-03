@@ -36,13 +36,27 @@ async function updateLeaderBoard(
       description = 'N/A';
     }
 
+    const leaderboardTitle = 'Monthly Spawns';
+
     if (message) {
       await message.edit({
-        embeds: [getEmbedMessage(textChannel, 'Leaderboard', description)],
+        embeds: [
+          getEmbedMessage(
+            textChannel,
+            'Leaderboard - ' + leaderboardTitle,
+            description,
+          ),
+        ],
       });
     } else {
       await textChannel.send({
-        embeds: [getEmbedMessage(textChannel, 'Leaderboard', description)],
+        embeds: [
+          getEmbedMessage(
+            textChannel,
+            'Leaderboard - ' + leaderboardTitle,
+            description,
+          ),
+        ],
       });
     }
 
