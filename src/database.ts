@@ -1,5 +1,6 @@
 import mysql, { Pool } from 'mysql2/promise';
 import { CardClaim, CardDespawn, CardSpawn } from './types/websocketMessage';
+import { RecentClaim } from './types/recentClaim';
 
 let pool: Pool;
 
@@ -34,6 +35,7 @@ export async function initialiseDatabase(): Promise<void> {
                 BatchId VARCHAR(255),
                 DateTime DATETIME,
                 ClaimedCard VARCHAR(255) NULL,
+                ClaimedVersion Int NULL,
                 UserClaimed VARCHAR(255) NULL,
                 Status VARCHAR(255),
                 PRIMARY KEY (BatchId)
@@ -67,13 +69,14 @@ export async function saveCardSpawn(cardSpawn: CardSpawn): Promise<void> {
 
     await connection.query(
       `
-            INSERT INTO Spawns (ServerId, ChannelId, BatchId, DateTime, ClaimedCard, UserClaimed, Status)
-            VALUES (?, ?, ?, NOW(), ?, ?, ?);
+            INSERT INTO Spawns (ServerId, ChannelId, BatchId, DateTime, ClaimedCard, ClaimedVersion, UserClaimed, Status)
+            VALUES (?, ?, ?, NOW(), ?, ?, ?, ?);
         `,
       [
         cardSpawn.serverId,
         cardSpawn.channelId,
         cardSpawn.batchId,
+        null,
         null,
         null,
         'active',
@@ -149,10 +152,15 @@ export async function saveCardClaim(cardClaim: CardClaim): Promise<void> {
     await connection.query(
       `
             UPDATE Spawns
-            SET Status = 'claimed', ClaimedCard = ?, UserClaimed = ?
+            SET Status = 'claimed', ClaimedCard = ?, ClaimedVersion = ?, UserClaimed = ?
             WHERE BatchId = ?;
         `,
-      [cardClaim.card.id, cardClaim.userId, cardClaim.batchId],
+      [
+        cardClaim.card.id,
+        cardClaim.cardVersion,
+        cardClaim.userId,
+        cardClaim.batchId,
+      ],
     );
 
     await connection.commit();
@@ -165,5 +173,60 @@ export async function saveCardClaim(cardClaim: CardClaim): Promise<void> {
     throw error;
   } finally {
     connection.release();
+  }
+}
+
+export async function getRecentSpawns(
+  channelId: string,
+  tier?: string,
+): Promise<RecentClaim[]> {
+  try {
+    const query = `
+      SELECT
+          spawn.ServerId as serverId,
+          spawn.ChannelId as channelId,
+          spawn.BatchId as batchId,
+          spawn.DateTime as dateTime,
+          JSON_OBJECT(
+              'id', claimedCard.Id,
+              'type', claimedCard.Type,
+              'tier', claimedCard.Tier,
+              'name', claimedCard.Name,
+              'series', claimedCard.Series
+          ) AS claimedCard,
+          spawn.UserClaimed as userClaimed,
+          spawn.ClaimedVersion as claimedVersion,
+          spawn.Status as status,
+          CONCAT('[', GROUP_CONCAT(
+                  JSON_OBJECT(
+                          'id', card.Id,
+                          'type', card.Type,
+                          'tier', card.Tier,
+                          'name', card.Name,
+                          'series', card.Series
+                  )
+              ), ']') AS cards
+      FROM
+          Spawns spawn
+              LEFT JOIN Claims claim ON spawn.BatchId = claim.BatchId
+              LEFT JOIN Cards claimedCard ON spawn.ClaimedCard = claimedCard.Id
+              LEFT JOIN Cards card ON claim.CardId = card.Id
+      WHERE
+          spawn.ChannelId = ?
+          ${tier ? 'AND card.Tier = ?' : ''}
+      GROUP BY
+          spawn.ServerId, spawn.ChannelId, spawn.BatchId, spawn.DateTime, claimedCard.Id, spawn.Status
+      ORDER BY
+          spawn.DateTime DESC
+      LIMIT 5;
+    `;
+
+    const params = [channelId, tier];
+    const [rows] = await pool.query(query, params);
+
+    return rows as RecentClaim[];
+  } catch (error) {
+    console.error('Error querying cards:', error);
+    return [];
   }
 }

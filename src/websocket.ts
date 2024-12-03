@@ -37,6 +37,7 @@ const webSocket = () => {
 
   socket.addEventListener('close', (event) => {
     console.log('WebSocket connection closed:', event);
+    webSocket();
   });
 };
 
