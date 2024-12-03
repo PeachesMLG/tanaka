@@ -42,50 +42,59 @@ client.login(process.env.DISCORD_TOKEN).catch((error) => {
 
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isCommand()) return;
+  try {
+    if (interaction.commandName === 'recent') {
+      if (!interaction.channel) {
+        await interaction.reply({
+          content: 'Cannot execute command outside a channel',
+        });
+        return;
+      }
+      const tier = (
+        interaction as ChatInputCommandInteraction
+      ).options.getString('tier');
 
-  if (interaction.commandName === 'recent') {
-    if (!interaction.channel) {
-      await interaction.reply({
-        content: 'Cannot execute command outside a channel',
-      });
-      return;
-    }
-    const tier = (interaction as ChatInputCommandInteraction).options.getString(
-      'tier',
-    );
-
-    const recentSpawns = await getRecentSpawns(
-      interaction.channel?.id ?? '',
-      tier ?? undefined,
-    );
-
-    const embed = new EmbedBuilder()
-      .setTitle('Recent Claims')
-      .setColor(0x0099ff);
-
-    if (recentSpawns.length > 0) {
-      const fields = await Promise.all(
-        recentSpawns.map(async (claim) => {
-          const discordTimestamp = `<t:${Math.floor(claim.dateTime.getTime() / 1000)}:R>`;
-
-          const user = await interaction.client.users.fetch(claim.userClaimed);
-          const userName = user.username;
-
-          if (claim.status === 'claimed') {
-            return `${claim.claimedCard.tier} • **${discordTimestamp}** • #${claim.claimedVersion} • **${claim.claimedCard.name}** • ${userName}`;
-          } else if (claim.status === 'active') {
-            return `**${discordTimestamp}** Pending`;
-          } else {
-            return `**${discordTimestamp}** Despawned :c`;
-          }
-        }),
+      const recentSpawns = await getRecentSpawns(
+        interaction.channel?.id ?? '',
+        tier ?? undefined,
       );
 
-      embed.setDescription(fields.join('\n'));
-    } else {
-      embed.setDescription('No recent claims found.');
-    }
+      const embed = new EmbedBuilder()
+        .setTitle('Recent Claims')
+        .setColor(0x0099ff);
 
-    await interaction.reply({ embeds: [embed] });
+      if (recentSpawns.length > 0) {
+        const fields = await Promise.all(
+          recentSpawns.map(async (claim) => {
+            const discordTimestamp = `<t:${Math.floor(claim.dateTime.getTime() / 1000)}:R>`;
+
+            let userName = 'N/A';
+
+            if (claim.userClaimed) {
+              const user = await interaction.client.users.fetch(
+                claim.userClaimed,
+              );
+              userName = user.username;
+            }
+
+            if (claim.status === 'claimed') {
+              return `${claim.claimedCard.tier} • **${discordTimestamp}** • #${claim.claimedVersion} • **${claim.claimedCard.name}** • ${userName}`;
+            } else if (claim.status === 'active') {
+              return `**${discordTimestamp}** Pending`;
+            } else {
+              return `**${discordTimestamp}** Despawned :c`;
+            }
+          }),
+        );
+
+        embed.setDescription(fields.join('\n'));
+      } else {
+        embed.setDescription('No recent claims found.');
+      }
+
+      await interaction.reply({ embeds: [embed] });
+    }
+  } catch (error) {
+    await interaction.reply({ content: 'Internal Server Error...' });
   }
 });
