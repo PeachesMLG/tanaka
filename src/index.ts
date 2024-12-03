@@ -8,6 +8,7 @@ import {
 import websocket from './websocket';
 import * as dotenv from 'dotenv';
 import { getRecentSpawns, initialiseDatabase } from './database';
+import { Card } from './types/websocketMessage';
 
 dotenv.config();
 
@@ -82,7 +83,9 @@ client.on('interactionCreate', async (interaction) => {
             } else if (claim.status === 'active') {
               return `**${discordTimestamp}** Pending`;
             } else {
-              return `**${discordTimestamp}** Despawned :c`;
+              const cards = JSON.parse(claim.cards) as Card[];
+              const tier = cards[0].tier;
+              return `${tier} • **${discordTimestamp}** Despawned :c`;
             }
           }),
         );
