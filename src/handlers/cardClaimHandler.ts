@@ -1,5 +1,6 @@
-import {CardClaim} from "../types/websocketMessage";
+import { CardClaim } from '../types/websocketMessage';
+import { saveCardClaim } from '../database';
 
 export const cardClaimHandler = async (cardClaim: CardClaim) => {
-    console.log(`Card Claimed! ${cardClaim.card.name} V${cardClaim.cardVersion}`);
-}
+  await saveCardClaim(cardClaim);
+};
