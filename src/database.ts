@@ -218,7 +218,7 @@ export async function getRecentSpawns(
           spawn.ServerId, spawn.ChannelId, spawn.BatchId, spawn.DateTime, claimedCard.Id, spawn.Status
       ORDER BY
           spawn.DateTime DESC
-      LIMIT 5;
+      LIMIT 10;
     `;
 
     const params = [channelId, tier];
