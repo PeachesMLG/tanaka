@@ -1,6 +1,7 @@
 import { CardSpawn } from '../types/websocketMessage';
 import { saveCardSpawn } from '../database';
 import { Client, PermissionsBitField, TextChannel } from 'discord.js';
+import { mapEmoji } from '../utils/emojis';
 
 export const cardSpawnHandler = async (
   cardSpawn: CardSpawn,
@@ -52,7 +53,7 @@ const sendSpawnSummary = async (cardSpawn: CardSpawn, client: Client) => {
     if (!targetMessage) return;
 
     const claimContent = cardSpawn.claims.map((value, index): string => {
-      return `${index + 1}: - **${value.card.name}** *${value.card.series}*`;
+      return `${index + 1}: ${mapEmoji(value.card.tier)} - **${value.card.name}** *${value.card.series}*`;
     });
 
     const content = `Card will despawn ${discordTimestamp}\n${claimContent.join('\n')}`;

@@ -8,8 +8,9 @@ import {
 } from 'discord.js';
 import { getRecentSpawns } from '../database';
 import { Card } from '../types/websocketMessage';
-import { getEmbedMessage } from '../utils';
+import { getEmbedMessage } from '../utils/embeds';
 import { RecentClaim } from '../types/recentClaim';
+import { mapEmoji } from '../utils/emojis';
 
 export class RecentCommand implements Command {
   command: SlashCommandOptionsOnlyBuilder;
@@ -78,7 +79,7 @@ export class RecentCommand implements Command {
     const tier = cards[0].tier;
 
     if (claim.status === 'claimed') {
-      return `${claim.claimedCard.tier} • **${discordTimestamp}** • #${claim.claimedVersion} • **${claim.claimedCard.name}** • ${userName}`;
+      return `${mapEmoji(claim.claimedCard.tier)} • **${discordTimestamp}** • #${claim.claimedVersion} • **${claim.claimedCard.name}** • ${userName}`;
     } else if (claim.status === 'active') {
       return `${tier} • **${discordTimestamp}** Pending`;
     } else {

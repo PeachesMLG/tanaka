@@ -1,6 +1,6 @@
 import { Client, TextChannel } from 'discord.js';
 import { getSpawnLeaderboard } from './database';
-import { getEmbedMessage } from './utils';
+import { getEmbedMessage } from './utils/embeds';
 
 async function updateLeaderBoard(
   client: Client,
