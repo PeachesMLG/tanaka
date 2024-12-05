@@ -4,6 +4,7 @@ import { cardDespawnHandler } from './handlers/cardDespawnHandler';
 import { cardClaimHandler } from './handlers/cardClaimHandler';
 
 const webSocket = () => {
+  console.log('Connecting to Websocket...');
   const websocketUrl = 'https://api.mazoku.cc/api/websocket';
   const socket = new WebSocket(websocketUrl);
 
@@ -37,7 +38,7 @@ const webSocket = () => {
 
   socket.addEventListener('close', (event) => {
     console.log('WebSocket connection closed:', event);
-    webSocket();
+    setTimeout(webSocket, 5000);
   });
 };
 

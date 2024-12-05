@@ -25,8 +25,6 @@ async function updateLeaderBoard(
     const message = messages[0];
     const leaderBoard = await getSpawnLeaderboard(serverId);
 
-    console.log(leaderBoard);
-
     let description = leaderBoard
       .map(
         (value, index) =>
