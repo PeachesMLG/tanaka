@@ -29,7 +29,7 @@ client.once('ready', async () => {
 
   await initialiseDatabase();
   await startLeaderBoard(client);
-  websocket();
+  websocket(client);
 });
 
 client.on('interactionCreate', async (interaction) => {

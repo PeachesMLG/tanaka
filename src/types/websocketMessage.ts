@@ -36,4 +36,7 @@ export type CardSpawn = {
 export type Claim = {
   card: Card;
   claimId: string;
+  claimType: string;
+  dateTime: string;
+  autoClaimableBy: string;
 };
