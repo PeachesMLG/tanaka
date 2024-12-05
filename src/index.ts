@@ -28,7 +28,13 @@ client.once('ready', async () => {
         option
           .setName('tier')
           .setDescription('The tier of the card')
-          .setRequired(false),
+          .setRequired(false)
+          .addChoices(
+            { name: 'C', value: 'C' },
+            { name: 'R', value: 'R' },
+            { name: 'SR', value: 'SR' },
+            { name: 'SSR', value: 'SSR' },
+          ),
       ),
   ];
 
