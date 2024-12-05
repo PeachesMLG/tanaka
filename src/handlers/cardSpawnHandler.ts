@@ -17,6 +17,7 @@ const sendSpawnSummery = async (cardSpawn: CardSpawn, client: Client) => {
   const textChannel = channel as TextChannel;
 
   const permissions = textChannel.permissionsFor(client.user!);
+  console.log(permissions);
   if (!permissions?.has(['ViewChannel', 'SendMessages'])) {
     console.log(
       `Bot lacks permission to view or send messages in the channel. - ${permissions}`,
