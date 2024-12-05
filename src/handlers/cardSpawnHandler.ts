@@ -23,24 +23,16 @@ const sendSpawnSummary = async (cardSpawn: CardSpawn, client: Client) => {
     const textChannel = channel as TextChannel;
 
     const permissions = textChannel.permissionsFor(client.user!);
-    console.log(permissions);
     const requiredPermissions = [
       PermissionsBitField.Flags.SendMessages,
       PermissionsBitField.Flags.ViewChannel,
     ];
 
     if (!permissions?.has(requiredPermissions)) {
-      console.log(
-        `Bot lacks permission to view or send messages in the channel. - ${permissions}`,
-      );
       return;
     }
 
-    console.log(`Bot has permissions ${requiredPermissions}`);
-
     const messages = await textChannel.messages.fetch({ limit: 10 });
-
-    console.log(`Retried ${messages.size} Messages`);
 
     const claim = cardSpawn.claims[0];
     const expectedTitle =
@@ -57,24 +49,20 @@ const sendSpawnSummary = async (cardSpawn: CardSpawn, client: Client) => {
         ),
     );
 
-    messages.forEach((message) => {
-      if (message.author.id !== '1242388858897956906') return;
-      console.log(message.author.id, message.embeds);
-    });
-
-    console.log(targetMessage);
-
     if (!targetMessage) return;
 
     const claimContent = cardSpawn.claims.map((value, index): string => {
-      return `${index}: - **${value.card.name}** *${value.card.series}*\n`;
+      return `${index + 1}: - **${value.card.name}** *${value.card.series}*`;
     });
 
-    const content = `Card will despawn ${discordTimestamp}\n${claimContent}`;
+    const content = `Card will despawn ${discordTimestamp}\n${claimContent.join('\n')}`;
 
     const message = await targetMessage.reply(content);
 
-    setTimeout(async () => await message.delete(), 20000);
+    setTimeout(
+      async () => await message.delete(),
+      despawnTime.getTime() - new Date().getTime(),
+    );
   } catch (e) {
     console.error(e);
   }
