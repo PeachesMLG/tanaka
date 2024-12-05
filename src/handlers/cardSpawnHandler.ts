@@ -12,6 +12,11 @@ export const cardSpawnHandler = async (
 
 const sendSpawnSummary = async (cardSpawn: CardSpawn, client: Client) => {
   try {
+    const guild = client.guilds.cache.get(cardSpawn.serverId);
+    if (!guild) {
+      return;
+    }
+
     const channel = await client.channels.fetch(cardSpawn.channelId);
     if (channel === null) return;
     if (!channel.isTextBased) return;
@@ -34,6 +39,8 @@ const sendSpawnSummary = async (cardSpawn: CardSpawn, client: Client) => {
     console.log(`Bot has permissions ${requiredPermissions}`);
 
     const messages = await textChannel.messages.fetch({ limit: 100 });
+
+    console.log(`Retried ${messages.size} Messages`);
 
     const claim = cardSpawn.claims[0];
     const expectedTitle =
