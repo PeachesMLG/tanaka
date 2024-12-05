@@ -15,7 +15,7 @@ import { RecentCommand } from './commands/RecentCommand';
 dotenv.config();
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds],
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent],
 });
 
 const commands = [new RecentCommand()];

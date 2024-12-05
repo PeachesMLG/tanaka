@@ -38,7 +38,7 @@ const sendSpawnSummary = async (cardSpawn: CardSpawn, client: Client) => {
 
     console.log(`Bot has permissions ${requiredPermissions}`);
 
-    const messages = await textChannel.messages.fetch({ limit: 100 });
+    const messages = await textChannel.messages.fetch({ limit: 10 });
 
     console.log(`Retried ${messages.size} Messages`);
 
@@ -56,6 +56,11 @@ const sendSpawnSummary = async (cardSpawn: CardSpawn, client: Client) => {
           (embed) => embed.title && embed.title.includes(expectedTitle),
         ),
     );
+
+    messages.forEach((message) => {
+      if (message.author.id !== '1242388858897956906') return;
+      console.log(message.author.id, message.embeds);
+    });
 
     console.log(targetMessage);
 
