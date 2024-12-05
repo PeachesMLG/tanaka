@@ -1,6 +1,6 @@
 import { CardSpawn } from '../types/websocketMessage';
 import { saveCardSpawn } from '../database';
-import { Client, TextChannel } from 'discord.js';
+import { Client, PermissionsBitField, TextChannel } from 'discord.js';
 
 export const cardSpawnHandler = async (
   cardSpawn: CardSpawn,
@@ -17,8 +17,12 @@ const sendSpawnSummery = async (cardSpawn: CardSpawn, client: Client) => {
   const textChannel = channel as TextChannel;
 
   const permissions = textChannel.permissionsFor(client.user!);
-  console.log(permissions);
-  if (!permissions?.has(['ViewChannel', 'SendMessages'])) {
+  const requiredPermissions = [
+    PermissionsBitField.Flags.SendMessages,
+    PermissionsBitField.Flags.ViewChannel,
+  ];
+
+  if (!permissions?.has(requiredPermissions)) {
     console.log(
       `Bot lacks permission to view or send messages in the channel. - ${permissions}`,
     );
