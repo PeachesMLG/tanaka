@@ -53,7 +53,7 @@ const sendSpawnSummary = async (cardSpawn: CardSpawn, client: Client) => {
     if (!targetMessage) return;
 
     const claimContent = cardSpawn.claims.map((value, index): string => {
-      return `${index + 1}: ${mapEmoji(value.card.tier)} - **${value.card.name}** *${value.card.series}*`;
+      return `\`${String.fromCharCode(65 + index)}\`: ${mapEmoji(value.card.tier)} - **${value.card.name}** *${value.card.series}*`;
     });
 
     const content = `Card will despawn ${discordTimestamp}\n${claimContent.join('\n')}`;
