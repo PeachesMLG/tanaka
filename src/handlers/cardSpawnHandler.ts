@@ -15,6 +15,15 @@ const sendSpawnSummery = async (cardSpawn: CardSpawn, client: Client) => {
   if (channel === null) return;
   if (!channel.isTextBased) return;
   const textChannel = channel as TextChannel;
+
+  const permissions = textChannel.permissionsFor(client.user!);
+  if (!permissions?.has(['ViewChannel', 'SendMessages'])) {
+    console.log(
+      `Bot lacks permission to view or send messages in the channel. - ${permissions}`,
+    );
+    return;
+  }
+
   const messages = await textChannel.messages.fetch({ limit: 100 });
 
   const claim = cardSpawn.claims[0];
