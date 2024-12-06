@@ -180,6 +180,7 @@ export async function saveCardClaim(cardClaim: CardClaim): Promise<void> {
 export async function getRecentSpawns(
   channelId: string,
   tier?: string,
+  maxVersion?: number,
 ): Promise<RecentClaim[]> {
   try {
     const query = `
@@ -215,6 +216,7 @@ export async function getRecentSpawns(
       WHERE
           spawn.ChannelId = ?
           ${tier ? 'AND card.Tier = ?' : ''}
+          ${maxVersion ? 'AND spawn.ClaimedVersion <= ?' : ''}
       GROUP BY
           spawn.ServerId, spawn.ChannelId, spawn.BatchId, spawn.DateTime, claimedCard.Id, spawn.Status
       ORDER BY
@@ -222,7 +224,7 @@ export async function getRecentSpawns(
       LIMIT 10;
     `;
 
-    const params = [channelId, tier];
+    const params = [channelId, tier, maxVersion].filter((param) => param);
     const [rows] = await pool.query(query, params);
 
     return rows as RecentClaim[];

@@ -30,6 +30,12 @@ export class RecentCommand implements Command {
             { name: 'SR', value: 'SR' },
             { name: 'SSR', value: 'SSR' },
           ),
+      )
+      .addIntegerOption((option) =>
+        option
+          .setName('version')
+          .setDescription('The maximum version of the card')
+          .setRequired(false),
       );
   }
 
@@ -43,10 +49,12 @@ export class RecentCommand implements Command {
 
     const channel = interaction.channel as TextChannel;
     const tier = interaction.options.getString('tier');
+    const version = interaction.options.getInteger('version');
 
     const recentSpawns = await getRecentSpawns(
       interaction.channel?.id ?? '',
       tier ?? undefined,
+      version ?? undefined,
     );
 
     const fields = await Promise.all(
