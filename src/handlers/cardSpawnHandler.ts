@@ -2,6 +2,7 @@ import { CardSpawn } from '../types/websocketMessage';
 import { saveCardSpawn } from '../database';
 import { Client, PermissionsBitField, TextChannel } from 'discord.js';
 import { mapEmoji } from '../utils/emojis';
+import { getRemainingVersionsByCard } from '../utils/inventoryItems';
 
 export const cardSpawnHandler = async (
   cardSpawn: CardSpawn,
@@ -52,9 +53,22 @@ const sendSpawnSummary = async (cardSpawn: CardSpawn, client: Client) => {
 
     if (!targetMessage) return;
 
-    const claimContent = cardSpawn.claims.map((value, index): string => {
-      return `\`${String.fromCharCode(65 + index)}\`: ${mapEmoji(value.card.tier)} - **${value.card.name}** *${value.card.series}*`;
-    });
+    const claimContent = await Promise.all(
+      cardSpawn.claims.map(async (value, index) => {
+        const singleVersions = await getRemainingVersionsByCard(
+          value.card.id,
+          10,
+        );
+
+        const cardInformation = `\`${String.fromCharCode(65 + index)}\`: ${mapEmoji(value.card.tier)} - **${value.card.name}** *${value.card.series}*`;
+        const versionInformation =
+          singleVersions.length > 0
+            ? `-# Single Vs: ${singleVersions.join(', ')}.`
+            : `-# No Single Vs Remaining.`;
+
+        return `${cardInformation}\n${versionInformation}`;
+      }),
+    );
 
     const content = `Card will despawn ${discordTimestamp}\n${claimContent.join('\n')}`;
 
