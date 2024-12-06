@@ -35,10 +35,19 @@ const webSocket = (client: Client) => {
 
   socket.addEventListener('error', (error) => {
     console.error('WebSocket error:', error);
+
+    if (
+      socket.readyState === WebSocket.CLOSED ||
+      socket.readyState === WebSocket.CLOSING
+    ) {
+      console.log('Connection is closed. Retrying in 5 seconds...');
+      setTimeout(webSocket, 5000);
+    }
   });
 
   socket.addEventListener('close', (event) => {
     console.log('WebSocket connection closed:', event);
+    console.log('Connection is closed. Retrying in 5 seconds...');
     setTimeout(webSocket, 5000);
   });
 };
