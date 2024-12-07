@@ -66,8 +66,6 @@ export async function initialiseDatabase(): Promise<void> {
             );
         `);
 
-    await connection.query(`ALTER TABLE Timer ADD COLUMN Information TEXT;`);
-
     console.log('Database initialized successfully.');
   } catch (error) {
     console.error('Error initializing database:', error);
