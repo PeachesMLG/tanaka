@@ -66,7 +66,7 @@ export class TimerCommand implements Command {
       channel,
       interaction,
       unixTimestamp,
-      interaction.user,
+      interaction.user.id,
       reason ?? '',
       this.client,
     );

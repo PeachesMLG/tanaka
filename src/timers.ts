@@ -6,7 +6,7 @@ export async function createTimer(
   channel: TextChannel,
   interaction: CommandInteraction | undefined,
   timestamp: number,
-  user: User,
+  userId: string,
   reason: string,
   client: Client,
   information?: string,
@@ -14,7 +14,7 @@ export async function createTimer(
   const embed = constructTimerCreatedEmbed(
     channel,
     timestamp,
-    user,
+    userId,
     reason,
     information,
   );
@@ -28,9 +28,9 @@ export async function createTimer(
     });
   }
 
-  const id = await saveTimer(user.id, channel.id, reason, timestamp);
+  const id = await saveTimer(userId, channel.id, reason, timestamp);
 
-  activateTimer(channel.id, timestamp, user.id, reason, id, client);
+  activateTimer(channel.id, timestamp, userId, reason, id, client);
 }
 
 export function activateTimer(
@@ -59,13 +59,13 @@ export function activateTimer(
 function constructTimerCreatedEmbed(
   channel: TextChannel,
   timestamp: number,
-  user: User,
+  userId: string,
   reason?: string,
   information?: string | undefined,
 ) {
-  let content = `Set a timer for <@${user.id}>.`;
+  let content = `Set a timer for <@${userId}>.`;
   if (reason) {
-    content += ' \n Reason: ${reason}';
+    content += ` \n Reason: ${reason}`;
   }
   content += ` \n It will go off at <t:${timestamp}:F>`;
   if (information) {
