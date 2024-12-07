@@ -37,9 +37,9 @@ export async function startAllTimers(client: Client) {
   const timers = await getTimers();
   timers.forEach((timer) => {
     activateTimer(
-      timer.ChannelId,
+      timer.ChannelID,
       timer.Time,
-      timer.UserId,
+      timer.UserID,
       timer.Reason,
       timer.ID,
       client,
@@ -56,7 +56,7 @@ export function activateTimer(
   client: Client,
 ) {
   console.log(
-    `Activating Timer ${timerId}, it will go off at ${timestamp} for ${reason}`,
+    `Activating Timer ${timerId}, it will go off at ${timestamp} for ${reason} in channel ${channelId}`,
   );
   const milliseconds = timestamp * 1000 - Date.now();
 

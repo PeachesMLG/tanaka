@@ -1,7 +1,7 @@
 export type TimerEntry = {
   ID: number;
-  UserId: string;
-  ChannelId: string;
+  UserID: string;
+  ChannelID: string;
   Reason: string;
   Time: number;
 };
