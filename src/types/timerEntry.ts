@@ -1,5 +1,5 @@
 export type TimerEntry = {
-  Id: number;
+  ID: number;
   UserId: string;
   ChannelId: string;
   Reason: string;
