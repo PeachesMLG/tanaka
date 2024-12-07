@@ -2,6 +2,7 @@ import mysql, { Pool, ResultSetHeader } from 'mysql2/promise';
 import { CardClaim, CardDespawn, CardSpawn } from './types/websocketMessage';
 import { RecentClaim } from './types/recentClaim';
 import { LeaderboardEntry } from './types/leaderboardEntry';
+import { TimerEntry } from './types/timerEntry';
 
 let pool: Pool;
 
@@ -323,5 +324,20 @@ export async function deleteTimer(Id: number) {
     throw error;
   } finally {
     connection.release();
+  }
+}
+
+export async function getTimers() {
+  try {
+    const query = `
+        SELECT * FROM Timer;
+    `;
+
+    const [rows] = await pool.query(query);
+
+    return rows as TimerEntry[];
+  } catch (error) {
+    console.error('Error getting timers:', error);
+    return [];
   }
 }

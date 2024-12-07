@@ -1,5 +1,5 @@
 import { Client, CommandInteraction, TextChannel, User } from 'discord.js';
-import { deleteTimer, saveTimer } from './database';
+import { deleteTimer, getTimers, saveTimer } from './database';
 import { getEmbedMessage } from './utils/embeds';
 
 export async function createTimer(
@@ -33,6 +33,20 @@ export async function createTimer(
   activateTimer(channel.id, timestamp, userId, reason, id, client);
 }
 
+export async function startAllTimers(client: Client) {
+  const timers = await getTimers();
+  timers.forEach((timer) => {
+    activateTimer(
+      timer.ChannelId,
+      timer.Time,
+      timer.UserId,
+      timer.Reason,
+      timer.Id,
+      client,
+    );
+  });
+}
+
 export function activateTimer(
   channelId: string,
   timestamp: number,
@@ -41,6 +55,9 @@ export function activateTimer(
   timerId: number,
   client: Client,
 ) {
+  console.log(
+    `Activating Timer ${timerId}, it will go off at ${timestamp} for ${reason}`,
+  );
   const milliseconds = timestamp * 1000 - Date.now();
 
   setTimeout(async () => {
@@ -69,7 +86,7 @@ function constructTimerCreatedEmbed(
   }
   content += ` \n It will go off at <t:${timestamp}:F>`;
   if (information) {
-    content += ` \n -# ${information}`;
+    content += ` \n ${information}`;
   }
   return getEmbedMessage(channel, 'Timer', content);
 }

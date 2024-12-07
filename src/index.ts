@@ -9,6 +9,7 @@ import { initialiseDatabase } from './database';
 import { startLeaderBoard } from './leaderboard';
 import { RecentCommand } from './commands/RecentCommand';
 import { TimerCommand } from './commands/TimerCommand';
+import { startAllTimers } from './timers';
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ client.once('ready', async () => {
 
   await initialiseDatabase();
   await startLeaderBoard(client);
+  await startAllTimers(client);
   websocket(client);
 });
 
