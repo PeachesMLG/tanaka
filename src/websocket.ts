@@ -39,14 +39,14 @@ const webSocket = (client: Client) => {
 
     if (socket.readyState !== WebSocket.OPEN) {
       console.log('Connection is closed. Retrying in 5 seconds...');
-      setTimeout(webSocket, 5000);
+      setTimeout(() => webSocket(client), 5000);
     }
   });
 
   socket.addEventListener('close', (event) => {
     console.log('WebSocket connection closed:', event);
     console.log('Connection is closed. Retrying in 5 seconds...');
-    setTimeout(webSocket, 5000);
+    setTimeout(() => webSocket(client), 5000);
   });
 };
 
