@@ -4,4 +4,5 @@ export type TimerEntry = {
   ChannelID: string;
   Reason: string;
   Time: number;
+  Information: string;
 };

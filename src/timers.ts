@@ -11,26 +11,36 @@ export async function createTimer(
   client: Client,
   information?: string,
 ) {
-  const embed = constructTimerCreatedEmbed(
-    channel,
+  const embed = constructTimerCreatedEmbed(channel, timestamp, userId, reason);
+  if (!information) {
+    if (interaction) {
+      await interaction.reply({
+        embeds: [embed],
+      });
+    } else {
+      await channel.send({
+        embeds: [embed],
+      });
+    }
+  }
+
+  const id = await saveTimer(
+    userId,
+    channel.id,
+    reason,
+    timestamp,
+    information ?? '',
+  );
+
+  activateTimer(
+    channel.id,
     timestamp,
     userId,
     reason,
-    information,
+    id,
+    information ?? '',
+    client,
   );
-  if (interaction) {
-    await interaction.reply({
-      embeds: [embed],
-    });
-  } else {
-    await channel.send({
-      embeds: [embed],
-    });
-  }
-
-  const id = await saveTimer(userId, channel.id, reason, timestamp);
-
-  activateTimer(channel.id, timestamp, userId, reason, id, client);
 }
 
 export async function startAllTimers(client: Client) {
@@ -42,6 +52,7 @@ export async function startAllTimers(client: Client) {
       timer.UserID,
       timer.Reason,
       timer.ID,
+      timer.Information,
       client,
     );
   });
@@ -53,6 +64,7 @@ export function activateTimer(
   userId: string,
   reason: string,
   timerId: number,
+  information: string,
   client: Client,
 ) {
   console.log(
@@ -65,11 +77,7 @@ export function activateTimer(
     const channel = await client.channels.fetch(channelId);
     if (channel === null || !channel.isTextBased) return;
     const textChannel = channel as TextChannel;
-    if (reason) {
-      await textChannel.send(`Reminder for <@${userId}>: ${reason}`);
-    } else {
-      await textChannel.send(`Reminder for <@${userId}>!`);
-    }
+    await textChannel.send(constructTimerElapsed(userId, reason, information));
   }, milliseconds);
 }
 
@@ -78,15 +86,26 @@ function constructTimerCreatedEmbed(
   timestamp: number,
   userId: string,
   reason?: string,
-  information?: string | undefined,
 ) {
   let content = `Set a timer for <@${userId}>.`;
   if (reason) {
     content += ` \n Reason: ${reason}`;
   }
   content += ` \n It will go off at <t:${timestamp}:F>`;
-  if (information) {
-    content += ` \n ${information}`;
-  }
   return getEmbedMessage(channel, 'Timer', content);
+}
+
+function constructTimerElapsed(
+  userId: string,
+  reason?: string,
+  information?: string,
+) {
+  let content = `Reminder for <@${userId}>!`;
+  if (reason) {
+    content += `\n Reason: ${reason}`;
+  }
+  if (information) {
+    content += `\n-# ${information}`;
+  }
+  return content;
 }

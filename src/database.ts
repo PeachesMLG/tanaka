@@ -65,6 +65,10 @@ export async function initialiseDatabase(): Promise<void> {
             );
         `);
 
+    await connection.query(
+      `ALTER TABLE Timer ADD COLUMN IF NOT EXISTS Information TEXT;`,
+    );
+
     console.log('Database initialized successfully.');
   } catch (error) {
     console.error('Error initializing database:', error);
@@ -280,6 +284,7 @@ export async function saveTimer(
   channelId: string,
   reason: string,
   timestamp: number,
+  information: string,
 ) {
   const connection = await pool.getConnection();
   try {
@@ -287,9 +292,9 @@ export async function saveTimer(
 
     const [rows] = await connection.query<ResultSetHeader>(
       `
-          INSERT INTO Timer (UserID, ChannelID, Reason, Time) VALUES (?, ?, ?, ?);
+          INSERT INTO Timer (UserID, ChannelID, Reason, Time, Information) VALUES (?, ?, ?, ?, ?);
         `,
-      [userId, channelId, reason, timestamp],
+      [userId, channelId, reason, timestamp, information],
     );
 
     await connection.commit();
