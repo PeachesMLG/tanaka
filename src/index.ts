@@ -1,16 +1,14 @@
 import {
   Client,
   GatewayIntentBits,
-  SlashCommandBuilder,
   ChatInputCommandInteraction,
-  EmbedBuilder,
 } from 'discord.js';
 import websocket from './websocket';
 import * as dotenv from 'dotenv';
-import { getRecentSpawns, initialiseDatabase } from './database';
-import { Card } from './types/websocketMessage';
+import { initialiseDatabase } from './database';
 import { startLeaderBoard } from './leaderboard';
 import { RecentCommand } from './commands/RecentCommand';
+import { TimerCommand } from './commands/TimerCommand';
 
 dotenv.config();
 
@@ -18,7 +16,7 @@ const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent],
 });
 
-const commands = [new RecentCommand()];
+const commands = [new RecentCommand(), new TimerCommand(client)];
 
 client.once('ready', async () => {
   console.log(`Logged in as ${client.user?.tag}!`);

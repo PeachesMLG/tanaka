@@ -1,4 +1,4 @@
-import mysql, { Pool } from 'mysql2/promise';
+import mysql, { Pool, ResultSetHeader } from 'mysql2/promise';
 import { CardClaim, CardDespawn, CardSpawn } from './types/websocketMessage';
 import { RecentClaim } from './types/recentClaim';
 import { LeaderboardEntry } from './types/leaderboardEntry';
@@ -51,6 +51,16 @@ export async function initialiseDatabase(): Promise<void> {
                 PRIMARY KEY (ClaimId),
                 FOREIGN KEY (BatchId) REFERENCES Spawns(BatchId),
                 FOREIGN KEY (CardId) REFERENCES Cards(Id)
+            );
+        `);
+
+    await connection.query(`
+            CREATE TABLE IF NOT EXISTS Timer (
+                ID INT AUTO_INCREMENT PRIMARY KEY,
+                UserID VARCHAR(255),
+                ChannelID VARCHAR(255),
+                Reason TEXT,
+                Time INT
             );
         `);
 
@@ -261,5 +271,57 @@ export async function getSpawnLeaderboard(
   } catch (error) {
     console.error('Error getting leaderboard:', error);
     return [];
+  }
+}
+
+export async function saveTimer(
+  userId: string,
+  channelId: string,
+  reason: string,
+  timestamp: number,
+) {
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    const [rows] = await connection.query<ResultSetHeader>(
+      `
+          INSERT INTO Timer (UserID, ChannelID, Reason, Time) VALUES (?, ?, ?, ?);
+        `,
+      [userId, channelId, reason, timestamp],
+    );
+
+    await connection.commit();
+    console.log(`Timer saved successfully`);
+    return rows.insertId;
+  } catch (error) {
+    await connection.rollback();
+    console.error('Error saving timer:', error);
+    throw error;
+  } finally {
+    connection.release();
+  }
+}
+
+export async function deleteTimer(Id: number) {
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    await connection.query(
+      `
+          DELETE FROM Timer where ID = ?;
+      `,
+      [Id],
+    );
+
+    await connection.commit();
+    console.log(`Timer deleted successfully`);
+  } catch (error) {
+    await connection.rollback();
+    console.error('Error deleting timer:', error);
+    throw error;
+  } finally {
+    connection.release();
   }
 }
