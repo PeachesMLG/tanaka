@@ -41,7 +41,7 @@ export async function startAllTimers(client: Client) {
       timer.Time,
       timer.UserId,
       timer.Reason,
-      timer.Id,
+      timer.ID,
       client,
     );
   });
