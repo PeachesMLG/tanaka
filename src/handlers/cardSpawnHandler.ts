@@ -11,10 +11,12 @@ export const cardSpawnHandler = async (
 ) => {
   const claim = cardSpawn.claims[0];
   await saveCardSpawn(cardSpawn);
-  setTimeout(async () => await sendSpawnSummary(cardSpawn, client), 500);
-  if (claim.claimType === 'summon') {
-    await createSummonTimer(cardSpawn, claim.autoClaimableBy, client);
-  }
+  setTimeout(async () => {
+    await sendSpawnSummary(cardSpawn, client);
+    if (claim.claimType === 'summon') {
+      await createSummonTimer(cardSpawn, claim.autoClaimableBy, client);
+    }
+  }, 500);
 };
 
 const createSummonTimer = async (
