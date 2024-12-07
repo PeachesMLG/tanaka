@@ -102,7 +102,7 @@ function constructTimerElapsed(
 ) {
   let content = `Reminder for <@${userId}>!`;
   if (reason) {
-    content += `\n Reason: ${reason}`;
+    content += `\nReason: ${reason}`;
   }
   if (information) {
     content += `\n-# ${information}`;
