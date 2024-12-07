@@ -61,13 +61,12 @@ export async function initialiseDatabase(): Promise<void> {
                 UserID VARCHAR(255),
                 ChannelID VARCHAR(255),
                 Reason TEXT,
-                Time INT
+                Time INT,
+                Information TEXT
             );
         `);
 
-    await connection.query(
-      `ALTER TABLE Timer ADD COLUMN IF NOT EXISTS Information TEXT;`,
-    );
+    await connection.query(`ALTER TABLE Timer ADD COLUMN Information TEXT;`);
 
     console.log('Database initialized successfully.');
   } catch (error) {
