@@ -16,10 +16,7 @@ export const cardSpawnHandler = async (
     await createSummonTimer(cardSpawn, claim.autoClaimableBy, client);
   }
 
-  const message = await waitForMessage((message) =>
-    isSpawnMessage(message, cardSpawn),
-  );
-  await sendSpawnSummary(message, cardSpawn, client);
+  await sendSpawnSummary(cardSpawn, client);
 };
 
 const createSummonTimer = async (
@@ -46,11 +43,7 @@ const createSummonTimer = async (
   );
 };
 
-const sendSpawnSummary = async (
-  targetMessage: Message | undefined,
-  cardSpawn: CardSpawn,
-  client: Client,
-) => {
+const sendSpawnSummary = async (cardSpawn: CardSpawn, client: Client) => {
   try {
     const channel = await getChannel(
       cardSpawn.serverId,
@@ -63,8 +56,6 @@ const sendSpawnSummary = async (
     const spawnTime = new Date(claim.dateTime);
     const despawnTime = new Date(spawnTime.getTime() + 20 * 1000);
     const discordTimestamp = `<t:${Math.floor(despawnTime.getTime() / 1000)}:R>`;
-
-    if (!targetMessage) return;
 
     const claimContent = await Promise.all(
       cardSpawn.claims.map(async (value, index) => {
@@ -84,6 +75,12 @@ const sendSpawnSummary = async (
     );
 
     const content = `Card will despawn ${discordTimestamp}\n${claimContent.join('\n')}`;
+
+    const targetMessage = await waitForMessage((message) =>
+      isSpawnMessage(message, cardSpawn),
+    );
+
+    if (!targetMessage) return;
 
     const message = await targetMessage.reply(content);
 
