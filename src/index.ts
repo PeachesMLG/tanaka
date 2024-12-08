@@ -10,11 +10,16 @@ import { startLeaderBoard } from './leaderboard';
 import { RecentCommand } from './commands/RecentCommand';
 import { TimerCommand } from './commands/TimerCommand';
 import { startAllTimers } from './timers';
+import { messageListeners } from './messageListener';
 
 dotenv.config();
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent],
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMessages,
+  ],
 });
 
 const commands = [new RecentCommand(), new TimerCommand(client)];
@@ -43,6 +48,18 @@ client.on('interactionCreate', async (interaction) => {
     }
   } catch (error) {
     await interaction.reply({ content: 'Internal Server Error...' });
+  }
+});
+
+client.on('messageCreate', (message) => {
+  for (const [key, listener] of messageListeners.entries()) {
+    if (listener.predicate(message)) {
+      listener.resolve(message);
+      if (listener.timeout) {
+        clearTimeout(listener.timeout);
+      }
+      messageListeners.delete(key);
+    }
   }
 });
 

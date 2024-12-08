@@ -1,9 +1,10 @@
-import { CardSpawn } from '../types/websocketMessage';
+import { Card, CardSpawn } from '../types/websocketMessage';
 import { saveCardSpawn } from '../database';
-import { Client, PermissionsBitField, TextChannel } from 'discord.js';
+import { Client, Message, PermissionsBitField, TextChannel } from 'discord.js';
 import { mapEmoji } from '../utils/emojis';
 import { getRemainingVersionsByCard } from '../utils/inventoryItems';
 import { createTimer } from '../timers';
+import { waitForMessage } from '../messageListener';
 
 export const cardSpawnHandler = async (
   cardSpawn: CardSpawn,
@@ -11,12 +12,14 @@ export const cardSpawnHandler = async (
 ) => {
   const claim = cardSpawn.claims[0];
   await saveCardSpawn(cardSpawn);
-  setTimeout(async () => {
-    await sendSpawnSummary(cardSpawn, client);
-    if (claim.claimType === 'summon') {
-      await createSummonTimer(cardSpawn, claim.autoClaimableBy, client);
-    }
-  }, 500);
+  if (claim.claimType === 'summon') {
+    await createSummonTimer(cardSpawn, claim.autoClaimableBy, client);
+  }
+
+  const message = await waitForMessage((message) =>
+    isSpawnMessage(message, cardSpawn),
+  );
+  await sendSpawnSummary(message, cardSpawn, client);
 };
 
 const createSummonTimer = async (
@@ -43,7 +46,11 @@ const createSummonTimer = async (
   );
 };
 
-const sendSpawnSummary = async (cardSpawn: CardSpawn, client: Client) => {
+const sendSpawnSummary = async (
+  targetMessage: Message | undefined,
+  cardSpawn: CardSpawn,
+  client: Client,
+) => {
   try {
     const channel = await getChannel(
       cardSpawn.serverId,
@@ -52,22 +59,10 @@ const sendSpawnSummary = async (cardSpawn: CardSpawn, client: Client) => {
     );
     if (channel === null) return;
 
-    const messages = await channel.messages.fetch({ limit: 10 });
-
     const claim = cardSpawn.claims[0];
-    const expectedTitle =
-      claim.claimType === 'summon' ? 'Manual Summon' : 'Automatic Summon';
     const spawnTime = new Date(claim.dateTime);
     const despawnTime = new Date(spawnTime.getTime() + 20 * 1000);
     const discordTimestamp = `<t:${Math.floor(despawnTime.getTime() / 1000)}:R>`;
-
-    const targetMessage = messages.find(
-      (msg) =>
-        msg.author.id === '1242388858897956906' &&
-        msg.embeds.some(
-          (embed) => embed.title && embed.title.includes(expectedTitle),
-        ),
-    );
 
     if (!targetMessage) return;
 
@@ -100,6 +95,20 @@ const sendSpawnSummary = async (cardSpawn: CardSpawn, client: Client) => {
     console.error(e);
   }
 };
+
+function isSpawnMessage(message: Message, cardSpawn: CardSpawn): boolean {
+  const claim = cardSpawn.claims[0];
+  const expectedTitle =
+    claim.claimType === 'summon' ? 'Manual Summon' : 'Automatic Summon';
+
+  return (
+    message.author.id === '1242388858897956906' &&
+    message.channelId === cardSpawn.channelId &&
+    message.embeds.some(
+      (embed) => embed.title && embed.title.includes(expectedTitle),
+    )
+  );
+}
 
 const getChannel = async (
   serverId: string,
