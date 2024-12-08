@@ -1,5 +1,6 @@
 import { Message } from 'discord.js';
 import { v4 as uuid } from 'uuid';
+import { TimedMap } from './utils/timedMap';
 
 export const messageListeners: Map<
   string,
@@ -10,11 +11,21 @@ export const messageListeners: Map<
   }
 > = new Map();
 
-export function waitForMessage(
+export const recentMessages = new TimedMap<Message>();
+
+export async function waitForMessage(
   predicate: (message: Message) => boolean,
   timeoutMs: number = 5000,
 ): Promise<Message | undefined> {
-  return new Promise((resolve) => {
+  console.log(`Searching the past ${recentMessages.size()} Messages in Cache`);
+  for (const [key, { value, expiry }] of recentMessages.entries()) {
+    if (predicate(value)) {
+      console.log(`Found message in cache.`);
+      return value;
+    }
+  }
+
+  return await new Promise((resolve) => {
     const id = uuid();
 
     const listener = {
