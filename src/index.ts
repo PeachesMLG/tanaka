@@ -10,7 +10,7 @@ import { startLeaderBoard } from './leaderboard';
 import { RecentCommand } from './commands/RecentCommand';
 import { TimerCommand } from './commands/TimerCommand';
 import { startAllTimers } from './timers';
-import { messageListeners } from './messageListener';
+import { messageListeners, recentMessages } from './messageListener';
 
 dotenv.config();
 
@@ -52,6 +52,7 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 client.on('messageCreate', (message) => {
+  recentMessages.add(message);
   for (const [key, listener] of messageListeners.entries()) {
     if (listener.predicate(message)) {
       listener.resolve(message);
