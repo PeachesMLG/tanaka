@@ -45,6 +45,10 @@ const createSummonTimer = async (
 
 const sendSpawnSummary = async (cardSpawn: CardSpawn, client: Client) => {
   try {
+    const targetMessagePromise = waitForMessage((message) =>
+      isSpawnMessage(message, cardSpawn),
+    );
+
     const channel = await getChannel(
       cardSpawn.serverId,
       cardSpawn.channelId,
@@ -76,9 +80,7 @@ const sendSpawnSummary = async (cardSpawn: CardSpawn, client: Client) => {
 
     const content = `Card will despawn ${discordTimestamp}\n${claimContent.join('\n')}`;
 
-    const targetMessage = await waitForMessage((message) =>
-      isSpawnMessage(message, cardSpawn),
-    );
+    const targetMessage = await targetMessagePromise;
 
     if (!targetMessage) return;
 
