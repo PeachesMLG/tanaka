@@ -4,7 +4,7 @@ export class TimedMap<V> {
   private map = new Map<string, { value: V; expiry: number }>();
   private cleanupInterval: NodeJS.Timeout;
 
-  constructor(cleanupIntervalMs: number = 1000) {
+  constructor(cleanupIntervalMs: number = 5000) {
     this.cleanupInterval = setInterval(() => this.cleanup(), cleanupIntervalMs);
   }
 
