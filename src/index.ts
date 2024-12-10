@@ -47,6 +47,7 @@ client.on('interactionCreate', async (interaction) => {
       }
     }
   } catch (error) {
+    console.error(`Error Executing Command: `, error);
     await interaction.reply({ content: 'Internal Server Error...' });
   }
 });

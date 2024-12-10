@@ -33,10 +33,7 @@ const webSocket = (client: Client) => {
     }
   });
 
-  socket.addEventListener('error', (error) => {
-    console.error('WebSocket error:', error);
-    console.log('Socket State: ', socket.readyState);
-
+  socket.addEventListener('error', () => {
     if (socket.readyState !== WebSocket.OPEN) {
       console.log('Connection is closed. Retrying in 5 seconds...');
       setTimeout(() => webSocket(client), 5000);

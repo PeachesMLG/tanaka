@@ -122,7 +122,6 @@ export async function saveCardSpawn(cardSpawn: CardSpawn): Promise<void> {
     }
 
     await connection.commit();
-    console.log('Card spawn saved successfully.');
   } catch (error) {
     await connection.rollback();
     console.error('Error saving card spawn:', error);
@@ -147,7 +146,6 @@ export async function saveCardDespawn(cardDespawn: CardDespawn): Promise<void> {
     );
 
     await connection.commit();
-    console.log(`Card despawn saved for BatchId: ${cardDespawn.batchId}`);
   } catch (error) {
     await connection.rollback();
     console.error('Error saving card despawn:', error);
@@ -177,9 +175,6 @@ export async function saveCardClaim(cardClaim: CardClaim): Promise<void> {
     );
 
     await connection.commit();
-    console.log(
-      `Card claim saved successfully for BatchId: ${cardClaim.batchId}, ClaimId: ${cardClaim.claimId}`,
-    );
   } catch (error) {
     await connection.rollback();
     console.error('Error saving card claim:', error);
@@ -295,7 +290,6 @@ export async function saveTimer(
     );
 
     await connection.commit();
-    console.log(`Timer saved successfully`);
     return rows.insertId;
   } catch (error) {
     await connection.rollback();
@@ -319,7 +313,6 @@ export async function deleteTimer(Id: number) {
     );
 
     await connection.commit();
-    console.log(`Timer deleted successfully`);
   } catch (error) {
     await connection.rollback();
     console.error('Error deleting timer:', error);

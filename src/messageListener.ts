@@ -17,10 +17,8 @@ export async function waitForMessage(
   predicate: (message: Message) => boolean,
   timeoutMs: number = 5000,
 ): Promise<Message | undefined> {
-  console.log(`Searching the past ${recentMessages.size()} Messages in Cache`);
   for (const [key, { value, expiry }] of recentMessages.entries()) {
     if (predicate(value)) {
-      console.log(`Found message in cache.`);
       return value;
     }
   }

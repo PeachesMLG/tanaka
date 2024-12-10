@@ -67,9 +67,6 @@ export function activateTimer(
   information: string,
   client: Client,
 ) {
-  console.log(
-    `Activating Timer ${timerId}, it will go off at ${timestamp} for ${reason} in channel ${channelId} with information ${information}`,
-  );
   const milliseconds = timestamp * 1000 - Date.now();
 
   setTimeout(async () => {
