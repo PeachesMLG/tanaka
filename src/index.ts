@@ -50,7 +50,10 @@ client.on('interactionCreate', async (interaction) => {
   try {
     for (const command of commands) {
       if (interaction.commandName === command.command.name) {
-        await command.execute(interaction as ChatInputCommandInteraction);
+        await command.execute(
+          interaction as ChatInputCommandInteraction,
+          client,
+        );
         return;
       }
     }

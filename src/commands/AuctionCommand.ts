@@ -1,9 +1,12 @@
 import { Command } from './Command';
 import {
   ChatInputCommandInteraction,
-  SlashCommandBuilder,
+  Client,
   SharedSlashCommand,
+  SlashCommandBuilder,
 } from 'discord.js';
+import { Auction, AuctionStatus } from '../types/auction';
+import { createAuction } from '../auctions';
 
 export class AuctionCommand implements Command {
   command: SharedSlashCommand;
@@ -36,7 +39,7 @@ export class AuctionCommand implements Command {
       );
   }
 
-  async execute(interaction: ChatInputCommandInteraction) {
+  async execute(interaction: ChatInputCommandInteraction, client: Client) {
     if (!interaction.channel) {
       await interaction.reply({
         content: 'Cannot execute command outside a channel',
@@ -55,20 +58,47 @@ export class AuctionCommand implements Command {
     const subcommand = interaction.options.getSubcommand();
 
     if (subcommand === 'create') {
-      await this.createAuction(interaction);
+      await this.createAuction(interaction, client);
     } else if (subcommand === 'list') {
-      await this.ListAuctions(interaction);
+      await this.ListAuctions(interaction, client);
     }
   }
 
-  async createAuction(interaction: ChatInputCommandInteraction) {
+  async createAuction(
+    interaction: ChatInputCommandInteraction,
+    client: Client,
+  ) {
+    const cardId = interaction.options.getString('card');
+    const version = interaction.options.getString('version');
+
+    if (!cardId || !version) {
+      await interaction.reply({
+        content: 'You must set both CardId and Version',
+        ephemeral: true,
+      });
+
+      return;
+    }
+
+    const auction = {
+      ID: 0,
+      ServerId: interaction.guild!.id,
+      UserId: interaction.user.id,
+      CardId: cardId,
+      Version: version,
+      Status: AuctionStatus.PENDING,
+      DateTime: new Date(),
+    } as Auction;
+
+    await createAuction(auction, client);
+
     await interaction.reply({
-      content: 'Creating a new one auction.',
+      content: 'Auction Added to Queue!',
       ephemeral: true,
     });
   }
 
-  async ListAuctions(interaction: ChatInputCommandInteraction) {
+  async ListAuctions(interaction: ChatInputCommandInteraction, client: Client) {
     await interaction.reply({
       content: 'Listing your auctions.',
       ephemeral: true,

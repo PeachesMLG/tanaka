@@ -7,4 +7,5 @@ export enum SettingsTypes {
   SR_AUCTION_CHANNEL = 'Super Rare Auction Channel',
   SSR_AUCTION_CHANNEL = 'Super Super Rare Auction Channel',
   UR_AUCTION_CHANNEL = 'Ultra Rare Auction Channel',
+  APPROVAL_AUCTION_CHANNEL = 'Approval Auction Channel',
 }

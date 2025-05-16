@@ -55,6 +55,10 @@ export class ServerSettingsCommand implements Command {
                   name: 'Ultra Rare Auction Channel',
                   value: SettingsTypes.UR_AUCTION_CHANNEL,
                 },
+                {
+                  name: 'Approval Auction Channel',
+                  value: SettingsTypes.APPROVAL_AUCTION_CHANNEL,
+                },
               ]),
           )
           .addStringOption((option) =>
@@ -66,7 +70,7 @@ export class ServerSettingsCommand implements Command {
       );
   }
 
-  async execute(interaction: ChatInputCommandInteraction) {
+  async execute(interaction: ChatInputCommandInteraction, client: Client) {
     if (!interaction.channel) {
       await interaction.reply({
         content: 'Cannot execute command outside a channel',

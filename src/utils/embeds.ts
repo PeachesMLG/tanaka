@@ -13,6 +13,19 @@ export function getEmbedMessage(
     .setFooter({ text: 'Coded by Peaches_MLG' });
 }
 
+export function getEmbedImage(
+  channel: TextChannel,
+  title: string,
+  imageUrl: string,
+) {
+  return new EmbedBuilder()
+    .setColor(channel.guild.members.me?.displayHexColor ?? Colors.Blue)
+    .setTitle(title)
+    .setImage(imageUrl)
+    .setTimestamp()
+    .setFooter({ text: 'Coded by Peaches_MLG' });
+}
+
 export function sendEmbedMessage(
   channel: TextChannel,
   title: string,

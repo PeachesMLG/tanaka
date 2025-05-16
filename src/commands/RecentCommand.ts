@@ -38,7 +38,7 @@ export class RecentCommand implements Command {
       );
   }
 
-  async execute(interaction: ChatInputCommandInteraction) {
+  async execute(interaction: ChatInputCommandInteraction, client: Client) {
     if (!interaction.channel) {
       await interaction.reply({
         content: 'Cannot execute command outside a channel',
