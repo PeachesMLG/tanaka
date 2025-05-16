@@ -70,18 +70,5 @@ const sendHighTierPing = async (cardSpawn: CardSpawn, client: Client) => {
     return;
   }
 
-  // Lets just check if any other bot is going to send this first
-  waitForMessage((message) => message.content.includes(highTierPingRole)).then(
-    (message) => {
-      if (message) {
-        console.log(
-          'Ignoring because already sent by ' + message.author.username,
-        );
-        return;
-      }
-
-      console.log('Sending!');
-      channel.send(highTierPingRole + ' ' + highTierPingMessage);
-    },
-  );
+  await channel.send(highTierPingRole + ' ' + highTierPingMessage);
 };
