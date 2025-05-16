@@ -2,6 +2,8 @@ import { Client } from 'discord.js';
 import { CardSpawn } from '../types/cardSpawn';
 import { createTimer } from '../timers';
 import { getChannel } from '../utils/getChannel';
+import { getUserSetting } from '../database/userSettingsDatabase';
+import { UserSettingsTypes } from '../UserSettingsTypes';
 
 export const cardSpawnHandler = async (
   cardSpawn: CardSpawn,
@@ -14,6 +16,14 @@ export const cardSpawnHandler = async (
 
 const createSummonTimer = async (cardSpawn: CardSpawn, client: Client) => {
   if (!cardSpawn.SummonedBy) return;
+
+  const enabled = await getUserSetting(
+    cardSpawn.SummonedBy,
+    UserSettingsTypes.AUTOMATIC_SUMMON_TIMERS,
+  );
+
+  if (!enabled) return;
+
   const channel = await getChannel(cardSpawn.ChannelId, client);
   if (channel === null) return;
   let futureTime = new Date(Date.now() + 1000 * 60 * 30);
@@ -25,6 +35,6 @@ const createSummonTimer = async (cardSpawn: CardSpawn, client: Client) => {
     cardSpawn.SummonedBy,
     'Summons',
     client,
-    'Automatically triggered by summon (This is a WIP Ill add a way to turn off later)',
+    'Automatically triggered by summon\n Turn this off in the /usersettings command',
   );
 };

@@ -7,14 +7,9 @@ import * as dotenv from 'dotenv';
 import { initialiseDatabase } from './database/database';
 import { TimerCommand } from './commands/TimerCommand';
 import { startAllTimers } from './timers';
-import { CardClaim } from './types/cardClaim';
-import { mapEmojiToTier } from './utils/emojis';
-import { cardClaimHandler } from './handlers/cardClaimHandler';
-import { CardSpawn } from './types/cardSpawn';
-import { getUserByMessageReference } from './utils/messageUtils';
-import { cardSpawnHandler } from './handlers/cardSpawnHandler';
 import { RecentCommand } from './commands/RecentCommand';
 import { handleMessage } from './messageHandler';
+import { UserSettingsCommand } from './commands/UserSettingsCommand';
 
 dotenv.config();
 
@@ -26,7 +21,11 @@ const client = new Client({
   ],
 });
 
-const commands = [new TimerCommand(client), new RecentCommand()];
+const commands = [
+  new TimerCommand(client),
+  new RecentCommand(),
+  new UserSettingsCommand(),
+];
 
 client.once('ready', async () => {
   console.log(`Logged in as ${client.user?.tag}!`);
