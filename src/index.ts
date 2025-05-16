@@ -4,10 +4,17 @@ import {
   ChatInputCommandInteraction,
 } from 'discord.js';
 import * as dotenv from 'dotenv';
-import { initialiseDatabase } from './database';
+import { initialiseDatabase } from './database/database';
 import { TimerCommand } from './commands/TimerCommand';
 import { startAllTimers } from './timers';
-import { messageListeners, recentMessages } from './messageListener';
+import { CardClaim } from './types/cardClaim';
+import { mapEmojiToTier } from './utils/emojis';
+import { cardClaimHandler } from './handlers/cardClaimHandler';
+import { CardSpawn } from './types/cardSpawn';
+import { getUserByMessageReference } from './utils/messageUtils';
+import { cardSpawnHandler } from './handlers/cardSpawnHandler';
+import { RecentCommand } from './commands/RecentCommand';
+import { handleMessage } from './messageHandler';
 
 dotenv.config();
 
@@ -19,7 +26,7 @@ const client = new Client({
   ],
 });
 
-const commands = [new TimerCommand(client)];
+const commands = [new TimerCommand(client), new RecentCommand()];
 
 client.once('ready', async () => {
   console.log(`Logged in as ${client.user?.tag}!`);
@@ -47,17 +54,12 @@ client.on('interactionCreate', async (interaction) => {
   }
 });
 
-client.on('messageCreate', (message) => {
-  recentMessages.add(message);
-  for (const [key, listener] of messageListeners.entries()) {
-    if (listener.predicate(message)) {
-      listener.resolve(message);
-      if (listener.timeout) {
-        clearTimeout(listener.timeout);
-      }
-      messageListeners.delete(key);
-    }
-  }
+client.on('messageCreate', async (message) => {
+  await handleMessage(message, client);
+});
+
+client.on('messageUpdate', async (_, newMessage) => {
+  await handleMessage(newMessage, client);
 });
 
 client.login(process.env.DISCORD_TOKEN).catch((error) => {

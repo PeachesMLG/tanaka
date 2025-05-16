@@ -1,39 +1,20 @@
-import mysql, { Pool, ResultSetHeader } from 'mysql2/promise';
-import { TimerEntry } from './types/timerEntry';
+import { ResultSetHeader } from 'mysql2/promise';
+import { TimerEntry } from '../types/timerEntry';
+import { pool } from './database';
 
-let pool: Pool;
-
-export async function initialiseDatabase(): Promise<void> {
-  pool = mysql.createPool({
-    host: process.env.SQL_HOST,
-    user: process.env.SQL_USERNAME,
-    password: process.env.SQL_PASSWORD,
-    database: process.env.SQL_DATABASE,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-  });
-
+export async function initialiseTimerDatabase(): Promise<void> {
   const connection = await pool.getConnection();
-  try {
-    await connection.query(`
-            CREATE TABLE IF NOT EXISTS Timer (
-                ID INT AUTO_INCREMENT PRIMARY KEY,
-                UserID VARCHAR(255),
-                ChannelID VARCHAR(255),
-                Reason TEXT,
-                Time INT,
-                Information TEXT
-            );
-        `);
-
-    console.log('Database initialized successfully.');
-  } catch (error) {
-    console.error('Error initializing database:', error);
-    throw error;
-  } finally {
-    connection.release();
-  }
+  await connection.query(`
+    CREATE TABLE IF NOT EXISTS Timer
+    (
+      ID          INT AUTO_INCREMENT PRIMARY KEY,
+      UserID      VARCHAR(255),
+      ChannelID   VARCHAR(255),
+      Reason      TEXT,
+      Time        INT,
+      Information TEXT
+    );
+  `);
 }
 
 export async function saveTimer(

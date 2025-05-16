@@ -1,5 +1,5 @@
-import { Client, CommandInteraction, TextChannel, User } from 'discord.js';
-import { deleteTimer, getTimers, saveTimer } from './database';
+import { Client, CommandInteraction, TextChannel } from 'discord.js';
+import { deleteTimer, getTimers, saveTimer } from './database/timerDatabase';
 import { getEmbedMessage } from './utils/embeds';
 
 export async function createTimer(
