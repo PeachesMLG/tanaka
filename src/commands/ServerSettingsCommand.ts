@@ -88,7 +88,7 @@ export class ServerSettingsCommand implements Command {
 
     await saveSetting(interaction.guild.id, setting, value);
 
-    const result = (await getSetting(interaction.user.id, setting)) ?? '';
+    const result = (await getSetting(interaction.guild.id, setting)) ?? '';
 
     await interaction.reply({
       embeds: [
