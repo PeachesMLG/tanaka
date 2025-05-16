@@ -4,6 +4,7 @@ import { createTimer } from '../timers';
 import { getChannel } from '../utils/getChannel';
 import { getSetting } from '../database/settingsDatabase';
 import { SettingsTypes } from '../SettingsTypes';
+import { waitForMessage } from '../utils/messageListener';
 
 export const cardSpawnHandler = async (
   cardSpawn: CardSpawn,
@@ -70,5 +71,18 @@ const sendHighTierPing = async (cardSpawn: CardSpawn, client: Client) => {
     return;
   }
 
-  await channel.send(highTierPingRole + ' ' + highTierPingMessage);
+  // Lets just check if any other bot is going to send this first
+  waitForMessage((message) => message.content.includes(highTierPingRole)).then(
+    (message) => {
+      if (message) {
+        console.log(
+          'Ignoring because already sent by ' + message.author.username,
+        );
+        return;
+      }
+
+      console.log('Sending High Tier Ping!');
+      channel.send(highTierPingRole + ' ' + highTierPingMessage);
+    },
+  );
 };
