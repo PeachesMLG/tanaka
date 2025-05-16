@@ -4,10 +4,12 @@ import { cardSpawnHandler } from './handlers/cardSpawnHandler';
 import { mapEmojiToTier } from './utils/emojis';
 import { cardClaimHandler } from './handlers/cardClaimHandler';
 import { TimedList } from './utils/timedList';
+import { CardInfo } from './types/cardInfo';
 
 const handledMessages = new TimedList();
-const pattern =
+const claimPattern =
   /^<@!?(\d+)> claimed (.+?) • \*\*(.+?)\*\* • \*(.+?)\* • `v([\d.]+)`!$/;
+const spawnPattern = /^(.*?) \*\*(.*?)\*\* • \*(.*?)\*$/;
 
 export const handleMessage = async (
   message: Message | PartialMessage,
@@ -30,6 +32,12 @@ const handleCardSummon = async (
   client: Client,
 ) => {
   handledMessages.add(message.id);
+
+  const cardInfo = message.embeds[0].description
+    ?.split('\n')
+    .map(GetCardInfo)
+    .filter((cardInfo) => cardInfo) as CardInfo[];
+
   await cardSpawnHandler(
     {
       ChannelId: message.channelId ?? '',
@@ -39,6 +47,7 @@ const handleCardSummon = async (
         message.interactionMetadata,
         message.channel,
       ),
+      Cards: cardInfo,
     },
     client,
   );
@@ -48,7 +57,7 @@ const handleCardClaim = async (
   message: Message | PartialMessage,
   client: Client,
 ) => {
-  const match = message.content?.match(pattern);
+  const match = message.content?.match(claimPattern);
   if (match) {
     handledMessages.add(message.id);
     const [, userId, emote, name, series, version] = match;
@@ -65,4 +74,17 @@ const handleCardClaim = async (
       client,
     );
   }
+};
+
+const GetCardInfo = (description: string) => {
+  const match = description.match(spawnPattern);
+  if (match) {
+    const [, emote, name, series] = match;
+    return {
+      Name: name,
+      Series: series,
+      Rarity: mapEmojiToTier(emote),
+    } as CardInfo;
+  }
+  return undefined;
 };

@@ -4,13 +4,19 @@ import { createTimer } from '../timers';
 import { getChannel } from '../utils/getChannel';
 import { getSetting } from '../database/settingsDatabase';
 import { SettingsTypes } from '../SettingsTypes';
+import { waitForMessage } from '../utils/messageListener';
 
 export const cardSpawnHandler = async (
   cardSpawn: CardSpawn,
   client: Client,
 ) => {
-  if (cardSpawn.SummonedBy) {
-    await createSummonTimer(cardSpawn, client);
+  await createSummonTimer(cardSpawn, client);
+  if (
+    cardSpawn.Cards.some(
+      (value) => value.Rarity === 'SR' || value.Rarity === 'SSR',
+    )
+  ) {
+    await sendHighTierPing(cardSpawn, client);
   }
 };
 
@@ -37,5 +43,45 @@ const createSummonTimer = async (cardSpawn: CardSpawn, client: Client) => {
     'Summons',
     client,
     'Automatically triggered by summon\n Turn this off in the /usersettings command',
+  );
+};
+
+const sendHighTierPing = async (cardSpawn: CardSpawn, client: Client) => {
+  console.log('Sending High Tier Ping message!');
+  const channel = await getChannel(cardSpawn.ChannelId, client);
+  const highTierPingRole = await getSetting(
+    cardSpawn.ServerId,
+    SettingsTypes.HIGH_TIER_PING_ROLE,
+  );
+  const highTierPingMessage = await getSetting(
+    cardSpawn.ServerId,
+    SettingsTypes.HIGH_TIER_PING_MESSAGE,
+  );
+
+  if (!highTierPingRole || !highTierPingMessage || !channel) {
+    console.log(
+      ':c ' +
+        highTierPingRole +
+        ' - ' +
+        highTierPingMessage +
+        ' - ' +
+        channel?.id,
+    );
+    return;
+  }
+
+  // Lets just check if any other bot is going to send this first
+  waitForMessage((message) => message.content.includes(highTierPingRole)).then(
+    (message) => {
+      if (message) {
+        console.log(
+          'Ignoring because already sent by ' + message.author.username,
+        );
+        return;
+      }
+
+      console.log('Sending!');
+      channel.send(highTierPingRole + ' ' + highTierPingMessage);
+    },
   );
 };

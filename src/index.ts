@@ -11,6 +11,7 @@ import { RecentCommand } from './commands/RecentCommand';
 import { handleMessage } from './messageHandler';
 import { UserSettingsCommand } from './commands/UserSettingsCommand';
 import { ServerSettingsCommand } from './commands/ServerSettingsCommand';
+import { messageListeners, recentMessages } from './utils/messageListener';
 
 dotenv.config();
 
@@ -57,6 +58,17 @@ client.on('interactionCreate', async (interaction) => {
 
 client.on('messageCreate', async (message) => {
   await handleMessage(message, client);
+
+  recentMessages.add(message);
+  for (const [key, listener] of messageListeners.entries()) {
+    if (listener.predicate(message)) {
+      listener.resolve(message);
+      if (listener.timeout) {
+        clearTimeout(listener.timeout);
+      }
+      messageListeners.delete(key);
+    }
+  }
 });
 
 client.on('messageUpdate', async (_, newMessage) => {
