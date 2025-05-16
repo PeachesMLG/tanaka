@@ -1,6 +1,5 @@
 import { pool } from './database';
 import { Auction, AuctionStatus } from '../types/auction';
-import { TimerEntry } from '../types/timerEntry';
 
 export async function initialiseAuctionDatabase(): Promise<void> {
   const connection = await pool.getConnection();
@@ -18,7 +17,8 @@ export async function initialiseAuctionDatabase(): Promise<void> {
       ChannelId VARCHAR(255),
       ThreadId  VARCHAR(255),
       Status    VARCHAR(255),
-      DateTime  DATETIME DEFAULT CURRENT_TIMESTAMP
+      CreatedDateTime  DATETIME DEFAULT CURRENT_TIMESTAMP,
+      ExpiresDateTime  DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);
 }
@@ -113,7 +113,7 @@ export async function getAuctions(
                WHEN Status = 'IN_QUEUE'
                  THEN ROW_NUMBER() OVER (
                  PARTITION BY ServerId
-                 ORDER BY CASE WHEN Status = 'IN_QUEUE' THEN DateTime END DESC
+                 ORDER BY CASE WHEN Status = 'IN_QUEUE' THEN CreatedDateTime END DESC
                  )
                ELSE 0
                END AS PositionInQueue
@@ -121,7 +121,7 @@ export async function getAuctions(
       WHERE ServerId = ?
         AND Status != 'DONE'
         AND Status != 'REJECTED'
-      ORDER BY DateTime DESC;
+      ORDER BY CreatedDateTime DESC;
     `;
 
     const params = [serverId, UserId, status].filter((param) => param);
@@ -142,7 +142,8 @@ export async function getAuctions(
           ThreadId: row.ThreadId,
           PositionInQueue: row.PositionInQueue,
           Status: row.Status as AuctionStatus,
-          DateTime: new Date(row.DateTime),
+          CreatedDateTime: new Date(row.CreatedDateTime),
+          ExpiresDateTime: new Date(row.ExpiresDateTime),
         }) as Auction,
     );
 

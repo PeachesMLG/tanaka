@@ -11,7 +11,8 @@ export type Auction = {
   ThreadId: string;
   PositionInQueue: number;
   Status: AuctionStatus;
-  DateTime: Date;
+  CreatedDateTime: Date;
+  ExpiresDateTime: Date;
 };
 
 export enum AuctionStatus {
