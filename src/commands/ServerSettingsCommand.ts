@@ -65,10 +65,6 @@ export class ServerSettingsCommand implements Command {
                   value: SettingsTypes.MAX_AUCTIONS_PER_USER,
                 },
                 {
-                  name: 'Max Auctions Per User',
-                  value: SettingsTypes.MAX_AUCTIONS_PER_USER,
-                },
-                {
                   name: 'Max Auctions Per Queue',
                   value: SettingsTypes.MAX_AUCTIONS_PER_QUEUE,
                 },

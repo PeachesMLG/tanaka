@@ -9,7 +9,6 @@ import { Auction, AuctionStatus } from './types/auction';
 import {
   getActiveAuctions,
   getAuctionById,
-  getAuctions,
   saveAuction,
   updateAuction,
 } from './database/auctionDatabase';
@@ -18,8 +17,6 @@ import { SettingsTypes } from './SettingsTypes';
 import { getChannel, getForumChannel, getForumPost } from './utils/getChannel';
 import { AuctionCardDetails } from './types/auctionCardDetails';
 import { getEmbedImage } from './utils/embeds';
-import { deleteTimer, getTimers } from './database/timerDatabase';
-import { activateTimer } from './timers';
 
 async function getChannelIdForAuctionRarity(
   rarity: string,
@@ -170,6 +167,8 @@ export async function approveAuction(auctionId: string, client: Client) {
     threadPost.id,
     expirationDate,
   );
+
+  await activateAuction(auction, client);
 }
 
 export async function rejectAuction(auctionId: string) {
