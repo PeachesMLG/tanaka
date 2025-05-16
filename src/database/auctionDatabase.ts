@@ -63,6 +63,7 @@ export async function updateAuction(
       WHERE Id = ?;
     `;
     const values = [state, thread, newExpiration, id];
+    console.log('Values ', values);
     await connection.query(query, values);
   } finally {
     connection.release();

@@ -161,7 +161,7 @@ export async function approveAuction(auctionId: string, client: Client) {
     },
   });
 
-  console.log(threadPost);
+  console.log(parseInt(auctionId) + threadPost.id);
 
   await updateAuction(
     parseInt(auctionId),
