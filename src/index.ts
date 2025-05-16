@@ -3,11 +3,8 @@ import {
   GatewayIntentBits,
   ChatInputCommandInteraction,
 } from 'discord.js';
-import websocket from './websocket';
 import * as dotenv from 'dotenv';
 import { initialiseDatabase } from './database';
-import { startLeaderBoard } from './leaderboard';
-import { RecentCommand } from './commands/RecentCommand';
 import { TimerCommand } from './commands/TimerCommand';
 import { startAllTimers } from './timers';
 import { messageListeners, recentMessages } from './messageListener';
@@ -22,7 +19,7 @@ const client = new Client({
   ],
 });
 
-const commands = [new RecentCommand(), new TimerCommand(client)];
+const commands = [new TimerCommand(client)];
 
 client.once('ready', async () => {
   console.log(`Logged in as ${client.user?.tag}!`);
@@ -32,9 +29,7 @@ client.once('ready', async () => {
   );
 
   await initialiseDatabase();
-  await startLeaderBoard(client);
   await startAllTimers(client);
-  websocket(client);
 });
 
 client.on('interactionCreate', async (interaction) => {
