@@ -16,6 +16,7 @@ export class TopClaimersCommand implements Command {
   constructor() {
     this.command = new SlashCommandBuilder()
       .setName('top')
+      .setDescription('Top related commands')
       .addSubcommand((subcommand) =>
         subcommand
           .setName('claimers')

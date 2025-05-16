@@ -15,6 +15,7 @@ export class UserSettingsCommand implements Command {
   constructor() {
     this.command = new SlashCommandBuilder()
       .setName('user')
+      .setDescription('User related commands')
       .addSubcommand((subcommand) =>
         subcommand
           .setName('settings')
@@ -45,11 +46,6 @@ export class UserSettingsCommand implements Command {
       });
       return;
     }
-    if (!interaction.isChatInputCommand()) return;
-
-    const subcommand = interaction.options.getSubcommand();
-
-    if (subcommand !== 'settings') return;
 
     const channel = interaction.channel as TextChannel;
     const setting = interaction.options.getString('setting');

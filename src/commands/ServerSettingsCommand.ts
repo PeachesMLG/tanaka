@@ -16,6 +16,7 @@ export class ServerSettingsCommand implements Command {
   constructor() {
     this.command = new SlashCommandBuilder()
       .setName('server')
+      .setDescription('Server related commands')
       .addSubcommand((subcommand) =>
         subcommand
           .setName('settings')

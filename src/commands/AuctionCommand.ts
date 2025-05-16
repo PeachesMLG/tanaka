@@ -11,7 +11,7 @@ export class AuctionCommand implements Command {
   constructor() {
     this.command = new SlashCommandBuilder()
       .setName('auction')
-      .setDescription('Auction-related commands')
+      .setDescription('Auction related commands')
       .addSubcommand((subcommand) =>
         subcommand
           .setName('create')
