@@ -5,6 +5,7 @@ services:
     container_name: tanaka-mysql
     restart: always
     environment:
+      MYSQL_ROOT_PASSWORD: ${SQL_PASSWORD}
       MYSQL_DATABASE: tanaka
       MYSQL_USER: tanaka
       MYSQL_PASSWORD: ${SQL_PASSWORD}
