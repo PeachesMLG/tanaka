@@ -5,10 +5,9 @@ services:
     container_name: tanaka-mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD:
-      MYSQL_DATABASE:
-      MYSQL_USER:
-      MYSQL_PASSWORD:
+      MYSQL_DATABASE: tanaka
+      MYSQL_USER: tanaka
+      MYSQL_PASSWORD: ${SQL_PASSWORD}
     ports:
       - '3306:3306'
     volumes:
@@ -20,9 +19,9 @@ services:
     pull_policy: build
     restart: always
     environment:
-      SQL_HOST:
-      SQL_DATABASE:
-      SQL_USERNAME:
+      SQL_HOST: mysql
+      SQL_DATABASE: tanaka
+      SQL_USERNAME: tanaka
       SQL_PASSWORD:
       DISCORD_TOKEN:
     depends_on:
