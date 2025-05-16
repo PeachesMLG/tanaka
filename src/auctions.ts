@@ -181,13 +181,6 @@ export async function rejectAuction(auctionId: string) {
 }
 
 export async function finishAuction(auction: Auction, client: Client) {
-  await updateAuction(
-    auction.ID,
-    AuctionStatus.DONE,
-    auction.ThreadId,
-    new Date(),
-  );
-
   console.log(`Getting Channel ${auction.ThreadId}`);
 
   const channel = await getForumPost(auction.ThreadId, client);
@@ -197,6 +190,13 @@ export async function finishAuction(auction: Auction, client: Client) {
   }
   await channel.send('Auction Finished!');
   await channel.setLocked(true, 'Auction Ended');
+
+  await updateAuction(
+    auction.ID,
+    AuctionStatus.DONE,
+    auction.ThreadId,
+    new Date(),
+  );
 }
 
 export async function activateAllAuctions(client: Client) {
