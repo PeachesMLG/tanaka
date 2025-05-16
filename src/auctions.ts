@@ -197,6 +197,8 @@ export async function finishAuction(auction: Auction, client: Client) {
     auction.ThreadId,
     new Date(),
   );
+
+  console.log('Auction ended!');
 }
 
 export async function activateAllAuctions(client: Client) {
