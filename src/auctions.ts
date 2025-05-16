@@ -161,6 +161,8 @@ export async function approveAuction(auctionId: string, client: Client) {
     },
   });
 
+  console.log(threadPost);
+
   await updateAuction(
     parseInt(auctionId),
     AuctionStatus.IN_AUCTION,
@@ -209,7 +211,7 @@ export async function activateAllAuctions(client: Client) {
 }
 
 async function activateAuction(auction: Auction, client: Client) {
-  const timeLeft = auction.ExpiresDateTime.getTime() - Date.now();
+  const timeLeft = auction.ExpiresDateTime.getTime() - new Date().getTime();
 
   console.log(`Activating Auction with ${timeLeft}ms left`);
 
