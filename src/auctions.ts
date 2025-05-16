@@ -181,12 +181,16 @@ export async function rejectAuction(auctionId: string) {
 }
 
 export async function finishAuction(auction: Auction, client: Client) {
+  console.log('Finishing Auction...');
+
   await updateAuction(
     auction.ID,
     AuctionStatus.DONE,
     auction.ThreadId,
     new Date(),
   );
+
+  console.log(`Getting Channel ${auction.ThreadId}`);
 
   const channel = await getForumPost(auction.ThreadId, client);
   if (!channel) {
@@ -205,7 +209,11 @@ export async function activateAllAuctions(client: Client) {
 }
 
 async function activateAuction(auction: Auction, client: Client) {
+  const timeLeft = auction.ExpiresDateTime.getTime() - Date.now();
+
+  console.log(`Activating Auction with ${timeLeft}ms left`);
+
   setTimeout(async () => {
     await finishAuction(auction, client);
-  }, auction.ExpiresDateTime.getTime() - Date.now());
+  }, timeLeft);
 }
