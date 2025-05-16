@@ -19,7 +19,7 @@ export class TopClaimersCommand implements Command {
 
   constructor() {
     this.command = new SlashCommandBuilder()
-      .setName('Top Claimers')
+      .setName('topclaimers')
       .setDescription('Get the top 10 claimers in your server.');
   }
 
