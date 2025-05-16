@@ -1,6 +1,7 @@
 import { Client, CommandInteraction, TextChannel } from 'discord.js';
 import { deleteTimer, getTimers, saveTimer } from './database/timerDatabase';
 import { getEmbedMessage } from './utils/embeds';
+import { getChannel } from './utils/getChannel';
 
 export async function createTimer(
   channel: TextChannel,
@@ -71,10 +72,9 @@ export function activateTimer(
 
   setTimeout(async () => {
     await deleteTimer(timerId);
-    const channel = await client.channels.fetch(channelId);
-    if (channel === null || !channel.isTextBased) return;
-    const textChannel = channel as TextChannel;
-    await textChannel.send(constructTimerElapsed(userId, reason, information));
+    const channel = await getChannel(channelId, client);
+    if (channel === null) return;
+    await channel.send(constructTimerElapsed(userId, reason, information));
   }, milliseconds);
 }
 
