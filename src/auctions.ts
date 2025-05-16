@@ -170,7 +170,7 @@ export async function approveAuction(auctionId: string, client: Client) {
     expirationDate,
   );
 
-  await activateAuction(auction, client);
+  await activateAuction(auction.ID, client);
 }
 
 export async function rejectAuction(auctionId: string) {
@@ -206,11 +206,13 @@ export async function finishAuction(auction: Auction, client: Client) {
 export async function activateAllAuctions(client: Client) {
   const auctions = await getActiveAuctions();
   auctions.forEach((auction) => {
-    activateAuction(auction, client);
+    activateAuction(auction.ID, client);
   });
 }
 
-async function activateAuction(auction: Auction, client: Client) {
+async function activateAuction(auctionId: number, client: Client) {
+  const auction = await getAuctionById(auctionId);
+  if (!auction) return;
   const timeLeft = auction.ExpiresDateTime.getTime() - new Date().getTime();
 
   console.log(`Activating Auction with ${timeLeft}ms left`);
