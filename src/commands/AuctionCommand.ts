@@ -91,7 +91,8 @@ export class AuctionCommand implements Command {
       CardId: cardId,
       Version: version,
       Status: AuctionStatus.PENDING,
-      DateTime: new Date(),
+      CreatedDateTime: new Date(),
+      ExpiresDateTime: new Date(),
     } as Auction;
 
     const result = await createAuction(auction, client);
