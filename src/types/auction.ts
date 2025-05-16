@@ -4,6 +4,12 @@ export type Auction = {
   UserId: string;
   CardId: string;
   Version: string;
+  Rarity: string;
+  Series: string;
+  Name: string;
+  ChannelId: string;
+  ThreadId: string;
+  PositionInQueue: number;
   Status: AuctionStatus;
   DateTime: Date;
 };

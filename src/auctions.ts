@@ -27,12 +27,19 @@ export async function createAuction(auction: Auction, client: Client) {
     return 'Bot does not have sufficient permissions to post in channel!';
   }
 
-  const auctionId = await saveAuction(auction);
   const auctionDetails = await getAuctionDetails(auction);
 
   if (!auctionDetails) {
     return 'Unknown card!';
   }
+
+  const auctionId = await saveAuction({
+    ...auction,
+    Rarity: auctionDetails.rarity,
+    Series: auctionDetails.seriesName,
+    Name: auctionDetails.cardName,
+    ChannelId: pendingAuctionId,
+  });
 
   const row =
     new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(

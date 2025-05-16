@@ -4,9 +4,13 @@ import {
   Client,
   SharedSlashCommand,
   SlashCommandBuilder,
+  TextChannel,
 } from 'discord.js';
 import { Auction, AuctionStatus } from '../types/auction';
 import { createAuction } from '../auctions';
+import { getAuctions } from '../database/auctionDatabase';
+import { getEmbedMessage } from '../utils/embeds';
+import { ClaimCount } from '../types/claimCount';
 
 export class AuctionCommand implements Command {
   command: SharedSlashCommand;
@@ -98,10 +102,35 @@ export class AuctionCommand implements Command {
     });
   }
 
-  async ListAuctions(interaction: ChatInputCommandInteraction, client: Client) {
+  async ListAuctions(interaction: ChatInputCommandInteraction, _: Client) {
+    const auctions = await getAuctions(
+      interaction.guild!.id,
+      interaction.user.id,
+    );
+    const channel = interaction.channel as TextChannel;
+
+    const fields = await Promise.all(
+      auctions.map(async (claimCount) => {
+        return await this.getAuctionField(claimCount);
+      }),
+    );
+
+    await interaction.reply({
+      embeds: [
+        getEmbedMessage(
+          channel,
+          'Your Auctions',
+          fields.length === 0 ? 'No auctions found.' : fields.join('\n'),
+        ),
+      ],
+    });
     await interaction.reply({
       content: 'Listing your auctions.',
       ephemeral: true,
     });
+  }
+
+  async getAuctionField(auction: Auction) {
+    return `Position #${auction.PositionInQueue} • ${auction.Rarity} • ${auction.Name} • ${auction.Version}`;
   }
 }
