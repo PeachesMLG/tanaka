@@ -6,11 +6,8 @@ import {
   TextChannel,
 } from 'discord.js';
 import { getEmbedMessage } from '../utils/embeds';
-import {
-  getUserSetting,
-  saveUserSetting,
-} from '../database/userSettingsDatabase';
-import { UserSettingsTypes } from '../UserSettingsTypes';
+import { getSetting, saveSetting } from '../database/settingsDatabase';
+import { SettingsTypes } from '../SettingsTypes';
 
 export class UserSettingsCommand implements Command {
   command: SlashCommandOptionsOnlyBuilder;
@@ -26,7 +23,7 @@ export class UserSettingsCommand implements Command {
           .setRequired(true)
           .addChoices({
             name: 'Automatic Summon Timers',
-            value: UserSettingsTypes.AUTOMATIC_SUMMON_TIMERS,
+            value: SettingsTypes.AUTOMATIC_SUMMON_TIMERS,
           }),
       )
       .addBooleanOption((option) =>
@@ -63,9 +60,9 @@ export class UserSettingsCommand implements Command {
       return;
     }
 
-    await saveUserSetting(interaction.user.id, setting, enabled);
+    await saveSetting(interaction.user.id, setting, enabled);
 
-    const result = await getUserSetting(interaction.user.id, setting);
+    const result = await getSetting(interaction.user.id, setting);
 
     await interaction.reply({
       embeds: [

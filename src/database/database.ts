@@ -1,7 +1,7 @@
 import mysql, { Pool } from 'mysql2/promise';
 import { initialiseTimerDatabase } from './timerDatabase';
 import { initialiseRecentClaimsDatabase } from './recentClaimsDatabase';
-import { initialiseUserSettingsDatabase } from './userSettingsDatabase';
+import { initialiseSettingsDatabase } from './settingsDatabase';
 
 export let pool: Pool;
 
@@ -20,7 +20,7 @@ export async function initialiseDatabase(): Promise<void> {
   try {
     await initialiseTimerDatabase();
     await initialiseRecentClaimsDatabase();
-    await initialiseUserSettingsDatabase();
+    await initialiseSettingsDatabase();
 
     console.log('Database initialized successfully.');
   } catch (error) {

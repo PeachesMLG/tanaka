@@ -2,8 +2,8 @@ import { Client } from 'discord.js';
 import { CardSpawn } from '../types/cardSpawn';
 import { createTimer } from '../timers';
 import { getChannel } from '../utils/getChannel';
-import { getUserSetting } from '../database/userSettingsDatabase';
-import { UserSettingsTypes } from '../UserSettingsTypes';
+import { getSetting } from '../database/settingsDatabase';
+import { SettingsTypes } from '../SettingsTypes';
 
 export const cardSpawnHandler = async (
   cardSpawn: CardSpawn,
@@ -18,9 +18,9 @@ const createSummonTimer = async (cardSpawn: CardSpawn, client: Client) => {
   if (!cardSpawn.SummonedBy) return;
 
   const enabled =
-    (await getUserSetting(
+    (await getSetting(
       cardSpawn.SummonedBy,
-      UserSettingsTypes.AUTOMATIC_SUMMON_TIMERS,
+      SettingsTypes.AUTOMATIC_SUMMON_TIMERS,
     )) ?? true;
 
   if (!enabled) return;

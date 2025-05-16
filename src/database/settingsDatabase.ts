@@ -1,21 +1,21 @@
 import { pool } from './database';
 import { ResultSetHeader } from 'mysql2/promise';
 
-export async function initialiseUserSettingsDatabase(): Promise<void> {
+export async function initialiseSettingsDatabase(): Promise<void> {
   const connection = await pool.getConnection();
   await connection.query(`
-    CREATE TABLE IF NOT EXISTS UserSettings
+    CREATE TABLE IF NOT EXISTS Settings
     (
-      UserID      VARCHAR(255),
+      ID      VARCHAR(255),
       SettingName VARCHAR(255),
       Value       BOOLEAN,
-      PRIMARY KEY (UserID, SettingName)
+      PRIMARY KEY (ID, SettingName)
     );
   `);
 }
 
-export async function saveUserSetting(
-  userId: string,
+export async function saveSetting(
+  id: string,
   settingName: string,
   value: boolean,
 ) {
@@ -25,11 +25,11 @@ export async function saveUserSetting(
 
     const [result] = await connection.query<ResultSetHeader>(
       `
-        INSERT INTO UserSettings (UserID, SettingName, Value)
+        INSERT INTO Settings (ID, SettingName, Value)
         VALUES (?, ?, ?)
         ON DUPLICATE KEY UPDATE Value = VALUES(Value);
       `,
-      [userId, settingName, value],
+      [id, settingName, value],
     );
 
     await connection.commit();
@@ -43,13 +43,13 @@ export async function saveUserSetting(
   }
 }
 
-export async function getUserSetting(
+export async function getSetting(
   userId: string,
   settingName: string,
 ): Promise<boolean | undefined> {
   try {
     const query = `
-      SELECT Value FROM UserSettings
+      SELECT Value FROM Settings
       WHERE UserID = ? AND SettingName = ?;
     `;
 
