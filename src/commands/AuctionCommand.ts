@@ -28,10 +28,28 @@ export class AuctionCommand implements Command {
               .setDescription('The Version of the card')
               .setRequired(true),
           ),
+      )
+      .addSubcommand((subcommand) =>
+        subcommand
+          .setName('list')
+          .setDescription('Lists your current auctions'),
       );
   }
 
   async execute(interaction: ChatInputCommandInteraction) {
+    if (!interaction.channel) {
+      await interaction.reply({
+        content: 'Cannot execute command outside a channel',
+      });
+      return;
+    }
+
+    if (!interaction.guild) {
+      await interaction.reply({
+        content: 'Cannot execute command outside a Guild',
+      });
+      return;
+    }
     if (!interaction.isChatInputCommand()) return;
 
     const subcommand = interaction.options.getSubcommand();

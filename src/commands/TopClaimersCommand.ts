@@ -15,8 +15,12 @@ export class TopClaimersCommand implements Command {
 
   constructor() {
     this.command = new SlashCommandBuilder()
-      .setName('topclaimers')
-      .setDescription('Get the top 10 claimers in your server.');
+      .setName('top')
+      .addSubcommand((subcommand) =>
+        subcommand
+          .setName('claimers')
+          .setDescription('Get the top 10 claimers in your server.'),
+      );
   }
 
   async execute(interaction: ChatInputCommandInteraction) {
@@ -26,6 +30,11 @@ export class TopClaimersCommand implements Command {
       });
       return;
     }
+    if (!interaction.isChatInputCommand()) return;
+
+    const subcommand = interaction.options.getSubcommand();
+
+    if (subcommand !== 'claimers') return;
 
     const channel = interaction.channel as TextChannel;
     const topClaimers = await getTopClaimers(channel.guildId);

@@ -14,23 +14,27 @@ export class UserSettingsCommand implements Command {
 
   constructor() {
     this.command = new SlashCommandBuilder()
-      .setName('usersettings')
-      .setDescription('Modify your user settings')
-      .addStringOption((option) =>
-        option
-          .setName('setting')
-          .setDescription('The setting you want to modify')
-          .setRequired(true)
-          .addChoices({
-            name: 'Automatic Summon Timers',
-            value: SettingsTypes.AUTOMATIC_SUMMON_TIMERS,
-          }),
-      )
-      .addBooleanOption((option) =>
-        option
-          .setName('enabled')
-          .setDescription('Enable/Disable the setting')
-          .setRequired(true),
+      .setName('user')
+      .addSubcommand((subcommand) =>
+        subcommand
+          .setName('settings')
+          .setDescription('Modify your user settings')
+          .addStringOption((option) =>
+            option
+              .setName('setting')
+              .setDescription('The setting you want to modify')
+              .setRequired(true)
+              .addChoices({
+                name: 'Automatic Summon Timers',
+                value: SettingsTypes.AUTOMATIC_SUMMON_TIMERS,
+              }),
+          )
+          .addBooleanOption((option) =>
+            option
+              .setName('enabled')
+              .setDescription('Enable/Disable the setting')
+              .setRequired(true),
+          ),
       );
   }
 
@@ -41,6 +45,11 @@ export class UserSettingsCommand implements Command {
       });
       return;
     }
+    if (!interaction.isChatInputCommand()) return;
+
+    const subcommand = interaction.options.getSubcommand();
+
+    if (subcommand !== 'settings') return;
 
     const channel = interaction.channel as TextChannel;
     const setting = interaction.options.getString('setting');

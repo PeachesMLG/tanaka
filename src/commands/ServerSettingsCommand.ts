@@ -15,49 +15,53 @@ export class ServerSettingsCommand implements Command {
 
   constructor() {
     this.command = new SlashCommandBuilder()
-      .setName('serversettings')
-      .setDescription('Modify your server settings')
-      .addStringOption((option) =>
-        option
-          .setName('setting')
-          .setDescription('The setting you want to modify')
-          .setRequired(false)
-          .addChoices([
-            {
-              name: 'High Tier Ping Role',
-              value: SettingsTypes.HIGH_TIER_PING_ROLE,
-            },
-            {
-              name: 'High Tier Ping Message',
-              value: SettingsTypes.HIGH_TIER_PING_MESSAGE,
-            },
-            {
-              name: 'Common Auction Channel',
-              value: SettingsTypes.C_AUCTION_CHANNEL,
-            },
-            {
-              name: 'Rare Auction Channel',
-              value: SettingsTypes.R_AUCTION_CHANNEL,
-            },
-            {
-              name: 'Super Rare Auction Channel',
-              value: SettingsTypes.SR_AUCTION_CHANNEL,
-            },
-            {
-              name: 'Super Super Rare Auction Channel',
-              value: SettingsTypes.SSR_AUCTION_CHANNEL,
-            },
-            {
-              name: 'Ultra Rare Auction Channel',
-              value: SettingsTypes.UR_AUCTION_CHANNEL,
-            },
-          ]),
-      )
-      .addStringOption((option) =>
-        option
-          .setName('value')
-          .setDescription('Value of the setting')
-          .setRequired(false),
+      .setName('server')
+      .addSubcommand((subcommand) =>
+        subcommand
+          .setName('settings')
+          .setDescription('Modify your user settings')
+          .addStringOption((option) =>
+            option
+              .setName('setting')
+              .setDescription('The setting you want to modify')
+              .setRequired(false)
+              .addChoices([
+                {
+                  name: 'High Tier Ping Role',
+                  value: SettingsTypes.HIGH_TIER_PING_ROLE,
+                },
+                {
+                  name: 'High Tier Ping Message',
+                  value: SettingsTypes.HIGH_TIER_PING_MESSAGE,
+                },
+                {
+                  name: 'Common Auction Channel',
+                  value: SettingsTypes.C_AUCTION_CHANNEL,
+                },
+                {
+                  name: 'Rare Auction Channel',
+                  value: SettingsTypes.R_AUCTION_CHANNEL,
+                },
+                {
+                  name: 'Super Rare Auction Channel',
+                  value: SettingsTypes.SR_AUCTION_CHANNEL,
+                },
+                {
+                  name: 'Super Super Rare Auction Channel',
+                  value: SettingsTypes.SSR_AUCTION_CHANNEL,
+                },
+                {
+                  name: 'Ultra Rare Auction Channel',
+                  value: SettingsTypes.UR_AUCTION_CHANNEL,
+                },
+              ]),
+          )
+          .addStringOption((option) =>
+            option
+              .setName('value')
+              .setDescription('Value of the setting')
+              .setRequired(false),
+          ),
       );
   }
 
@@ -68,12 +72,18 @@ export class ServerSettingsCommand implements Command {
       });
       return;
     }
+
     if (!interaction.guild) {
       await interaction.reply({
         content: 'Cannot execute command outside a Guild',
       });
       return;
     }
+    if (!interaction.isChatInputCommand()) return;
+
+    const subcommand = interaction.options.getSubcommand();
+
+    if (subcommand !== 'settings') return;
 
     const member = interaction.member;
     if (!member || !('permissions' in member)) {
