@@ -13,6 +13,7 @@ import { UserSettingsCommand } from './commands/UserSettingsCommand';
 import { ServerSettingsCommand } from './commands/ServerSettingsCommand';
 import { messageListeners, recentMessages } from './utils/messageListener';
 import { TopClaimersCommand } from './commands/TopClaimersCommand';
+import { AuctionCommand } from './commands/AuctionCommand';
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ const commands = [
   new UserSettingsCommand(),
   new ServerSettingsCommand(),
   new TopClaimersCommand(),
+  new AuctionCommand(),
 ];
 
 client.once('ready', async () => {

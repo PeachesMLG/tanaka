@@ -3,14 +3,14 @@ import {
   ChatInputCommandInteraction,
   Client,
   SlashCommandBuilder,
-  SlashCommandOptionsOnlyBuilder,
+  SharedSlashCommand,
   TextChannel,
 } from 'discord.js';
 import { getEmbedMessage } from '../utils/embeds';
 import { createTimer } from '../timers';
 
 export class TimerCommand implements Command {
-  command: SlashCommandOptionsOnlyBuilder;
+  command: SharedSlashCommand;
   client: Client;
 
   constructor(client: Client) {

@@ -3,7 +3,7 @@ import {
   ChatInputCommandInteraction,
   PermissionsBitField,
   SlashCommandBuilder,
-  SlashCommandOptionsOnlyBuilder,
+  SharedSlashCommand,
   TextChannel,
 } from 'discord.js';
 import { getEmbedMessage } from '../utils/embeds';
@@ -11,7 +11,7 @@ import { getSetting, saveSetting } from '../database/settingsDatabase';
 import { SettingsTypes } from '../SettingsTypes';
 
 export class ServerSettingsCommand implements Command {
-  command: SlashCommandOptionsOnlyBuilder;
+  command: SharedSlashCommand;
 
   constructor() {
     this.command = new SlashCommandBuilder()

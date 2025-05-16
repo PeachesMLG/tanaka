@@ -3,7 +3,7 @@ import {
   ChatInputCommandInteraction,
   Client,
   SlashCommandBuilder,
-  SlashCommandOptionsOnlyBuilder,
+  SharedSlashCommand,
   TextChannel,
 } from 'discord.js';
 import { getEmbedMessage } from '../utils/embeds';
@@ -11,7 +11,7 @@ import { getTopClaimers } from '../database/recentClaimsDatabase';
 import { ClaimCount } from '../types/claimCount';
 
 export class TopClaimersCommand implements Command {
-  command: SlashCommandOptionsOnlyBuilder;
+  command: SharedSlashCommand;
 
   constructor() {
     this.command = new SlashCommandBuilder()

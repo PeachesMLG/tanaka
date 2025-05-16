@@ -3,7 +3,7 @@ import {
   ChatInputCommandInteraction,
   Client,
   SlashCommandBuilder,
-  SlashCommandOptionsOnlyBuilder,
+  SharedSlashCommand,
   TextChannel,
 } from 'discord.js';
 import { getRecentClaims } from '../database/recentClaimsDatabase';
@@ -12,7 +12,7 @@ import { CardClaim } from '../types/cardClaim';
 import { mapTierToEmoji } from '../utils/emojis';
 
 export class RecentCommand implements Command {
-  command: SlashCommandOptionsOnlyBuilder;
+  command: SharedSlashCommand;
 
   constructor() {
     this.command = new SlashCommandBuilder()
