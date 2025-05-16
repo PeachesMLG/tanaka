@@ -1,4 +1,4 @@
-import { Colors, EmbedBuilder, TextChannel } from 'discord.js';
+import { Colors, EmbedBuilder, Guild, TextChannel } from 'discord.js';
 
 export function getEmbedMessage(
   channel: TextChannel,
@@ -14,13 +14,13 @@ export function getEmbedMessage(
 }
 
 export function getEmbedImage(
-  channel: TextChannel,
+  guild: Guild,
   title: string,
   description: string,
   imageUrl: string,
 ) {
   return new EmbedBuilder()
-    .setColor(channel.guild.members.me?.displayHexColor ?? Colors.Blue)
+    .setColor(guild.members.me?.displayHexColor ?? Colors.Blue)
     .setTitle(title)
     .setDescription(description)
     .setImage(imageUrl)

@@ -71,7 +71,7 @@ client.on('interactionCreate', async (interaction) => {
 
   if (section === 'auction') {
     if (action === 'approve') {
-      await approveAuction(itemId);
+      await approveAuction(itemId, client);
       await interaction.message.delete();
     } else if (action === 'reject') {
       await rejectAuction(itemId);

@@ -1,5 +1,6 @@
 import { pool } from './database';
 import { Auction, AuctionStatus } from '../types/auction';
+import { TimerEntry } from '../types/timerEntry';
 
 export async function initialiseAuctionDatabase(): Promise<void> {
   const connection = await pool.getConnection();
@@ -64,6 +65,38 @@ export async function setAuctionState(
   } finally {
     connection.release();
   }
+}
+
+export async function setAuctionThread(
+  id: number,
+  thread: string,
+): Promise<void> {
+  const connection = await pool.getConnection();
+  try {
+    const query = `
+      UPDATE Auctions
+      SET Status = ?
+      WHERE ThreadId = ?;
+    `;
+    const values = [thread, id];
+    await connection.query(query, values);
+  } finally {
+    connection.release();
+  }
+}
+
+export async function getAuctionById(
+  auctionId: number,
+): Promise<Auction | undefined> {
+  const query = `
+        SELECT * FROM Auctions WHERE ID = ?;
+    `;
+
+  const [rows] = await pool.query(query, [auctionId]);
+
+  const auctions = rows as Auction[];
+
+  return auctions.length > 0 ? auctions[0] : undefined;
 }
 
 export async function getAuctions(

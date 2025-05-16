@@ -1,4 +1,10 @@
-import { Client, PermissionsBitField, TextChannel } from 'discord.js';
+import {
+  Client,
+  ForumChannel,
+  PermissionsBitField,
+  TextChannel,
+} from 'discord.js';
+import { ChannelType } from 'discord-api-types/v10';
 
 export const getChannel = async (channelId: string, client: Client) => {
   const channel = await client.channels.fetch(channelId);
@@ -15,5 +21,24 @@ export const getChannel = async (channelId: string, client: Client) => {
   if (!permissions?.has(requiredPermissions)) {
     return null;
   }
-  return channel as TextChannel;
+  return textChannel;
+};
+
+export const getForumChannel = async (channelId: string, client: Client) => {
+  const channel = await client.channels.fetch(channelId);
+  if (channel === null) return null;
+  if (channel.type !== ChannelType.GuildForum) return null;
+  const forumChannel = channel as ForumChannel;
+
+  const permissions = forumChannel.permissionsFor(client.user!);
+  const requiredPermissions = [
+    PermissionsBitField.Flags.SendMessages,
+    PermissionsBitField.Flags.ViewChannel,
+    PermissionsBitField.Flags.CreatePublicThreads,
+  ];
+
+  if (!permissions?.has(requiredPermissions)) {
+    return null;
+  }
+  return forumChannel;
 };

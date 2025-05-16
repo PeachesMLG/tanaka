@@ -6,10 +6,15 @@ import {
 } from 'discord.js';
 import { ButtonStyle } from 'discord-api-types/v10';
 import { Auction, AuctionStatus } from './types/auction';
-import { saveAuction, setAuctionState } from './database/auctionDatabase';
+import {
+  getAuctionById,
+  saveAuction,
+  setAuctionState,
+  setAuctionThread,
+} from './database/auctionDatabase';
 import { getSetting } from './database/settingsDatabase';
 import { SettingsTypes } from './SettingsTypes';
-import { getChannel } from './utils/getChannel';
+import { getChannel, getForumChannel } from './utils/getChannel';
 import { AuctionCardDetails } from './types/auctionCardDetails';
 import { getEmbedImage } from './utils/embeds';
 
@@ -56,7 +61,7 @@ export async function createAuction(auction: Auction, client: Client) {
   await pendingAuctionChannel.send({
     embeds: [
       getEmbedImage(
-        pendingAuctionChannel,
+        pendingAuctionChannel.guild,
         `${auctionDetails.rarity} ${auctionDetails.cardName} ${auctionDetails.version}`,
         `<@${auction.UserId}> Posted a new Auction`,
         auctionDetails.imageUrl,
@@ -94,8 +99,31 @@ export async function getAuctionDetails(
   }
 }
 
-export async function approveAuction(auctionId: string) {
+export async function approveAuction(auctionId: string, client: Client) {
   await setAuctionState(parseInt(auctionId), AuctionStatus.IN_QUEUE);
+  const auction = await getAuctionById(parseInt(auctionId));
+  if (!auction) return;
+
+  const auctionDetails = await getAuctionDetails(auction);
+
+  const channel = await getForumChannel(auction.ChannelId, client);
+  if (!channel) return;
+
+  const threadPost = await channel.threads.create({
+    name: `${auction.Rarity} ${auction.Name} ${auction.Version}`,
+    message: {
+      embeds: [
+        getEmbedImage(
+          channel.guild,
+          `${auction.Rarity} ${auction.Name} ${auction.Version}`,
+          `<@${auction.UserId}> Posted a new Auction`,
+          auctionDetails?.imageUrl ?? '',
+        ),
+      ],
+    },
+  });
+
+  await setAuctionThread(parseInt(auctionId), threadPost.id);
 }
 
 export async function rejectAuction(auctionId: string) {
