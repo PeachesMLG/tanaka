@@ -14,7 +14,7 @@ export class UserSettingsCommand implements Command {
 
   constructor() {
     this.command = new SlashCommandBuilder()
-      .setName('usersettings')
+      .setName('User Settings')
       .setDescription('Modify your user settings')
       .addStringOption((option) =>
         option
