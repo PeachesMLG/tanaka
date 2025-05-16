@@ -161,8 +161,6 @@ export async function approveAuction(auctionId: string, client: Client) {
     },
   });
 
-  console.log(parseInt(auctionId) + threadPost.id);
-
   await updateAuction(
     parseInt(auctionId),
     AuctionStatus.IN_AUCTION,
@@ -183,8 +181,6 @@ export async function rejectAuction(auctionId: string) {
 }
 
 export async function finishAuction(auction: Auction, client: Client) {
-  console.log('Finishing Auction...');
-
   await updateAuction(
     auction.ID,
     AuctionStatus.DONE,
@@ -214,8 +210,6 @@ async function activateAuction(auctionId: number, client: Client) {
   const auction = await getAuctionById(auctionId);
   if (!auction) return;
   const timeLeft = auction.ExpiresDateTime.getTime() - new Date().getTime();
-
-  console.log(`Activating Auction with ${timeLeft}ms left`);
 
   setTimeout(async () => {
     await finishAuction(auction, client);
