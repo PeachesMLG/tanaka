@@ -102,7 +102,7 @@ function constructTimerElapsed(
     content += `\nReason: ${reason}`;
   }
   if (information) {
-    content += `\n-# ${information}`;
+    content += `\n-# ${information.replace('\n', '\n-# ')}`;
   }
   return content;
 }
