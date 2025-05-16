@@ -6,9 +6,9 @@ export async function initialiseSettingsDatabase(): Promise<void> {
   await connection.query(`
     CREATE TABLE IF NOT EXISTS Settings
     (
-      ID      VARCHAR(255),
+      ID          VARCHAR(255),
       SettingName VARCHAR(255),
-      Value       BOOLEAN,
+      Value       VARCHAR(255),
       PRIMARY KEY (ID, SettingName)
     );
   `);
@@ -17,7 +17,7 @@ export async function initialiseSettingsDatabase(): Promise<void> {
 export async function saveSetting(
   id: string,
   settingName: string,
-  value: boolean,
+  value: string,
 ) {
   const connection = await pool.getConnection();
   try {
@@ -46,7 +46,7 @@ export async function saveSetting(
 export async function getSetting(
   userId: string,
   settingName: string,
-): Promise<boolean | undefined> {
+): Promise<string | undefined> {
   try {
     const query = `
       SELECT Value FROM Settings
@@ -55,7 +55,7 @@ export async function getSetting(
 
     const [rows] = await pool.query(query, [userId, settingName]);
 
-    const values = rows as { Value: boolean }[];
+    const values = rows as { Value: string }[];
 
     return values.length > 0 ? values[0].Value : undefined;
   } catch (error) {

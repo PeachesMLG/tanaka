@@ -21,9 +21,9 @@ const createSummonTimer = async (cardSpawn: CardSpawn, client: Client) => {
     (await getSetting(
       cardSpawn.SummonedBy,
       SettingsTypes.AUTOMATIC_SUMMON_TIMERS,
-    )) ?? true;
+    )) ?? 'true';
 
-  if (!enabled) return;
+  if (enabled !== 'true') return;
 
   const channel = await getChannel(cardSpawn.ChannelId, client);
   if (channel === null) return;

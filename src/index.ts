@@ -10,6 +10,7 @@ import { startAllTimers } from './timers';
 import { RecentCommand } from './commands/RecentCommand';
 import { handleMessage } from './messageHandler';
 import { UserSettingsCommand } from './commands/UserSettingsCommand';
+import { ServerSettingsCommand } from './commands/ServerSettingsCommand';
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ const commands = [
   new TimerCommand(client),
   new RecentCommand(),
   new UserSettingsCommand(),
+  new ServerSettingsCommand(),
 ];
 
 client.once('ready', async () => {

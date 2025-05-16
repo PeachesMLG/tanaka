@@ -60,16 +60,16 @@ export class UserSettingsCommand implements Command {
       return;
     }
 
-    await saveSetting(interaction.user.id, setting, enabled);
+    await saveSetting(interaction.user.id, setting, enabled ? 'true' : 'false');
 
-    const result = await getSetting(interaction.user.id, setting);
+    const result = (await getSetting(interaction.user.id, setting)) ?? '';
 
     await interaction.reply({
       embeds: [
         getEmbedMessage(
           channel,
           'Setting changed!',
-          `${result ? 'Enabled' : 'Disabled'} ${setting}.`,
+          `${setting} set to \"${result}\".`,
         ),
       ],
       ephemeral: true,
