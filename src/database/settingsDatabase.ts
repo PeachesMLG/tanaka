@@ -44,16 +44,16 @@ export async function saveSetting(
 }
 
 export async function getSetting(
-  userId: string,
+  id: string,
   settingName: string,
 ): Promise<string | undefined> {
   try {
     const query = `
       SELECT Value FROM Settings
-      WHERE UserID = ? AND SettingName = ?;
+      WHERE ID = ? AND SettingName = ?;
     `;
 
-    const [rows] = await pool.query(query, [userId, settingName]);
+    const [rows] = await pool.query(query, [id, settingName]);
 
     const values = rows as { Value: string }[];
 
