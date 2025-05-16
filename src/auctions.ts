@@ -108,7 +108,7 @@ export async function getAuctionDetails(
 
   try {
     const res = await fetch(detailsUrl);
-    if (!res.ok) return undefined;
+    if (res.status !== 200) return undefined;
 
     const data = await res.json();
 
