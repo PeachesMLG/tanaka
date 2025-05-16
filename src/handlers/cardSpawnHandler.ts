@@ -4,7 +4,6 @@ import { createTimer } from '../timers';
 import { getChannel } from '../utils/getChannel';
 import { getSetting } from '../database/settingsDatabase';
 import { SettingsTypes } from '../SettingsTypes';
-import { waitForMessage } from '../utils/messageListener';
 
 export const cardSpawnHandler = async (
   cardSpawn: CardSpawn,
@@ -12,6 +11,7 @@ export const cardSpawnHandler = async (
 ) => {
   await createSummonTimer(cardSpawn, client);
   if (
+    !cardSpawn.SummonedBy &&
     cardSpawn.Cards.some(
       (value) => value.Rarity === 'SR' || value.Rarity === 'SSR',
     )
