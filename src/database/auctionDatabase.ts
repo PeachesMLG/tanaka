@@ -83,6 +83,16 @@ export async function getAuctionById(
   return auctions.length > 0 ? auctions[0] : undefined;
 }
 
+export async function getActiveAuctions(): Promise<Auction[]> {
+  const query = `
+    SELECT * FROM Auctions WHERE Status = 'IN_AUCTION';
+  `;
+
+  const [rows] = await pool.query(query);
+
+  return rows as Auction[];
+}
+
 export async function getAuctions(
   serverId: string,
   UserId?: string,

@@ -14,7 +14,7 @@ import { ServerSettingsCommand } from './commands/ServerSettingsCommand';
 import { messageListeners, recentMessages } from './utils/messageListener';
 import { TopClaimersCommand } from './commands/TopClaimersCommand';
 import { AuctionCommand } from './commands/AuctionCommand';
-import { approveAuction, rejectAuction } from './auctions';
+import { activateAllAuctions, approveAuction, rejectAuction } from './auctions';
 
 dotenv.config();
 
@@ -44,6 +44,7 @@ client.once('ready', async () => {
 
   await initialiseDatabase();
   await startAllTimers(client);
+  await activateAllAuctions(client);
 });
 
 client.on('interactionCreate', async (interaction) => {

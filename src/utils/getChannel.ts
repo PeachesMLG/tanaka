@@ -3,6 +3,7 @@ import {
   ForumChannel,
   PermissionsBitField,
   TextChannel,
+  ThreadChannel,
 } from 'discord.js';
 import { ChannelType } from 'discord-api-types/v10';
 
@@ -41,4 +42,23 @@ export const getForumChannel = async (channelId: string, client: Client) => {
     return null;
   }
   return forumChannel;
+};
+
+export const getForumPost = async (postId: string, client: Client) => {
+  const channel = await client.channels.fetch(postId);
+  if (!channel || channel.type !== ChannelType.PublicThread) return null;
+
+  const thread = channel as ThreadChannel;
+
+  const permissions = thread.permissionsFor(client.user!);
+  const requiredPermissions = [
+    PermissionsBitField.Flags.SendMessagesInThreads,
+    PermissionsBitField.Flags.ManageThreads,
+  ];
+
+  if (!permissions?.has(requiredPermissions)) {
+    return null;
+  }
+
+  return thread;
 };

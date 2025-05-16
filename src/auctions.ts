@@ -7,15 +7,19 @@ import {
 import { ButtonStyle } from 'discord-api-types/v10';
 import { Auction, AuctionStatus } from './types/auction';
 import {
+  getActiveAuctions,
   getAuctionById,
+  getAuctions,
   saveAuction,
   updateAuction,
 } from './database/auctionDatabase';
 import { getSetting } from './database/settingsDatabase';
 import { SettingsTypes } from './SettingsTypes';
-import { getChannel, getForumChannel } from './utils/getChannel';
+import { getChannel, getForumChannel, getForumPost } from './utils/getChannel';
 import { AuctionCardDetails } from './types/auctionCardDetails';
 import { getEmbedImage } from './utils/embeds';
+import { deleteTimer, getTimers } from './database/timerDatabase';
+import { activateTimer } from './timers';
 
 async function getChannelIdForAuctionRarity(
   rarity: string,
@@ -175,4 +179,29 @@ export async function rejectAuction(auctionId: string) {
     '',
     new Date(),
   );
+}
+
+export async function finishAuction(auction: Auction, client: Client) {
+  await updateAuction(auction.ID, AuctionStatus.DONE, '', new Date());
+
+  const channel = await getForumPost(auction.ThreadId, client);
+  if (!channel) {
+    console.log('No channel :C');
+    return;
+  }
+  await channel.send('Auction Finished!');
+  await channel.setLocked(true, 'Auction Ended');
+}
+
+export async function activateAllAuctions(client: Client) {
+  const auctions = await getActiveAuctions();
+  auctions.forEach((auction) => {
+    activateAuction(auction, client);
+  });
+}
+
+async function activateAuction(auction: Auction, client: Client) {
+  setTimeout(async () => {
+    await finishAuction(auction, client);
+  }, auction.ExpiresDateTime.getTime() - Date.now());
 }
