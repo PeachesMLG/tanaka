@@ -18,36 +18,23 @@ import { getChannel, getForumChannel } from './utils/getChannel';
 import { AuctionCardDetails } from './types/auctionCardDetails';
 import { getEmbedImage } from './utils/embeds';
 
-async function getChannelIdForAuction(
-  auction: Auction,
+async function getChannelIdForAuctionRarity(
+  rarity: string,
+  serverId: string,
 ): Promise<string | undefined> {
-  switch (auction.Rarity.toLowerCase()) {
+  switch (rarity.toLowerCase()) {
     case 'c':
-      return await getSetting(
-        auction.ServerId,
-        SettingsTypes.C_AUCTION_CHANNEL,
-      );
+      return await getSetting(serverId, SettingsTypes.C_AUCTION_CHANNEL);
     case 'r':
-      return await getSetting(
-        auction.ServerId,
-        SettingsTypes.R_AUCTION_CHANNEL,
-      );
+      return await getSetting(serverId, SettingsTypes.R_AUCTION_CHANNEL);
     case 'sr':
-      return await getSetting(
-        auction.ServerId,
-        SettingsTypes.SR_AUCTION_CHANNEL,
-      );
+      return await getSetting(serverId, SettingsTypes.SR_AUCTION_CHANNEL);
     case 'ssr':
-      return await getSetting(
-        auction.ServerId,
-        SettingsTypes.SSR_AUCTION_CHANNEL,
-      );
+      return await getSetting(serverId, SettingsTypes.SSR_AUCTION_CHANNEL);
     case 'ur':
-      return await getSetting(
-        auction.ServerId,
-        SettingsTypes.UR_AUCTION_CHANNEL,
-      );
+      return await getSetting(serverId, SettingsTypes.UR_AUCTION_CHANNEL);
   }
+  return undefined;
 }
 
 export async function createAuction(auction: Auction, client: Client) {
@@ -70,10 +57,13 @@ export async function createAuction(auction: Auction, client: Client) {
     return 'Unknown card!';
   }
 
-  const auctionChannelId = await getChannelIdForAuction(auction);
+  const auctionChannelId = await getChannelIdForAuctionRarity(
+    auctionDetails.rarity,
+    auction.ServerId,
+  );
 
   if (!auctionChannelId) {
-    return `Auctions are not settup for ${auction.Rarity}`;
+    return `Auctions are not settup for ${auctionDetails.rarity}`;
   }
 
   const auctionId = await saveAuction({
