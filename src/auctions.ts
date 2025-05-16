@@ -108,9 +108,12 @@ export async function getAuctionDetails(
 
   try {
     const res = await fetch(detailsUrl);
-    if (res.status !== 200) return undefined;
 
     const data = await res.json();
+
+    if (!data.uuid) {
+      return undefined;
+    }
 
     return {
       imageUrl,
