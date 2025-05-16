@@ -89,14 +89,18 @@ export class AuctionCommand implements Command {
       (await getSetting(
         interaction.guild!.id,
         SettingsTypes.MAX_AUCTIONS_PER_USER,
-      )) ?? '0';
+      )) ?? '1';
     const currentUserAuctions = await getAuctions(
       interaction.guild!.id,
       interaction.user.id,
     );
 
     if (currentUserAuctions.length > parseInt(maxAuctionsPerUser)) {
-      return `You already have ${currentUserAuctions.length} Auctions, max is ${maxAuctionsPerUser}`;
+      await interaction.reply({
+        content: `You already have ${currentUserAuctions.length} Auctions, max is ${maxAuctionsPerUser}`,
+        ephemeral: true,
+      });
+      return;
     }
 
     const auction = {
@@ -139,10 +143,6 @@ export class AuctionCommand implements Command {
           fields.length === 0 ? 'No auctions found.' : fields.join('\n'),
         ),
       ],
-    });
-    await interaction.reply({
-      content: 'Listing your auctions.',
-      ephemeral: true,
     });
   }
 

@@ -62,7 +62,7 @@ export async function createAuction(auction: Auction, client: Client) {
   );
 
   if (!auctionChannelId) {
-    return `Auctions are not settup for ${auctionDetails.rarity}`;
+    return `Auctions are not setup for ${auctionDetails.rarity}`;
   }
 
   const auctionId = await saveAuction({
