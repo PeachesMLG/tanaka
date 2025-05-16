@@ -7,11 +7,7 @@ import {
   TextChannel,
 } from 'discord.js';
 import { getEmbedMessage } from '../utils/embeds';
-import { getSetting, saveSetting } from '../database/settingsDatabase';
-import { SettingsTypes } from '../SettingsTypes';
 import { getTopClaimers } from '../database/recentClaimsDatabase';
-import { CardClaim } from '../types/cardClaim';
-import { mapTierToEmoji } from '../utils/emojis';
 import { ClaimCount } from '../types/claimCount';
 
 export class TopClaimersCommand implements Command {
@@ -55,6 +51,6 @@ export class TopClaimersCommand implements Command {
     const user = await client.users.fetch(claimCount.UserID);
     const userName = user.username;
 
-    return `#${claimCount.Rank} • ${userName} • **${claimCount.ClaimedCards} Cards Claimed**`;
+    return `#${claimCount.Rank} • ${userName} • **${claimCount.ClaimCount} Cards Claimed**`;
   }
 }

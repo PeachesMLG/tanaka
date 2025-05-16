@@ -27,8 +27,9 @@ export async function saveClaim(cardClaim: CardClaim) {
 
     const [rows] = await connection.query<ResultSetHeader>(
       `
-          INSERT INTO RecentClaims (ServerId, UserID, Name, Rarity, Series, Version) VALUES (?, ?, ?, ?, ?, ?);
-        `,
+        INSERT INTO RecentClaims (ServerId, UserID, Name, Rarity, Series, Version)
+        VALUES (?, ?, ?, ?, ?, ?);
+      `,
       [
         cardClaim.ServerId,
         cardClaim.UserID,
@@ -57,12 +58,12 @@ export async function getRecentClaims(
 ): Promise<CardClaim[]> {
   try {
     const query = `
-      SELECT * FROM RecentClaims
-      WHERE ServerId = ?
-          ${rarity ? 'AND Rarity = ?' : ''}
-          ${maxVersion ? 'AND Version <= ?' : ''}
-      ORDER BY DateTime DESC
-      LIMIT 10;
+      SELECT *
+      FROM RecentClaims
+      WHERE ServerId = ? ${rarity ? 'AND Rarity = ?' : ''} ${maxVersion ? 'AND Version <= ?' : ''}
+      ORDER BY DateTime
+      DESC
+        LIMIT 10;
     `;
 
     const params = [serverId, rarity, maxVersion].filter((param) => param);
@@ -78,25 +79,24 @@ export async function getRecentClaims(
 export async function getTopClaimers(serverId: string): Promise<ClaimCount[]> {
   try {
     const query = `
-      SELECT ROW_NUMBER() OVER (ORDER BY ClaimCount DESC) AS Rank,
-        UserID,
-        ClaimCount
-      FROM (
-        SELECT UserID, COUNT (*) AS ClaimCount
-        FROM RecentClaims
-        WHERE ServerId = ?
-        AND YEAR (DateTime) = YEAR (CURRENT_DATE ())
-        AND MONTH (DateTime) = MONTH (CURRENT_DATE ())
-        GROUP BY UserID
-        ) AS user_claims
-      ORDER BY ClaimCount
-      DESC
-        LIMIT 10;
+      SELECT UserID, COUNT(*) AS ClaimCount
+      FROM RecentClaims
+      WHERE ServerId = ?
+        AND YEAR(DateTime) = YEAR(CURRENT_DATE())
+        AND MONTH(DateTime) = MONTH(CURRENT_DATE())
+      GROUP BY UserID
+      ORDER BY ClaimCount DESC
+      LIMIT 10;
     `;
 
     const [rows] = await pool.query(query, [serverId]);
-
-    return rows as ClaimCount[];
+    return (rows as { UserID: string; ClaimCount: number }[]).map(
+      (row, index) =>
+        ({
+          ...row,
+          Rank: index + 1,
+        }) as ClaimCount,
+    );
   } catch (error) {
     console.error('Error getting top claimers:', error);
     return [];

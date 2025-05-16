@@ -1,5 +1,5 @@
 export type ClaimCount = {
   UserID: string;
-  ClaimedCards: number;
+  ClaimCount: number;
   Rank: number;
 };
