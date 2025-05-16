@@ -1,6 +1,7 @@
 import { pool } from './database';
 import { CardClaim } from '../types/cardClaim';
 import { ResultSetHeader } from 'mysql2/promise';
+import { ClaimCount } from '../types/claimCount';
 
 export async function initialiseRecentClaimsDatabase(): Promise<void> {
   const connection = await pool.getConnection();
@@ -70,6 +71,34 @@ export async function getRecentClaims(
     return rows as CardClaim[];
   } catch (error) {
     console.error('Error querying cards:', error);
+    return [];
+  }
+}
+
+export async function getTopClaimers(serverId: string): Promise<ClaimCount[]> {
+  try {
+    const query = `
+      SELECT ROW_NUMBER() OVER (ORDER BY ClaimCount DESC) AS Rank,
+        UserID,
+        ClaimCount
+      FROM (
+        SELECT UserID, COUNT (*) AS ClaimCount
+        FROM RecentClaims
+        WHERE ServerId = ?
+        AND YEAR (DateTime) = YEAR (CURRENT_DATE ())
+        AND MONTH (DateTime) = MONTH (CURRENT_DATE ())
+        GROUP BY UserID
+        ) AS user_claims
+      ORDER BY ClaimCount
+      DESC
+        LIMIT 10;
+    `;
+
+    const [rows] = await pool.query(query, [serverId]);
+
+    return rows as ClaimCount[];
+  } catch (error) {
+    console.error('Error getting top claimers:', error);
     return [];
   }
 }

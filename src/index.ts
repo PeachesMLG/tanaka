@@ -12,6 +12,7 @@ import { handleMessage } from './messageHandler';
 import { UserSettingsCommand } from './commands/UserSettingsCommand';
 import { ServerSettingsCommand } from './commands/ServerSettingsCommand';
 import { messageListeners, recentMessages } from './utils/messageListener';
+import { TopClaimersCommand } from './commands/TopClaimersCommand';
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ const commands = [
   new RecentCommand(),
   new UserSettingsCommand(),
   new ServerSettingsCommand(),
+  new TopClaimersCommand(),
 ];
 
 client.once('ready', async () => {
