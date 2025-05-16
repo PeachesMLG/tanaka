@@ -18,6 +18,38 @@ import { getChannel, getForumChannel } from './utils/getChannel';
 import { AuctionCardDetails } from './types/auctionCardDetails';
 import { getEmbedImage } from './utils/embeds';
 
+async function getChannelIdForAuction(
+  auction: Auction,
+): Promise<string | undefined> {
+  switch (auction.Rarity.toLowerCase()) {
+    case 'c':
+      return await getSetting(
+        auction.ServerId,
+        SettingsTypes.C_AUCTION_CHANNEL,
+      );
+    case 'r':
+      return await getSetting(
+        auction.ServerId,
+        SettingsTypes.R_AUCTION_CHANNEL,
+      );
+    case 'sr':
+      return await getSetting(
+        auction.ServerId,
+        SettingsTypes.SR_AUCTION_CHANNEL,
+      );
+    case 'ssr':
+      return await getSetting(
+        auction.ServerId,
+        SettingsTypes.SSR_AUCTION_CHANNEL,
+      );
+    case 'ur':
+      return await getSetting(
+        auction.ServerId,
+        SettingsTypes.UR_AUCTION_CHANNEL,
+      );
+  }
+}
+
 export async function createAuction(auction: Auction, client: Client) {
   const pendingAuctionId = await getSetting(
     auction.ServerId,
@@ -38,12 +70,18 @@ export async function createAuction(auction: Auction, client: Client) {
     return 'Unknown card!';
   }
 
+  const auctionChannelId = await getChannelIdForAuction(auction);
+
+  if (!auctionChannelId) {
+    return `Auctions are not settup for ${auction.Rarity}`;
+  }
+
   const auctionId = await saveAuction({
     ...auction,
     Rarity: auctionDetails.rarity,
     Series: auctionDetails.seriesName,
     Name: auctionDetails.cardName,
-    ChannelId: pendingAuctionId,
+    ChannelId: auctionChannelId,
   });
 
   const row =
