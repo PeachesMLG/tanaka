@@ -31,6 +31,26 @@ export class ServerSettingsCommand implements Command {
               name: 'High Tier Ping Message',
               value: SettingsTypes.HIGH_TIER_PING_MESSAGE,
             },
+            {
+              name: 'Common Auction Channel',
+              value: SettingsTypes.C_AUCTION_CHANNEL,
+            },
+            {
+              name: 'Rare Auction Channel',
+              value: SettingsTypes.R_AUCTION_CHANNEL,
+            },
+            {
+              name: 'Super Rare Auction Channel',
+              value: SettingsTypes.SR_AUCTION_CHANNEL,
+            },
+            {
+              name: 'Super Super Rare Auction Channel',
+              value: SettingsTypes.SSR_AUCTION_CHANNEL,
+            },
+            {
+              name: 'Ultra Rare Auction Channel',
+              value: SettingsTypes.UR_AUCTION_CHANNEL,
+            },
           ]),
       )
       .addStringOption((option) =>
