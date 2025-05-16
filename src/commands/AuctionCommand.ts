@@ -90,10 +90,10 @@ export class AuctionCommand implements Command {
       DateTime: new Date(),
     } as Auction;
 
-    await createAuction(auction, client);
+    const result = await createAuction(auction, client);
 
     await interaction.reply({
-      content: 'Auction Added to Queue!',
+      content: result,
       ephemeral: true,
     });
   }
