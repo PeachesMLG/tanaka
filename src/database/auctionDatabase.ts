@@ -9,7 +9,7 @@ export async function initialiseAuctionDatabase(): Promise<void> {
     (
       ID        INT AUTO_INCREMENT PRIMARY KEY,
       ServerId  VARCHAR(255),
-      UserID    VARCHAR(255),
+      UserId    VARCHAR(255),
       CardId    VARCHAR(255),
       Version   VARCHAR(255),
       Rarity    VARCHAR(255),
@@ -27,7 +27,7 @@ export async function saveAuction(auction: Auction): Promise<number> {
   const connection = await pool.getConnection();
   try {
     const query = `
-      INSERT INTO Auctions (ServerId, UserID, CardId, Version, Rarity, Series, Name, ChannelId, ThreadId, Status)
+      INSERT INTO Auctions (ServerId, UserId, CardId, Version, Rarity, Series, Name, ChannelId, ThreadId, Status)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     `;
     const values = [
@@ -101,7 +101,7 @@ export async function getAuctionById(
 
 export async function getAuctions(
   serverId: string,
-  userId?: string,
+  UserId?: string,
   channelId?: string,
   status?: AuctionStatus,
 ): Promise<Auction[]> {
@@ -124,7 +124,7 @@ export async function getAuctions(
       ORDER BY DateTime DESC;
     `;
 
-    const params = [serverId, userId, status].filter((param) => param);
+    const params = [serverId, UserId, status].filter((param) => param);
     const [rows] = await connection.query(query, params);
 
     const auctions = (rows as any[]).map(
@@ -132,7 +132,7 @@ export async function getAuctions(
         ({
           ID: row.ID,
           ServerId: row.ServerId,
-          UserId: row.UserID,
+          UserId: row.UserId,
           CardId: row.CardId,
           Version: row.Version,
           Rarity: row.Rarity,
@@ -147,7 +147,7 @@ export async function getAuctions(
     );
 
     return auctions
-      .filter((auction) => !userId || auction.UserId === userId)
+      .filter((auction) => !UserId || auction.UserId === UserId)
       .filter((auction) => !status || auction.Status === status)
       .filter((auction) => !channelId || auction.ChannelId === channelId);
   } finally {

@@ -26,7 +26,6 @@ export const getChannel = async (channelId: string, client: Client) => {
 
 export const getForumChannel = async (channelId: string, client: Client) => {
   const channel = await client.channels.fetch(channelId);
-  console.log(channel);
   if (channel === null) return null;
   if (channel.type !== ChannelType.GuildForum) return null;
   const forumChannel = channel as ForumChannel;
@@ -38,10 +37,7 @@ export const getForumChannel = async (channelId: string, client: Client) => {
     PermissionsBitField.Flags.CreatePublicThreads,
   ];
 
-  console.log(permissions);
-
   if (!permissions?.has(requiredPermissions)) {
-    console.log(':c no perms');
     return null;
   }
   return forumChannel;
