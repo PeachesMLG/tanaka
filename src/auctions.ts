@@ -181,7 +181,12 @@ export async function rejectAuction(auctionId: string) {
 }
 
 export async function finishAuction(auction: Auction, client: Client) {
-  await updateAuction(auction.ID, AuctionStatus.DONE, '', new Date());
+  await updateAuction(
+    auction.ID,
+    AuctionStatus.DONE,
+    auction.ThreadId,
+    new Date(),
+  );
 
   const channel = await getForumPost(auction.ThreadId, client);
   if (!channel) {
