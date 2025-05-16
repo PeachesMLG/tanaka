@@ -26,7 +26,7 @@ export class AuctionCommand implements Command {
           .setDescription('Create a new auction')
           .addStringOption((option) =>
             option
-              .setName('cardId')
+              .setName('card')
               .setDescription('The ID of the card')
               .setRequired(true),
           )
@@ -73,7 +73,7 @@ export class AuctionCommand implements Command {
     interaction: ChatInputCommandInteraction,
     client: Client,
   ) {
-    const cardId = interaction.options.getString('cardId');
+    const cardId = interaction.options.getString('card');
     const version = interaction.options.getString('version');
 
     if (!cardId || !version) {
