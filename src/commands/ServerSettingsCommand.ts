@@ -60,6 +60,22 @@ export class ServerSettingsCommand implements Command {
                   name: 'Approval Auction Channel',
                   value: SettingsTypes.APPROVAL_AUCTION_CHANNEL,
                 },
+                {
+                  name: 'Max Auctions Per User',
+                  value: SettingsTypes.MAX_AUCTIONS_PER_USER,
+                },
+                {
+                  name: 'Max Auctions Per User',
+                  value: SettingsTypes.MAX_AUCTIONS_PER_USER,
+                },
+                {
+                  name: 'Max Auctions Per Queue',
+                  value: SettingsTypes.MAX_AUCTIONS_PER_QUEUE,
+                },
+                {
+                  name: 'Auction Lifetime (Minutes)',
+                  value: SettingsTypes.AUCTION_LIFETIME_MINUTES,
+                },
               ]),
           )
           .addStringOption((option) =>

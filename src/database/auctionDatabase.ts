@@ -49,36 +49,20 @@ export async function saveAuction(auction: Auction): Promise<number> {
   }
 }
 
-export async function setAuctionState(
+export async function updateAuction(
   id: number,
   state: AuctionStatus,
+  thread: string,
+  newExpiration: Date,
 ): Promise<void> {
   const connection = await pool.getConnection();
   try {
     const query = `
       UPDATE Auctions
-      SET Status = ?
+      SET Status = ?, ThreadId = ?, ExpiresDateTime = ?
       WHERE Id = ?;
     `;
-    const values = [state, id];
-    await connection.query(query, values);
-  } finally {
-    connection.release();
-  }
-}
-
-export async function setAuctionThread(
-  id: number,
-  thread: string,
-): Promise<void> {
-  const connection = await pool.getConnection();
-  try {
-    const query = `
-      UPDATE Auctions
-      SET Status = ?
-      WHERE ThreadId = ?;
-    `;
-    const values = [thread, id];
+    const values = [state, thread, newExpiration, id];
     await connection.query(query, values);
   } finally {
     connection.release();

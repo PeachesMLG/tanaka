@@ -9,8 +9,7 @@ import { Auction, AuctionStatus } from './types/auction';
 import {
   getAuctionById,
   saveAuction,
-  setAuctionState,
-  setAuctionThread,
+  updateAuction,
 } from './database/auctionDatabase';
 import { getSetting } from './database/settingsDatabase';
 import { SettingsTypes } from './SettingsTypes';
@@ -128,9 +127,16 @@ export async function getAuctionDetails(
 }
 
 export async function approveAuction(auctionId: string, client: Client) {
-  await setAuctionState(parseInt(auctionId), AuctionStatus.IN_QUEUE);
   const auction = await getAuctionById(parseInt(auctionId));
   if (!auction) return;
+  const auctionLifeTimeMinutes = await getSetting(
+    auction.ServerId,
+    SettingsTypes.AUCTION_LIFETIME_MINUTES,
+  );
+  const expirationDate = new Date(
+    Date.now() + parseInt(auctionLifeTimeMinutes ?? '10') * 60 * 1000,
+  );
+  const unixTimestamp = Math.floor(expirationDate.getTime() / 1000);
 
   const auctionDetails = await getAuctionDetails(auction);
 
@@ -144,16 +150,26 @@ export async function approveAuction(auctionId: string, client: Client) {
         getEmbedImage(
           channel.guild,
           `${auction.Rarity} ${auction.Name} ${auction.Version}`,
-          `<@${auction.UserId}> Posted a new Auction`,
+          `<@${auction.UserId}> Posted a new Auction\n Expires: <t:${unixTimestamp}:R>`,
           auctionDetails?.imageUrl ?? '',
         ),
       ],
     },
   });
 
-  await setAuctionThread(parseInt(auctionId), threadPost.id);
+  await updateAuction(
+    parseInt(auctionId),
+    AuctionStatus.IN_AUCTION,
+    threadPost.id,
+    expirationDate,
+  );
 }
 
 export async function rejectAuction(auctionId: string) {
-  await setAuctionState(parseInt(auctionId), AuctionStatus.REJECTED);
+  await updateAuction(
+    parseInt(auctionId),
+    AuctionStatus.IN_AUCTION,
+    '',
+    new Date(),
+  );
 }

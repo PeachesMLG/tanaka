@@ -10,7 +10,8 @@ import { Auction, AuctionStatus } from '../types/auction';
 import { createAuction } from '../auctions';
 import { getAuctions } from '../database/auctionDatabase';
 import { getEmbedMessage } from '../utils/embeds';
-import { ClaimCount } from '../types/claimCount';
+import { getSetting } from '../database/settingsDatabase';
+import { SettingsTypes } from '../SettingsTypes';
 
 export class AuctionCommand implements Command {
   command: SharedSlashCommand;
@@ -82,6 +83,20 @@ export class AuctionCommand implements Command {
       });
 
       return;
+    }
+
+    const maxAuctionsPerUser =
+      (await getSetting(
+        interaction.guild!.id,
+        SettingsTypes.MAX_AUCTIONS_PER_USER,
+      )) ?? '0';
+    const currentUserAuctions = await getAuctions(
+      interaction.guild!.id,
+      interaction.user.id,
+    );
+
+    if (currentUserAuctions.length > parseInt(maxAuctionsPerUser)) {
+      return `You already have ${currentUserAuctions.length} Auctions, max is ${maxAuctionsPerUser}`;
     }
 
     const auction = {
