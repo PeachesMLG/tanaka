@@ -14,6 +14,7 @@ import { ServerSettingsCommand } from './commands/ServerSettingsCommand';
 import { messageListeners, recentMessages } from './utils/messageListener';
 import { TopClaimersCommand } from './commands/TopClaimersCommand';
 import { AuctionCommand } from './commands/AuctionCommand';
+import { approveAuction, rejectAuction } from './auctions';
 
 dotenv.config();
 
@@ -60,6 +61,22 @@ client.on('interactionCreate', async (interaction) => {
   } catch (error) {
     console.error(`Error Executing Command: `, error);
     await interaction.reply({ content: 'Internal Server Error...' });
+  }
+});
+
+client.on('interactionCreate', async (interaction) => {
+  if (!interaction.isButton()) return;
+
+  const [section, action, itemId] = interaction.customId.split('_');
+
+  if (section === 'auction') {
+    if (action === 'approve') {
+      await approveAuction(itemId);
+      await interaction.message.delete();
+    } else if (action === 'reject') {
+      await rejectAuction(itemId);
+      await interaction.message.delete();
+    }
   }
 });
 

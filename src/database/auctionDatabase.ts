@@ -38,6 +38,24 @@ export async function saveAuction(auction: Auction): Promise<number> {
   }
 }
 
+export async function setAuctionState(
+  id: number,
+  state: AuctionStatus,
+): Promise<void> {
+  const connection = await pool.getConnection();
+  try {
+    const query = `
+      UPDATE Auctions
+      SET Status = ?
+      WHERE Id = ?;
+    `;
+    const values = [state, id];
+    await connection.query(query, values);
+  } finally {
+    connection.release();
+  }
+}
+
 export async function getAuctions(
   serverId: string,
   userId: string,
@@ -48,7 +66,7 @@ export async function getAuctions(
     const query = `
       SELECT *
       FROM Auctions
-      WHERE ServerId = ? ${userId ? 'AND UserID = ?' : ''} ${status ? 'AND Status = ?' : ''} AND Status != 'DONE'
+      WHERE ServerId = ? ${userId ? 'AND UserID = ?' : ''} ${status ? 'AND Status = ?' : ''} AND Status != 'DONE' AND Status != 'REJECTED'
       ORDER BY DateTime
       DESC;
     `;

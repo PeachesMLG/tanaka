@@ -5,8 +5,8 @@ import {
   MessageActionRowComponentBuilder,
 } from 'discord.js';
 import { ButtonStyle } from 'discord-api-types/v10';
-import { Auction } from './types/auction';
-import { saveAuction } from './database/auctionDatabase';
+import { Auction, AuctionStatus } from './types/auction';
+import { saveAuction, setAuctionState } from './database/auctionDatabase';
 import { getSetting } from './database/settingsDatabase';
 import { SettingsTypes } from './SettingsTypes';
 import { getChannel } from './utils/getChannel';
@@ -37,11 +37,11 @@ export async function createAuction(auction: Auction, client: Client) {
   const row =
     new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
       new ButtonBuilder()
-        .setCustomId(`approve_${auctionId}`)
+        .setCustomId(`auction_approve_${auctionId}`)
         .setLabel('Approve')
         .setStyle(ButtonStyle.Success),
       new ButtonBuilder()
-        .setCustomId(`reject_${auctionId}`)
+        .setCustomId(`auction_reject_${auctionId}`)
         .setLabel('Reject')
         .setStyle(ButtonStyle.Danger),
     );
@@ -51,6 +51,7 @@ export async function createAuction(auction: Auction, client: Client) {
       getEmbedImage(
         pendingAuctionChannel,
         `${auctionDetails.rarity} ${auctionDetails.cardName} ${auctionDetails.version}`,
+        `<@${auction.UserId}> Posted a new Auction`,
         auctionDetails.imageUrl,
       ),
     ],
@@ -84,4 +85,12 @@ export async function getAuctionDetails(
     console.error(`Failed to fetch auction details: ${err}`);
     return undefined;
   }
+}
+
+export async function approveAuction(auctionId: string) {
+  await setAuctionState(parseInt(auctionId), AuctionStatus.IN_QUEUE);
+}
+
+export async function rejectAuction(auctionId: string) {
+  await setAuctionState(parseInt(auctionId), AuctionStatus.REJECTED);
 }

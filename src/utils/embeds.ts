@@ -16,11 +16,13 @@ export function getEmbedMessage(
 export function getEmbedImage(
   channel: TextChannel,
   title: string,
+  description: string,
   imageUrl: string,
 ) {
   return new EmbedBuilder()
     .setColor(channel.guild.members.me?.displayHexColor ?? Colors.Blue)
     .setTitle(title)
+    .setDescription(description)
     .setImage(imageUrl)
     .setTimestamp()
     .setFooter({ text: 'Coded by Peaches_MLG' });

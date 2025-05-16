@@ -13,4 +13,5 @@ export enum AuctionStatus {
   IN_QUEUE = 'IN_QUEUE',
   IN_AUCTION = 'IN_AUCTION',
   DONE = 'DONE',
+  REJECTED = 'REJECTED',
 }
