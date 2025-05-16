@@ -17,10 +17,11 @@ export const cardSpawnHandler = async (
 const createSummonTimer = async (cardSpawn: CardSpawn, client: Client) => {
   if (!cardSpawn.SummonedBy) return;
 
-  const enabled = await getUserSetting(
-    cardSpawn.SummonedBy,
-    UserSettingsTypes.AUTOMATIC_SUMMON_TIMERS,
-  );
+  const enabled =
+    (await getUserSetting(
+      cardSpawn.SummonedBy,
+      UserSettingsTypes.AUTOMATIC_SUMMON_TIMERS,
+    )) ?? true;
 
   if (!enabled) return;
 
