@@ -40,7 +40,7 @@ export class TopClaimersCommand implements Command {
       embeds: [
         getEmbedMessage(
           channel,
-          'Recent Claims',
+          'Top Claimers this month',
           fields.length === 0 ? 'No recent claims found.' : fields.join('\n'),
         ),
       ],
