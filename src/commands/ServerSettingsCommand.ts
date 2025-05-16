@@ -88,14 +88,14 @@ export class ServerSettingsCommand implements Command {
 
     await saveSetting(interaction.guild.id, setting, value);
 
-    const result = await getSetting(interaction.user.id, setting);
+    const result = (await getSetting(interaction.user.id, setting)) ?? '';
 
     await interaction.reply({
       embeds: [
         getEmbedMessage(
           channel,
-          'Setting changed!',
-          `${result ? 'Enabled' : 'Disabled'} ${setting}.`,
+          'Server Setting changed!',
+          `${setting} set to \"${result}\".`,
         ),
       ],
       ephemeral: true,

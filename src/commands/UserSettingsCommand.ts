@@ -68,7 +68,7 @@ export class UserSettingsCommand implements Command {
       embeds: [
         getEmbedMessage(
           channel,
-          'Setting changed!',
+          'User Setting changed!',
           `${setting} set to \"${result}\".`,
         ),
       ],
