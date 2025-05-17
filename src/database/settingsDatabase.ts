@@ -57,6 +57,8 @@ export async function getSetting(
 
     const values = rows as { Value: string }[];
 
+    console.log('Returened', values);
+
     return values.length > 0 ? values[0].Value : undefined;
   } catch (error) {
     console.error('Error getting user setting:', error);
