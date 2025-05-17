@@ -14,6 +14,7 @@ import { getSetting } from '../database/settingsDatabase';
 import { SettingsTypes } from '../SettingsTypes';
 import { getCardDetails } from '../utils/cardUtils';
 import { getChannelIdForAuctionRarity } from '../utils/auctionUtils';
+import { QueueType } from '../types/queueType';
 
 export class AuctionCommand implements Command {
   command: SharedSlashCommand;
@@ -142,6 +143,7 @@ export class AuctionCommand implements Command {
         ThreadId: '',
         QueueMessageId: '',
         ChannelId: channelId,
+        QueueType: QueueType.Regular,
       },
       client,
     );

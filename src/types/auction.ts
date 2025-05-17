@@ -1,3 +1,5 @@
+import { QueueType } from './queueType';
+
 export type Auction = {
   ID: number;
   ServerId: string;
@@ -12,6 +14,7 @@ export type Auction = {
   QueueMessageId: string;
   PositionInQueue: number;
   Status: AuctionStatus;
+  QueueType: QueueType;
   CreatedDateTime: Date;
   ExpiresDateTime: Date;
 };
