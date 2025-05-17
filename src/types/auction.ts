@@ -15,6 +15,7 @@ export type Auction = {
   PositionInQueue: number;
   Status: AuctionStatus;
   QueueType: QueueType;
+  ImageUrl: string;
   CreatedDateTime: Date;
   ExpiresDateTime: Date;
 };

@@ -19,6 +19,7 @@ export async function initialiseAuctionDatabase(): Promise<void> {
       QueueMessageId  VARCHAR(255),
       Status          VARCHAR(255),
       QueueType       VARCHAR(255),
+      ImageUrl        VARCHAR(255),
       CreatedDateTime DATETIME DEFAULT CURRENT_TIMESTAMP,
       ExpiresDateTime DATETIME DEFAULT CURRENT_TIMESTAMP
     );
@@ -34,8 +35,8 @@ export async function saveAuction(
   const connection = await pool.getConnection();
   try {
     const query = `
-      INSERT INTO Auctions (ServerId, UserId, CardId, Version, Rarity, Series, Name, ChannelId, ThreadId, QueueMessageId, Status, QueueType)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+      INSERT INTO Auctions (ServerId, UserId, CardId, Version, Rarity, Series, Name, ChannelId, ThreadId, QueueMessageId, Status, QueueType, ImageUrl)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     `;
     const values = [
       auction.ServerId,
@@ -50,6 +51,7 @@ export async function saveAuction(
       auction.QueueMessageId,
       auction.Status,
       auction.QueueType,
+      auction.ImageUrl,
     ];
     const [result]: any = await connection.query(query, values);
     return result.insertId;

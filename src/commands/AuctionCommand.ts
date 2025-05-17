@@ -150,6 +150,7 @@ export class AuctionCommand implements Command {
         QueueMessageId: '',
         ChannelId: channelId,
         QueueType: QueueType.Regular,
+        ImageUrl: cardDetails.imageUrl,
       },
       client,
     );

@@ -1,9 +1,5 @@
 import { CardDetails } from '../types/cardDetails';
 
-export function getCardImage(cardId: string) {
-  return `https://cdn3.mazoku.cc/a/750/card/${cardId}.webp`;
-}
-
 export async function getCardDetails(
   cardId: string,
 ): Promise<CardDetails | undefined> {
@@ -19,7 +15,7 @@ export async function getCardDetails(
     }
 
     return {
-      imageUrl: getCardImage(cardId),
+      imageUrl: `https://cdn3.mazoku.cc/a/750/card/${cardId}.webp`,
       cardName: data.name,
       seriesName: data.series?.name,
       rarity: data.rarity?.name,

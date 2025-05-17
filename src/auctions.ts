@@ -16,7 +16,6 @@ import { getSetting } from './database/settingsDatabase';
 import { SettingsTypes } from './SettingsTypes';
 import { getForumChannel, getForumPost } from './utils/getChannel';
 import { getEmbedImage } from './utils/embeds';
-import { getCardImage } from './utils/cardUtils';
 import {
   getPendingAuctionChannel,
   getQueueAuctionChannel,
@@ -60,7 +59,7 @@ export async function createAuction(
         pendingAuctionChannel.guild,
         `${auction.Rarity} ${auction.Name} Version ${auction.Version}`,
         `<@${auction.UserId}> Posted a new Auction`,
-        getCardImage(auction.CardId),
+        auction.ImageUrl,
       ),
     ],
     components: [row],
@@ -139,7 +138,7 @@ export async function approveAuction(
         queueChannel.guild,
         `${auction.Rarity} ${auction.Name} Version ${auction.Version}`,
         `<@${auction.UserId}> Posted a new Auction`,
-        getCardImage(auction.CardId ?? ''),
+        auction.ImageUrl,
       ),
     ],
   });
