@@ -37,6 +37,8 @@ export class TopClaimersCommand implements Command {
 
     if (subcommand !== 'claimers') return;
 
+    const start = Date.now();
+
     const channel = interaction.channel as TextChannel;
     const topClaimers = await getTopClaimers(channel.guildId);
 
@@ -55,6 +57,11 @@ export class TopClaimersCommand implements Command {
         ),
       ],
     });
+
+    const duration = Date.now() - start;
+    console.log(
+      `[Command Timing] Subcommand "${subcommand}" took ${duration}ms`,
+    );
   }
 
   async getTopClaimField(claimCount: ClaimCount, client: Client) {

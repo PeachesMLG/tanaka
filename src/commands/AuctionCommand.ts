@@ -64,12 +64,18 @@ export class AuctionCommand implements Command {
     if (!interaction.isChatInputCommand()) return;
 
     const subcommand = interaction.options.getSubcommand();
+    const start = Date.now();
 
     if (subcommand === 'create') {
       await this.createAuction(interaction, client);
     } else if (subcommand === 'list') {
       await this.ListAuctions(interaction, client);
     }
+
+    const duration = Date.now() - start;
+    console.log(
+      `[Command Timing] Subcommand "${subcommand}" took ${duration}ms`,
+    );
   }
 
   async createAuction(
