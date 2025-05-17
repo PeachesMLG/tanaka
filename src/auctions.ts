@@ -65,7 +65,7 @@ export async function createAuction(
     components: [row],
   });
 
-  return 'Auction Added to Queue!';
+  return 'Auction Added to Queue!\nDo /auction list at any time to see your current queue position';
 }
 
 export async function startAuction(auctionId: string, client: Client) {
@@ -100,6 +100,10 @@ export async function startAuction(auctionId: string, client: Client) {
       ],
     },
   });
+
+  threadPost
+    .send('<@${auction.UserId}> your auction has started!')
+    .then((value) => value.delete);
 
   await updateAuction({
     ID: parseInt(auctionId),
