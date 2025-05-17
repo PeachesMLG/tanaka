@@ -140,6 +140,7 @@ export class AuctionCommand implements Command {
         Series: cardDetails.seriesName,
         Name: cardDetails.cardName,
         ThreadId: '',
+        QueueMessageId: '',
       },
       client,
     );

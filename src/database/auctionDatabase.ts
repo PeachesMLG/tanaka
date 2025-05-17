@@ -6,19 +6,20 @@ export async function initialiseAuctionDatabase(): Promise<void> {
   await connection.query(`
     CREATE TABLE IF NOT EXISTS Auctions
     (
-      ID        INT AUTO_INCREMENT PRIMARY KEY,
-      ServerId  VARCHAR(255),
-      UserId    VARCHAR(255),
-      CardId    VARCHAR(255),
-      Version   VARCHAR(255),
-      Rarity    VARCHAR(255),
-      Series    VARCHAR(255),
-      Name      VARCHAR(255),
-      ChannelId VARCHAR(255),
-      ThreadId  VARCHAR(255),
-      Status    VARCHAR(255),
-      CreatedDateTime  DATETIME DEFAULT CURRENT_TIMESTAMP,
-      ExpiresDateTime  DATETIME DEFAULT CURRENT_TIMESTAMP
+      ID              INT AUTO_INCREMENT PRIMARY KEY,
+      ServerId        VARCHAR(255),
+      UserId          VARCHAR(255),
+      CardId          VARCHAR(255),
+      Version         VARCHAR(255),
+      Rarity          VARCHAR(255),
+      Series          VARCHAR(255),
+      Name            VARCHAR(255),
+      ChannelId       VARCHAR(255),
+      ThreadId        VARCHAR(255),
+      QueueMessageId  VARCHAR(255),
+      Status          VARCHAR(255),
+      CreatedDateTime DATETIME DEFAULT CURRENT_TIMESTAMP,
+      ExpiresDateTime DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);
 }
@@ -32,8 +33,8 @@ export async function saveAuction(
   const connection = await pool.getConnection();
   try {
     const query = `
-      INSERT INTO Auctions (ServerId, UserId, CardId, Version, Rarity, Series, Name, ChannelId, ThreadId, Status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+      INSERT INTO Auctions (ServerId, UserId, CardId, Version, Rarity, Series, Name, ChannelId, ThreadId, QueueMessageId, Status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     `;
     const values = [
       auction.ServerId,
@@ -45,6 +46,7 @@ export async function saveAuction(
       auction.Name,
       auction.ChannelId,
       auction.ThreadId,
+      auction.QueueMessageId,
       auction.Status,
     ];
     const [result]: any = await connection.query(query, values);
@@ -102,12 +104,17 @@ export async function getAuctionById(
   return auctions.length > 0 ? auctions[0] : undefined;
 }
 
-export async function getActiveAuctions(): Promise<Auction[]> {
+export async function getAuctionsByState(
+  status: AuctionStatus,
+  serverId?: string,
+  rarity?: string,
+): Promise<Auction[]> {
   const query = `
-    SELECT * FROM Auctions WHERE Status = 'IN_AUCTION';
+    SELECT * FROM Auctions WHERE Status = ? ${serverId ? 'AND ServerId = ?' : ''} ${rarity ? 'AND Rarity = ?' : ''};
   `;
 
-  const [rows] = await pool.query(query);
+  const params = [status, serverId, rarity].filter((param) => param);
+  const [rows] = await pool.query(query, params);
 
   return rows as Auction[];
 }

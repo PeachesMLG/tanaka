@@ -47,3 +47,12 @@ export async function getPendingAuctionChannel(
     channel: pendingAuctionChannel,
   };
 }
+export async function getQueueAuctionChannel(serverId: string, client: Client) {
+  const pendingAuctionId = await getSetting(
+    serverId,
+    SettingsTypes.QUEUE_AUCTION_CHANNEL,
+  );
+  if (!pendingAuctionId) return null;
+
+  return await getChannel(pendingAuctionId, client);
+}

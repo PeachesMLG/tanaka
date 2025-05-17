@@ -9,6 +9,7 @@ export type Auction = {
   Name: string;
   ChannelId: string;
   ThreadId: string;
+  QueueMessageId: string;
   PositionInQueue: number;
   Status: AuctionStatus;
   CreatedDateTime: Date;

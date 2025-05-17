@@ -1,7 +1,7 @@
 import {
+  ChatInputCommandInteraction,
   Client,
   GatewayIntentBits,
-  ChatInputCommandInteraction,
 } from 'discord.js';
 import * as dotenv from 'dotenv';
 import { initialiseDatabase } from './database/database';
@@ -14,7 +14,14 @@ import { ServerSettingsCommand } from './commands/ServerSettingsCommand';
 import { messageListeners, recentMessages } from './utils/messageListener';
 import { TopClaimersCommand } from './commands/TopClaimersCommand';
 import { AuctionCommand } from './commands/AuctionCommand';
-import { activateAllAuctions, approveAuction, rejectAuction } from './auctions';
+import {
+  activateAllAuctions,
+  approveAuction,
+  rejectAuction,
+  startNextAuctions,
+} from './auctions';
+import { getAuctionsByState } from './database/auctionDatabase';
+import { AuctionStatus } from './types/auction';
 
 dotenv.config();
 
@@ -45,6 +52,16 @@ client.once('ready', async () => {
   await initialiseDatabase();
   await startAllTimers(client);
   await activateAllAuctions(client);
+
+  const auctionsInQueue = await getAuctionsByState(AuctionStatus.IN_QUEUE);
+  await Promise.all(
+    Array.from(
+      new Set(auctionsInQueue.map((a) => `${a.ServerId}|${a.Rarity}`)),
+    ).map((key) => {
+      const [ServerId, Rarity] = key.split('|');
+      return startNextAuctions(ServerId, Rarity, client);
+    }),
+  );
 });
 
 client.on('interactionCreate', async (interaction) => {
@@ -72,7 +89,7 @@ client.on('interactionCreate', async (interaction) => {
 
   if (section === 'auction') {
     if (action === 'approve') {
-      await approveAuction(itemId, client);
+      await approveAuction(itemId, interaction.guild!.id, client);
       await interaction.message.delete();
     } else if (action === 'reject') {
       await rejectAuction(itemId);

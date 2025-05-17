@@ -61,6 +61,10 @@ export class ServerSettingsCommand implements Command {
                   value: SettingsTypes.APPROVAL_AUCTION_CHANNEL,
                 },
                 {
+                  name: 'Queue Auction Channel',
+                  value: SettingsTypes.QUEUE_AUCTION_CHANNEL,
+                },
+                {
                   name: 'Max Auctions Per User',
                   value: SettingsTypes.MAX_AUCTIONS_PER_USER,
                 },

@@ -8,6 +8,7 @@ export enum SettingsTypes {
   SSR_AUCTION_CHANNEL = 'Super Super Rare Auction Channel',
   UR_AUCTION_CHANNEL = 'Ultra Rare Auction Channel',
   APPROVAL_AUCTION_CHANNEL = 'Approval Auction Channel',
+  QUEUE_AUCTION_CHANNEL = 'Queue Auction Channel',
   MAX_AUCTIONS_PER_USER = 'Max Auctions Per User',
   MAX_AUCTIONS_PER_QUEUE = 'Max Auctions Per Queue',
   AUCTION_LIFETIME_MINUTES = 'Auction Lifetime',

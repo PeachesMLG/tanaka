@@ -7,8 +7,8 @@ import {
 import { ButtonStyle } from 'discord-api-types/v10';
 import { Auction, AuctionStatus } from './types/auction';
 import {
-  getActiveAuctions,
   getAuctionById,
+  getAuctionsByState,
   saveAuction,
   updateAuction,
 } from './database/auctionDatabase';
@@ -17,7 +17,10 @@ import { SettingsTypes } from './SettingsTypes';
 import { getForumChannel, getForumPost } from './utils/getChannel';
 import { getEmbedImage } from './utils/embeds';
 import { getCardImage } from './utils/cardUtils';
-import { getPendingAuctionChannel } from './utils/auctionUtils';
+import {
+  getPendingAuctionChannel,
+  getQueueAuctionChannel,
+} from './utils/auctionUtils';
 
 export async function createAuction(
   auction: Omit<
@@ -40,6 +43,7 @@ export async function createAuction(
   const auctionId = await saveAuction({
     ...auction,
     ChannelId: '',
+    QueueMessageId: '',
   });
 
   const row =
@@ -69,9 +73,12 @@ export async function createAuction(
   return 'Auction Added to Queue!';
 }
 
-export async function approveAuction(auctionId: string, client: Client) {
+export async function startAuction(auctionId: string, client: Client) {
   const auction = await getAuctionById(parseInt(auctionId));
   if (!auction) return;
+
+  await deleteQueueMessage(auction, client);
+
   const auctionLifeTimeMinutes = await getSetting(
     auction.ServerId,
     SettingsTypes.AUCTION_LIFETIME_MINUTES,
@@ -108,11 +115,84 @@ export async function approveAuction(auctionId: string, client: Client) {
   await activateAuction(auction.ID, client);
 }
 
+export async function approveAuction(
+  auctionId: string,
+  serverId: string,
+  client: Client,
+) {
+  const queueChannel = await getQueueAuctionChannel(serverId, client);
+  if (!queueChannel) {
+    await startAuction(auctionId, client);
+    return;
+  }
+  const auction = await getAuctionById(parseInt(auctionId));
+  if (!auction) {
+    console.error('Could not get auction by ID ' + auctionId);
+    return;
+  }
+
+  const message = await queueChannel.send({
+    embeds: [
+      getEmbedImage(
+        queueChannel.guild,
+        `${auction.Rarity} ${auction.Name} ${auction.Version}`,
+        `<@${auction.UserId}> Posted a new Auction`,
+        getCardImage(auction.CardId ?? ''),
+      ),
+    ],
+  });
+
+  await updateAuction({
+    ID: parseInt(auctionId),
+    Status: AuctionStatus.IN_QUEUE,
+    QueueMessageId: message.id,
+  });
+
+  await startNextAuctions(auction.ServerId, auction.Rarity, client);
+}
+
 export async function rejectAuction(auctionId: string) {
   await updateAuction({
     ID: parseInt(auctionId),
     Status: AuctionStatus.REJECTED,
   });
+}
+
+export async function startNextAuctions(
+  serverId: string,
+  rarity: string,
+  client: Client,
+) {
+  const maxAuctionsPerQueue = parseInt(
+    (await getSetting(SettingsTypes.MAX_AUCTIONS_PER_QUEUE, serverId)) ?? '0',
+  );
+
+  const activeAuctions = await getAuctionsByState(
+    AuctionStatus.IN_AUCTION,
+    serverId,
+    rarity,
+  );
+
+  const auctionsInQueue = await getAuctionsByState(
+    AuctionStatus.IN_QUEUE,
+    serverId,
+    rarity,
+  );
+
+  const availableSlots = maxAuctionsPerQueue - activeAuctions.length;
+
+  auctionsInQueue.sort(
+    (a, b) =>
+      new Date(a.CreatedDateTime).getTime() -
+      new Date(b.CreatedDateTime).getTime(),
+  );
+
+  for (let i = 0; i < availableSlots && auctionsInQueue.length > 0; i++) {
+    const auction = auctionsInQueue.shift();
+    if (auction) {
+      await startAuction(auction.ID.toString(), client);
+    }
+  }
 }
 
 export async function finishAuction(auction: Auction, client: Client) {
@@ -125,10 +205,12 @@ export async function finishAuction(auction: Auction, client: Client) {
   if (!channel) return;
   await channel.send('Auction Finished!');
   await channel.setLocked(true, 'Auction Ended');
+
+  await startNextAuctions(auction.ServerId, auction.Rarity, client);
 }
 
 export async function activateAllAuctions(client: Client) {
-  const auctions = await getActiveAuctions();
+  const auctions = await getAuctionsByState(AuctionStatus.IN_AUCTION);
   auctions.forEach((auction) => {
     activateAuction(auction.ID, client);
   });
@@ -142,4 +224,20 @@ async function activateAuction(auctionId: number, client: Client) {
   setTimeout(async () => {
     await finishAuction(auction, client);
   }, timeLeft);
+}
+
+async function deleteQueueMessage(auction: Auction, client: Client) {
+  const queueChannel = await getQueueAuctionChannel(auction.ServerId, client);
+  if (queueChannel && auction.QueueMessageId) {
+    try {
+      const queueMessage = await queueChannel.messages.fetch(
+        auction.QueueMessageId,
+      );
+      if (queueMessage) {
+        await queueMessage.delete();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
 }
