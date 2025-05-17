@@ -182,17 +182,6 @@ export async function startNextAuctions(
 
   const availableSlots = maxAuctionsPerQueue - activeAuctions.length;
 
-  console.log(maxAuctionsPerQueue, 'Max Auctions Per Queue');
-  console.log(availableSlots, 'Available slots');
-  console.log(
-    activeAuctions.map((value) => value.Name),
-    'Active Auctions',
-  );
-  console.log(
-    auctionsInQueue.map((value) => value.Name),
-    'Auctions In Queue',
-  );
-
   auctionsInQueue.sort(
     (a, b) =>
       new Date(a.CreatedDateTime).getTime() -
