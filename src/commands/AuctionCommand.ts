@@ -185,7 +185,10 @@ export class AuctionCommand implements Command {
       message = message + `: Expires: <t:${unixTimestamp}:R>`;
     }
     if (auction.Status === AuctionStatus.IN_QUEUE) {
-      message = `Position #${auction.PositionInQueue} ` + message;
+      message = message + `: Position #${auction.PositionInQueue}`;
+    }
+    if (auction.Status === AuctionStatus.PENDING) {
+      message = message + `: Pending Approval`;
     }
 
     return message;
