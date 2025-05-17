@@ -160,7 +160,7 @@ export async function startNextAuctions(
   rarity: string,
   client: Client,
 ) {
-  console.log('Starting next Auctions...');
+  console.log(`Starting next Auctions for ${serverId} - ${rarity}...`);
   const maxAuctionsPerQueue = parseInt(
     (await getSetting(SettingsTypes.MAX_AUCTIONS_PER_QUEUE, serverId)) ?? '0',
   );
