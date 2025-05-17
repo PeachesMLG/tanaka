@@ -109,7 +109,7 @@ export class AuctionCommand implements Command {
       interaction.user.id,
     );
 
-    if (currentUserAuctions.length > maxAuctionsPerUser) {
+    if (currentUserAuctions.length >= maxAuctionsPerUser) {
       await interaction.reply({
         content: `You already have ${currentUserAuctions.length} Auctions, max is ${maxAuctionsPerUser}`,
         ephemeral: true,
