@@ -25,11 +25,7 @@ import {
 export async function createAuction(
   auction: Omit<
     Auction,
-    | 'ID'
-    | 'PositionInQueue'
-    | 'CreatedDateTime'
-    | 'ExpiresDateTime'
-    | 'ChannelId'
+    'ID' | 'PositionInQueue' | 'CreatedDateTime' | 'ExpiresDateTime'
   >,
   client: Client,
 ) {
@@ -42,7 +38,6 @@ export async function createAuction(
 
   const auctionId = await saveAuction({
     ...auction,
-    ChannelId: '',
     QueueMessageId: '',
   });
 

@@ -141,6 +141,7 @@ export class AuctionCommand implements Command {
         Name: cardDetails.cardName,
         ThreadId: '',
         QueueMessageId: '',
+        ChannelId: channelId,
       },
       client,
     );
