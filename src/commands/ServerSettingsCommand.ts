@@ -10,6 +10,9 @@ import {
 import { getEmbedMessage } from '../utils/embeds';
 import { getSetting, saveSetting } from '../database/settingsDatabase';
 import { SettingsTypes } from '../SettingsTypes';
+import { getAuctionsByState } from '../database/auctionDatabase';
+import { AuctionStatus } from '../types/auction';
+import { startNextAuctions } from '../auctions';
 
 export class ServerSettingsCommand implements Command {
   command: SharedSlashCommand;
@@ -87,7 +90,7 @@ export class ServerSettingsCommand implements Command {
       );
   }
 
-  async execute(interaction: ChatInputCommandInteraction, _: Client) {
+  async execute(interaction: ChatInputCommandInteraction, client: Client) {
     if (!interaction.channel) {
       await interaction.reply({
         content: 'Cannot execute command outside a channel',
@@ -139,6 +142,21 @@ export class ServerSettingsCommand implements Command {
     }
 
     await saveSetting(interaction.guild.id, setting, value);
+
+    if (setting === SettingsTypes.MAX_AUCTIONS_PER_QUEUE) {
+      const auctionsInQueue = await getAuctionsByState(
+        AuctionStatus.IN_QUEUE,
+        interaction.guild.id,
+      );
+      await Promise.all(
+        Array.from(
+          new Set(auctionsInQueue.map((a) => `${a.ServerId}|${a.Rarity}`)),
+        ).map((key) => {
+          const [ServerId, Rarity] = key.split('|');
+          return startNextAuctions(ServerId, Rarity, client);
+        }),
+      );
+    }
 
     const result = (await getSetting(interaction.guild.id, setting)) ?? '';
 
