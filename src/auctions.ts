@@ -158,6 +158,7 @@ export async function startNextAuctions(
   rarity: string,
   client: Client,
 ) {
+  console.log('Starting next Auctions...');
   const maxAuctionsPerQueue = parseInt(
     (await getSetting(SettingsTypes.MAX_AUCTIONS_PER_QUEUE, serverId)) ?? '0',
   );
@@ -175,6 +176,16 @@ export async function startNextAuctions(
   );
 
   const availableSlots = maxAuctionsPerQueue - activeAuctions.length;
+
+  console.log(availableSlots, 'Available slots');
+  console.log(
+    activeAuctions.map((value) => value.Name),
+    'Active Auctions',
+  );
+  console.log(
+    auctionsInQueue.map((value) => value.Name),
+    'Auctions In Queue',
+  );
 
   auctionsInQueue.sort(
     (a, b) =>
