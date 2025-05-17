@@ -23,7 +23,12 @@ export async function initialiseAuctionDatabase(): Promise<void> {
   `);
 }
 
-export async function saveAuction(auction: Auction): Promise<number> {
+export async function saveAuction(
+  auction: Omit<
+    Auction,
+    'ID' | 'PositionInQueue' | 'CreatedDateTime' | 'ExpiresDateTime'
+  >,
+): Promise<number> {
   const connection = await pool.getConnection();
   try {
     const query = `
@@ -50,19 +55,33 @@ export async function saveAuction(auction: Auction): Promise<number> {
 }
 
 export async function updateAuction(
-  id: number,
-  state: AuctionStatus,
-  thread: string,
-  newExpiration: Date,
+  auction: Partial<Omit<Auction, 'PositionInQueue' | 'CreatedDateTime'>> & {
+    ID: number;
+  },
 ): Promise<void> {
   const connection = await pool.getConnection();
   try {
+    const fields = Object.keys(auction).filter(
+      (key) =>
+        key !== 'ID' && auction[key as keyof typeof auction] !== undefined,
+    );
+
+    if (fields.length === 0) {
+      throw new Error('No fields provided to update.');
+    }
+
+    const setClause = fields.map((field) => `${field} = ?`).join(', ');
+    const values = fields.map(
+      (field) => auction[field as keyof typeof auction],
+    );
+    values.push(auction.ID);
+
     const query = `
       UPDATE Auctions
-      SET Status = ?, ThreadId = ?, ExpiresDateTime = ?
-      WHERE Id = ?;
+      SET ${setClause}
+      WHERE ID = ?;
     `;
-    const values = [state, thread, newExpiration, id];
+
     await connection.query(query, values);
   } finally {
     connection.release();

@@ -12,6 +12,8 @@ import { getAuctions } from '../database/auctionDatabase';
 import { getEmbedMessage } from '../utils/embeds';
 import { getSetting } from '../database/settingsDatabase';
 import { SettingsTypes } from '../SettingsTypes';
+import { getCardDetails } from '../utils/cardUtils';
+import { getChannelIdForAuctionRarity } from '../utils/auctionUtils';
 
 export class AuctionCommand implements Command {
   command: SharedSlashCommand;
@@ -81,21 +83,32 @@ export class AuctionCommand implements Command {
         content: 'You must set both CardId and Version',
         ephemeral: true,
       });
-
       return;
     }
 
-    const maxAuctionsPerUser =
+    const cardDetails = await getCardDetails(cardId);
+
+    if (!cardDetails) {
+      await interaction.reply({
+        content: 'Unknown Card!',
+        ephemeral: true,
+      });
+      return;
+    }
+
+    const maxAuctionsPerUser = parseInt(
       (await getSetting(
         interaction.guild!.id,
         SettingsTypes.MAX_AUCTIONS_PER_USER,
-      )) ?? '1';
+      )) ?? '1',
+    );
+
     const currentUserAuctions = await getAuctions(
       interaction.guild!.id,
       interaction.user.id,
     );
 
-    if (currentUserAuctions.length > parseInt(maxAuctionsPerUser)) {
+    if (currentUserAuctions.length > maxAuctionsPerUser) {
       await interaction.reply({
         content: `You already have ${currentUserAuctions.length} Auctions, max is ${maxAuctionsPerUser}`,
         ephemeral: true,
@@ -103,18 +116,33 @@ export class AuctionCommand implements Command {
       return;
     }
 
-    const auction = {
-      ID: 0,
-      ServerId: interaction.guild!.id,
-      UserId: interaction.user.id,
-      CardId: cardId,
-      Version: version,
-      Status: AuctionStatus.PENDING,
-      CreatedDateTime: new Date(),
-      ExpiresDateTime: new Date(),
-    } as Auction;
+    const channelId = await getChannelIdForAuctionRarity(
+      cardDetails.rarity,
+      interaction.guild!.id,
+    );
 
-    const result = await createAuction(auction, client);
+    if (!channelId) {
+      await interaction.reply({
+        content: `${cardDetails.rarity} Cards are not setup for auction`,
+        ephemeral: true,
+      });
+      return;
+    }
+
+    const result = await createAuction(
+      {
+        ServerId: interaction.guild!.id,
+        UserId: interaction.user.id,
+        CardId: cardId,
+        Version: version,
+        Status: AuctionStatus.PENDING,
+        Rarity: cardDetails.rarity,
+        Series: cardDetails.seriesName,
+        Name: cardDetails.cardName,
+        ThreadId: '',
+      },
+      client,
+    );
 
     await interaction.reply({
       content: result,
