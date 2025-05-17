@@ -2,11 +2,12 @@ import { Client, CommandInteraction, TextChannel } from 'discord.js';
 import { deleteTimer, getTimers, saveTimer } from './database/timerDatabase';
 import { getEmbedMessage } from './utils/embeds';
 import { getChannel } from './utils/getChannel';
+import { executeAtDate } from './utils/timerUtils';
 
 export async function createTimer(
   channel: TextChannel,
   interaction: CommandInteraction | undefined,
-  timestamp: number,
+  timestamp: Date,
   userId: string,
   reason: string,
   client: Client,
@@ -61,34 +62,33 @@ export async function startAllTimers(client: Client) {
 
 export function activateTimer(
   channelId: string,
-  timestamp: number,
+  timestamp: Date,
   userId: string,
   reason: string,
   timerId: number,
   information: string,
   client: Client,
 ) {
-  const milliseconds = timestamp * 1000 - Date.now();
-
-  setTimeout(async () => {
+  executeAtDate(timestamp, async () => {
     await deleteTimer(timerId);
     const channel = await getChannel(channelId, client);
     if (channel === null) return;
     await channel.send(constructTimerElapsed(userId, reason, information));
-  }, milliseconds);
+  });
 }
 
 function constructTimerCreatedEmbed(
   channel: TextChannel,
-  timestamp: number,
+  futureTime: Date,
   userId: string,
   reason?: string,
 ) {
+  let unixTimestamp = Math.floor(futureTime.getTime() / 1000);
   let content = `Set a timer for <@${userId}>.`;
   if (reason) {
     content += ` \n Reason: ${reason}`;
   }
-  content += ` \n It will go off at <t:${timestamp}:F>`;
+  content += ` \n It will go off at <t:${unixTimestamp}:F>`;
   return getEmbedMessage(channel, 'Timer', content);
 }
 

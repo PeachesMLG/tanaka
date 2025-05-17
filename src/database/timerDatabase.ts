@@ -11,7 +11,7 @@ export async function initialiseTimerDatabase(): Promise<void> {
       UserID      VARCHAR(255),
       ChannelID   VARCHAR(255),
       Reason      TEXT,
-      Time        INT,
+      Time        DATETIME,
       Information TEXT
     );
   `);
@@ -21,7 +21,7 @@ export async function saveTimer(
   userId: string,
   channelId: string,
   reason: string,
-  timestamp: number,
+  timestamp: Date,
   information: string,
 ) {
   const connection = await pool.getConnection();

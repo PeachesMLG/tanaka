@@ -21,6 +21,7 @@ import {
   getPendingAuctionChannel,
   getQueueAuctionChannel,
 } from './utils/auctionUtils';
+import { executeAtDate } from './utils/timerUtils';
 
 export async function createAuction(
   auction: Omit<
@@ -224,11 +225,10 @@ export async function activateAllAuctions(client: Client) {
 async function activateAuction(auctionId: number, client: Client) {
   const auction = await getAuctionById(auctionId);
   if (!auction) return;
-  const timeLeft = auction.ExpiresDateTime.getTime() - new Date().getTime();
-
-  setTimeout(async () => {
-    await finishAuction(auction, client);
-  }, timeLeft);
+  executeAtDate(
+    auction.ExpiresDateTime,
+    async () => await finishAuction(auction, client),
+  );
 }
 
 async function deleteQueueMessage(auction: Auction, client: Client) {

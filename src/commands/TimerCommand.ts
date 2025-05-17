@@ -51,21 +51,12 @@ export class TimerCommand implements Command {
     );
 
     if (milliseconds <= 0) return;
-    if (milliseconds >= 2147483647) {
-      await interaction.reply({
-        embeds: [
-          getEmbedMessage(channel, 'Timer', `Timer exceeded maximum duration`),
-        ],
-      });
-      return;
-    }
 
     let futureTime = new Date(Date.now() + milliseconds);
-    let unixTimestamp = Math.floor(futureTime.getTime() / 1000);
     await createTimer(
       channel,
       interaction,
-      unixTimestamp,
+      futureTime,
       interaction.user.id,
       reason ?? '',
       this.client,
