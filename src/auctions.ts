@@ -160,10 +160,13 @@ export async function startNextAuctions(
   rarity: string,
   client: Client,
 ) {
-  console.log(`Starting next Auctions for ${serverId} - ${rarity}...`);
   const maxAuctionsPerQueue = parseInt(
-    (await getSetting(SettingsTypes.MAX_AUCTIONS_PER_QUEUE, serverId)) ?? '0',
+    (await getSetting(serverId, SettingsTypes.MAX_AUCTIONS_PER_QUEUE)) ?? '0',
   );
+
+  if (maxAuctionsPerQueue === 0) {
+    console.error('Max Auctions Per Queue is not setup!');
+  }
 
   const activeAuctions = await getAuctionsByState(
     AuctionStatus.IN_AUCTION,
