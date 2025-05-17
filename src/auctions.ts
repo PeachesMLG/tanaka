@@ -57,7 +57,7 @@ export async function createAuction(
     embeds: [
       getEmbedImage(
         pendingAuctionChannel.guild,
-        `${auction.Rarity} ${auction.Name} ${auction.Version}`,
+        `${auction.Rarity} ${auction.Name} Version ${auction.Version}`,
         `<@${auction.UserId}> Posted a new Auction`,
         getCardImage(auction.CardId),
       ),
@@ -88,12 +88,12 @@ export async function startAuction(auctionId: string, client: Client) {
   if (!channel) return;
 
   const threadPost = await channel.threads.create({
-    name: `${auction.Rarity} ${auction.Name} ${auction.Version}`,
+    name: `${auction.Rarity} ${auction.Name} Version ${auction.Version}`,
     message: {
       embeds: [
         getEmbedImage(
           channel.guild,
-          `${auction.Rarity} ${auction.Name} ${auction.Version}`,
+          `${auction.Rarity} ${auction.Name} Version ${auction.Version}`,
           `<@${auction.UserId}> Posted a new Auction\n Expires: <t:${unixTimestamp}:R>`,
           `https://cdn3.mazoku.cc/a/750/card/${auction.CardId}.webp`,
         ),
@@ -136,7 +136,7 @@ export async function approveAuction(
     embeds: [
       getEmbedImage(
         queueChannel.guild,
-        `${auction.Rarity} ${auction.Name} ${auction.Version}`,
+        `${auction.Rarity} ${auction.Name} Version ${auction.Version}`,
         `<@${auction.UserId}> Posted a new Auction`,
         getCardImage(auction.CardId ?? ''),
       ),

@@ -180,7 +180,7 @@ export class AuctionCommand implements Command {
 
   async getAuctionField(auction: Auction) {
     const unixTimestamp = Math.floor(auction.ExpiresDateTime.getTime() / 1000);
-    let message = `${auction.Rarity} • ${auction.Name} • ${auction.Version}`;
+    let message = `${auction.Rarity} • ${auction.Name} • Version ${auction.Version}`;
     if (auction.Status === AuctionStatus.IN_AUCTION) {
       message = message + `: Expires: <t:${unixTimestamp}:R>`;
     }
