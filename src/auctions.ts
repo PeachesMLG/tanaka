@@ -102,7 +102,7 @@ export async function startAuction(auctionId: string, client: Client) {
   });
 
   threadPost
-    .send('<@${auction.UserId}> your auction has started!')
+    .send(`<@${auction.UserId}> your auction has started!`)
     .then((value) => value.delete);
 
   await updateAuction({
