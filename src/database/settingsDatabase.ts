@@ -58,6 +58,7 @@ export async function getSetting(
     const values = rows as { Value: string }[];
 
     console.log('Returened', values);
+    console.log('Queried', [id, settingName]);
 
     return values.length > 0 ? values[0].Value : undefined;
   } catch (error) {
