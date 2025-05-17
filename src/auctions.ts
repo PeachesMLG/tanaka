@@ -69,6 +69,7 @@ export async function createAuction(
 }
 
 export async function startAuction(auctionId: string, client: Client) {
+  console.log('Starting auction');
   const auction = await getAuctionById(parseInt(auctionId));
   if (!auction) return;
 
@@ -117,6 +118,7 @@ export async function approveAuction(
 ) {
   const queueChannel = await getQueueAuctionChannel(serverId, client);
   if (!queueChannel) {
+    console.log('Queue channel not setup...');
     await startAuction(auctionId, client);
     return;
   }
