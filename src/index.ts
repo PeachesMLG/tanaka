@@ -87,6 +87,8 @@ client.on('interactionCreate', async (interaction) => {
 
   const [section, action, itemId] = interaction.customId.split('_');
 
+  const start = Date.now();
+
   if (section === 'auction') {
     if (action === 'approve') {
       await approveAuction(itemId, interaction.guild!.id, client);
@@ -96,6 +98,11 @@ client.on('interactionCreate', async (interaction) => {
       await interaction.message.delete();
     }
   }
+
+  const duration = Date.now() - start;
+  console.log(
+    `[Interaction Timing] Subcommand "${interaction.customId}" took ${duration}ms`,
+  );
 });
 
 client.on('messageCreate', async (message) => {
