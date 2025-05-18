@@ -1,7 +1,12 @@
 import {
+  ActionRowBuilder,
   ChatInputCommandInteraction,
   Client,
   GatewayIntentBits,
+  Interaction,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
 } from 'discord.js';
 import * as dotenv from 'dotenv';
 import { initialiseDatabase } from './database/database';
@@ -17,11 +22,13 @@ import { AuctionCommand } from './commands/AuctionCommand';
 import {
   activateAllAuctions,
   approveAuction,
+  createAuction,
   rejectAuction,
   startNextAuctions,
 } from './auctions';
 import { getAuctionsByState } from './database/auctionDatabase';
 import { AuctionStatus } from './types/auction';
+import { editState, getAuction } from './utils/auctionEditor';
 
 dotenv.config();
 
@@ -96,6 +103,62 @@ client.on('interactionCreate', async (interaction) => {
     } else if (action === 'reject') {
       await rejectAuction(itemId);
       await interaction.message.delete();
+    } else if (action === 'edit') {
+      const auction = getAuction(itemId);
+      await interaction.showModal(
+        new ModalBuilder()
+          .setCustomId(`auction_modal_edit_${itemId}`)
+          .setTitle('Edit Auction Card')
+          .addComponents(
+            new ActionRowBuilder<TextInputBuilder>().addComponents(
+              new TextInputBuilder()
+                .setCustomId('name')
+                .setLabel('Card Name')
+                .setStyle(TextInputStyle.Short)
+                .setRequired(true)
+                .setValue(auction?.auction?.Name ?? ''),
+            ),
+            new ActionRowBuilder<TextInputBuilder>().addComponents(
+              new TextInputBuilder()
+                .setCustomId('rarity')
+                .setLabel('Card Rarity')
+                .setStyle(TextInputStyle.Short)
+                .setRequired(true)
+                .setValue(auction?.auction?.Rarity ?? ''),
+            ),
+            new ActionRowBuilder<TextInputBuilder>().addComponents(
+              new TextInputBuilder()
+                .setCustomId('version')
+                .setLabel('Card Version')
+                .setStyle(TextInputStyle.Short)
+                .setRequired(true)
+                .setValue(auction?.auction?.Version ?? ''),
+            ),
+            new ActionRowBuilder<TextInputBuilder>().addComponents(
+              new TextInputBuilder()
+                .setCustomId('image')
+                .setLabel('Card Image Url')
+                .setStyle(TextInputStyle.Short)
+                .setRequired(true)
+                .setValue(auction?.auction?.ImageUrl ?? ''),
+            ),
+          ),
+      );
+    } else if (action === 'submit') {
+      const auction = getAuction(itemId);
+      if (!auction) {
+        await interaction.reply({
+          content: 'Auction no longer valid, please start again',
+          ephemeral: true,
+        });
+        return;
+      }
+      const result = await createAuction(auction.auction, client);
+
+      await interaction.reply({
+        content: result,
+        ephemeral: true,
+      });
     }
   }
 
@@ -103,6 +166,27 @@ client.on('interactionCreate', async (interaction) => {
   console.log(
     `[Interaction Timing] Subcommand "${interaction.customId}" took ${duration}ms`,
   );
+});
+
+client.on('interactionCreate', async (interaction: Interaction) => {
+  if (!interaction.isModalSubmit()) return;
+  const [prefix, , field, guid] = interaction.customId.split('_');
+  if (prefix !== 'auction' || !guid || field !== 'edit') return;
+
+  const state = getAuction(guid);
+  if (!state) return;
+
+  const name = interaction.fields.getTextInputValue('name');
+  const rarity = interaction.fields.getTextInputValue('rarity');
+  const version = interaction.fields.getTextInputValue('version');
+  const image = interaction.fields.getTextInputValue('image');
+
+  await editState(guid, {
+    Name: name,
+    Rarity: rarity,
+    Version: version,
+    ImageUrl: image,
+  });
 });
 
 client.on('messageCreate', async (message) => {

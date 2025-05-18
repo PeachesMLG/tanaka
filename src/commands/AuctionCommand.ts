@@ -7,7 +7,6 @@ import {
   TextChannel,
 } from 'discord.js';
 import { Auction, AuctionStatus } from '../types/auction';
-import { createAuction } from '../auctions';
 import { getAuctions } from '../database/auctionDatabase';
 import { getEmbedMessage } from '../utils/embeds';
 import { getSetting } from '../database/settingsDatabase';
@@ -15,6 +14,7 @@ import { SettingsTypes } from '../SettingsTypes';
 import { getCardDetails } from '../utils/cardUtils';
 import { getChannelIdForAuctionRarity } from '../utils/auctionUtils';
 import { QueueType } from '../types/queueType';
+import { storeAuction } from '../utils/auctionEditor';
 
 export class AuctionCommand implements Command {
   command: SharedSlashCommand;
@@ -78,10 +78,7 @@ export class AuctionCommand implements Command {
     );
   }
 
-  async createAuction(
-    interaction: ChatInputCommandInteraction,
-    client: Client,
-  ) {
+  async createAuction(interaction: ChatInputCommandInteraction, _: Client) {
     const cardId = interaction.options.getString('card');
     const version = interaction.options.getString('version');
 
@@ -136,8 +133,8 @@ export class AuctionCommand implements Command {
       return;
     }
 
-    const result = await createAuction(
-      {
+    await storeAuction({
+      auction: {
         ServerId: interaction.guild!.id,
         UserId: interaction.user.id,
         CardId: cardId,
@@ -152,12 +149,7 @@ export class AuctionCommand implements Command {
         QueueType: QueueType.Regular,
         ImageUrl: cardDetails.imageUrl,
       },
-      client,
-    );
-
-    await interaction.reply({
-      content: result,
-      ephemeral: true,
+      interaction,
     });
   }
 

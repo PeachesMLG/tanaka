@@ -28,6 +28,20 @@ export function getEmbedImage(
     .setFooter({ text: 'Coded by Peaches_MLG' });
 }
 
+export function getEmbedImageNoGuild(
+  title: string,
+  description: string,
+  imageUrl: string,
+) {
+  return new EmbedBuilder()
+    .setColor(Colors.Blue)
+    .setTitle(title)
+    .setDescription(description)
+    .setImage(imageUrl)
+    .setTimestamp()
+    .setFooter({ text: 'Coded by Peaches_MLG' });
+}
+
 export function sendEmbedMessage(
   channel: TextChannel,
   title: string,
