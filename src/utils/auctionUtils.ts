@@ -23,6 +23,25 @@ export async function getChannelIdForAuctionRarity(
   return undefined;
 }
 
+export async function getMaxAuctionsPerQueue(
+  rarity: string,
+  serverId: string,
+): Promise<string | undefined> {
+  switch (rarity.toLowerCase()) {
+    case 'c':
+      return await getSetting(serverId, SettingsTypes.C_AUCTION_CHANNEL);
+    case 'r':
+      return await getSetting(serverId, SettingsTypes.R_AUCTION_CHANNEL);
+    case 'sr':
+      return await getSetting(serverId, SettingsTypes.SR_AUCTION_CHANNEL);
+    case 'ssr':
+      return await getSetting(serverId, SettingsTypes.SSR_AUCTION_CHANNEL);
+    case 'ur':
+      return await getSetting(serverId, SettingsTypes.UR_AUCTION_CHANNEL);
+  }
+  return undefined;
+}
+
 export async function getPendingAuctionChannel(
   serverId: string,
   client: Client,

@@ -18,6 +18,7 @@ import { getForumChannel, getForumPost } from './utils/getChannel';
 import { getEmbedImage } from './utils/embeds';
 import {
   getAttachments,
+  getMaxAuctionsPerQueue,
   getPendingAuctionChannel,
   getQueueAuctionChannel,
 } from './utils/auctionUtils';
@@ -169,7 +170,7 @@ export async function startNextAuctions(
   client: Client,
 ) {
   const maxAuctionsPerQueue = parseInt(
-    (await getSetting(serverId, SettingsTypes.MAX_AUCTIONS_PER_QUEUE)) ?? '0',
+    (await getMaxAuctionsPerQueue(rarity, serverId)) ?? '0',
   );
 
   if (maxAuctionsPerQueue === 0) {

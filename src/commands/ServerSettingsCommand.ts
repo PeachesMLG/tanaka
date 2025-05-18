@@ -72,8 +72,24 @@ export class ServerSettingsCommand implements Command {
                   value: SettingsTypes.MAX_AUCTIONS_PER_USER,
                 },
                 {
-                  name: 'Max Auctions Per Queue',
-                  value: SettingsTypes.MAX_AUCTIONS_PER_QUEUE,
+                  name: 'Max Common Auctions Per Queue',
+                  value: SettingsTypes.MAX_C_AUCTIONS_PER_QUEUE,
+                },
+                {
+                  name: 'Max Rare Auctions Per Queue',
+                  value: SettingsTypes.MAX_R_AUCTIONS_PER_QUEUE,
+                },
+                {
+                  name: 'Max Super Rare Auctions Per Queue',
+                  value: SettingsTypes.MAX_SR_AUCTIONS_PER_QUEUE,
+                },
+                {
+                  name: 'Max Super Super Rare Auctions Per Queue',
+                  value: SettingsTypes.MAX_SSR_AUCTIONS_PER_QUEUE,
+                },
+                {
+                  name: 'Max Ultra Rare Auctions Per Queue',
+                  value: SettingsTypes.MAX_UR_AUCTIONS_PER_QUEUE,
                 },
                 {
                   name: 'Auction Lifetime (Minutes)',
@@ -143,7 +159,7 @@ export class ServerSettingsCommand implements Command {
 
     await saveSetting(interaction.guild.id, setting, value);
 
-    if (setting === SettingsTypes.MAX_AUCTIONS_PER_QUEUE) {
+    if (setting.includes('Auctions Per Queue')) {
       const auctionsInQueue = await getAuctionsByState(
         AuctionStatus.IN_QUEUE,
         interaction.guild.id,

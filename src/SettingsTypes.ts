@@ -10,6 +10,10 @@ export enum SettingsTypes {
   APPROVAL_AUCTION_CHANNEL = 'Approval Auction Channel',
   QUEUE_AUCTION_CHANNEL = 'Queue Auction Channel',
   MAX_AUCTIONS_PER_USER = 'Max Auctions Per User',
-  MAX_AUCTIONS_PER_QUEUE = 'Max Auctions Per Queue',
+  MAX_C_AUCTIONS_PER_QUEUE = 'Max Common Auctions Per Queue',
+  MAX_R_AUCTIONS_PER_QUEUE = 'Max Rare Auctions Per Queue',
+  MAX_SR_AUCTIONS_PER_QUEUE = 'Max Super Rare Auctions Per Queue',
+  MAX_SSR_AUCTIONS_PER_QUEUE = 'Max Super Super Rare Auctions Per Queue',
+  MAX_UR_AUCTIONS_PER_QUEUE = 'Max Ultra Rare Auctions Per Queue',
   AUCTION_LIFETIME_MINUTES = 'Auction Lifetime',
 }
