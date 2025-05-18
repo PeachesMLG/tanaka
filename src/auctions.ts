@@ -17,6 +17,7 @@ import { SettingsTypes } from './SettingsTypes';
 import { getForumChannel, getForumPost } from './utils/getChannel';
 import { getEmbedImage } from './utils/embeds';
 import {
+  getAttachments,
   getPendingAuctionChannel,
   getQueueAuctionChannel,
 } from './utils/auctionUtils';
@@ -62,6 +63,7 @@ export async function createAuction(
         auction.ImageUrl,
       ),
     ],
+    files: await getAttachments(auction),
     components: [row],
   });
 
@@ -98,6 +100,7 @@ export async function startAuction(auctionId: string, client: Client) {
           auction.ImageUrl,
         ),
       ],
+      files: await getAttachments(auction),
     },
   });
 
@@ -141,6 +144,7 @@ export async function approveAuction(
         auction.ImageUrl,
       ),
     ],
+    files: await getAttachments(auction),
   });
 
   await updateAuction({

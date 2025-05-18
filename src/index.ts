@@ -155,10 +155,16 @@ client.on('interactionCreate', async (interaction) => {
       }
       const result = await createAuction(auction.auction, client);
 
+      await auction?.interaction.deleteReply();
+
       await interaction.reply({
         content: result,
         ephemeral: true,
       });
+    } else if (action === 'cancel') {
+      const auction = getAuction(itemId);
+      await auction?.interaction.deleteReply();
+      await interaction.deferUpdate();
     }
   }
 

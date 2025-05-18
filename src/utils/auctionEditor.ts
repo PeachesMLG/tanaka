@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
   ActionRowBuilder,
-  AttachmentBuilder,
   ButtonBuilder,
   ChatInputCommandInteraction,
   InteractionEditReplyOptions,
@@ -11,6 +10,7 @@ import {
 import { ButtonStyle } from 'discord-api-types/v10';
 import { getEmbedImageNoGuild } from './embeds';
 import { Auction } from '../types/auction';
+import { getAttachments } from './auctionUtils';
 
 export type AuctionEditorState = {
   auction: Omit<
@@ -91,27 +91,4 @@ async function getReply(
     files: await getAttachments(auction.auction),
     components: [createAuctionEditorRows(guid)],
   };
-}
-
-async function getAttachments(
-  auction: Omit<
-    Auction,
-    'ID' | 'PositionInQueue' | 'CreatedDateTime' | 'ExpiresDateTime'
-  >,
-) {
-  let attachments = [];
-
-  if (auction.ImageUrl.endsWith('.webm')) {
-    const response = await fetch(auction.ImageUrl);
-    const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
-    const attachment = new AttachmentBuilder(buffer, {
-      name: 'video.webm',
-    });
-
-    attachments.push(attachment);
-  }
-
-  return attachments;
 }
