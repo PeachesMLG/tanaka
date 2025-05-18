@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
   ActionRowBuilder,
+  AttachmentBuilder,
   ButtonBuilder,
   ChatInputCommandInteraction,
   InteractionEditReplyOptions,
@@ -26,7 +27,7 @@ export async function storeAuction(auction: AuctionEditorState) {
   auctionMap.set(guid, auction);
 
   await auction.interaction.reply({
-    ...(getReply(auction, guid) as InteractionReplyOptions),
+    ...((await getReply(auction, guid)) as InteractionReplyOptions),
     ephemeral: true,
   });
 }
@@ -50,7 +51,7 @@ export async function editState(guid: string, partial: Partial<Auction>) {
   auctionMap.set(guid, updated);
 
   await updated.interaction.editReply({
-    ...(getReply(updated, guid) as InteractionEditReplyOptions),
+    ...((await getReply(updated, guid)) as InteractionEditReplyOptions),
   });
 }
 
@@ -75,10 +76,10 @@ function createAuctionEditorRows(
   );
 }
 
-function getReply(
+async function getReply(
   auction: AuctionEditorState,
   guid: string,
-): InteractionEditReplyOptions | InteractionReplyOptions {
+): Promise<InteractionEditReplyOptions | InteractionReplyOptions> {
   return {
     embeds: [
       getEmbedImageNoGuild(
@@ -87,6 +88,30 @@ function getReply(
         auction.auction.ImageUrl,
       ),
     ],
+    files: await getAttachments(auction.auction),
     components: [createAuctionEditorRows(guid)],
   };
+}
+
+async function getAttachments(
+  auction: Omit<
+    Auction,
+    'ID' | 'PositionInQueue' | 'CreatedDateTime' | 'ExpiresDateTime'
+  >,
+) {
+  let attachments = [];
+
+  if (auction.ImageUrl.endsWith('.webm')) {
+    const response = await fetch(auction.ImageUrl);
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    const attachment = new AttachmentBuilder(buffer, {
+      name: 'video.webm',
+    });
+
+    attachments.push(attachment);
+  }
+
+  return attachments;
 }

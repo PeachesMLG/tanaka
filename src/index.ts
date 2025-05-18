@@ -187,6 +187,8 @@ client.on('interactionCreate', async (interaction: Interaction) => {
     Version: version,
     ImageUrl: image,
   });
+
+  await interaction.deferUpdate();
 });
 
 client.on('messageCreate', async (message) => {
