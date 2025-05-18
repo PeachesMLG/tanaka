@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -11,6 +10,7 @@ import { ButtonStyle } from 'discord-api-types/v10';
 import { getEmbedImageNoGuild } from './embeds';
 import { Auction } from '../types/auction';
 import { getAttachments } from './auctionUtils';
+import { TimedMap } from './timedMap';
 
 export type AuctionEditorState = {
   auction: Omit<
@@ -20,11 +20,10 @@ export type AuctionEditorState = {
   interaction: ChatInputCommandInteraction;
 };
 
-const auctionMap = new Map<string, AuctionEditorState>();
+const auctionMap = new TimedMap<AuctionEditorState>();
 
 export async function storeAuction(auction: AuctionEditorState) {
-  const guid = uuidv4();
-  auctionMap.set(guid, auction);
+  const guid = auctionMap.add(auction, 1000 * 60 * 60);
 
   await auction.interaction.reply({
     ...((await getReply(auction, guid)) as InteractionReplyOptions),
@@ -48,7 +47,7 @@ export async function editState(guid: string, partial: Partial<Auction>) {
     },
   };
 
-  auctionMap.set(guid, updated);
+  auctionMap.update(guid, updated);
 
   await updated.interaction.editReply({
     ...((await getReply(updated, guid)) as InteractionEditReplyOptions),

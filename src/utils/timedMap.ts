@@ -15,6 +15,15 @@ export class TimedMap<V> {
     return key;
   }
 
+  update(key: string, value: V, timeout?: number) {
+    const old = this.map.get(key);
+    if (!old) return;
+    this.map.set(key, {
+      value: value,
+      expiry: timeout ? Date.now() + timeout : old.expiry,
+    });
+  }
+
   get(key: string): V | undefined {
     return this.map.get(key)?.value;
   }
