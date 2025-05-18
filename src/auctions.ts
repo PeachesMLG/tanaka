@@ -95,7 +95,7 @@ export async function startAuction(auctionId: string, client: Client) {
           channel.guild,
           `${auction.Rarity} ${auction.Name} Version ${auction.Version}`,
           `<@${auction.UserId}> Posted a new Auction\n Expires: <t:${unixTimestamp}:R>`,
-          `https://cdn3.mazoku.cc/a/750/card/${auction.CardId}.webp`,
+          auction.ImageUrl,
         ),
       ],
     },
