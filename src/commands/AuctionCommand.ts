@@ -13,8 +13,7 @@ import { getSetting } from '../database/settingsDatabase';
 import { SettingsTypes } from '../SettingsTypes';
 import { getCardDetails } from '../utils/cardUtils';
 import { getChannelIdForAuctionRarity } from '../utils/auctionUtils';
-import { QueueType } from '../types/queueType';
-import { storeAuction } from '../utils/auctionEditor';
+import { auctionModalEditor } from '../modalEditors/auctionModalEditor';
 
 export class AuctionCommand implements Command {
   command: SharedSlashCommand;
@@ -133,21 +132,17 @@ export class AuctionCommand implements Command {
       return;
     }
 
-    await storeAuction({
-      auction: {
-        ServerId: interaction.guild!.id,
-        UserId: interaction.user.id,
+    await auctionModalEditor.storeValue(interaction.user.id, {
+      object: {
+        CardName: cardDetails.cardName,
+        CardRarity: cardDetails.rarity,
+        CardImage: cardDetails.imageUrl,
+        CardVersion: version,
         CardId: cardId,
-        Version: version,
-        Status: AuctionStatus.PENDING,
-        Rarity: cardDetails.rarity,
-        Series: cardDetails.seriesName,
-        Name: cardDetails.cardName,
-        ThreadId: '',
-        QueueMessageId: '',
         ChannelId: channelId,
-        QueueType: QueueType.Regular,
-        ImageUrl: cardDetails.imageUrl,
+        UserId: interaction.user.id,
+        ServerId: interaction.guild!.id,
+        CardSeries: cardDetails.seriesName,
       },
       interaction,
     });

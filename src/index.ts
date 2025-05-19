@@ -28,7 +28,7 @@ import {
 } from './auctions';
 import { getAuctionsByState } from './database/auctionDatabase';
 import { AuctionStatus } from './types/auction';
-import { editState, getAuction } from './utils/auctionEditor';
+import { auctionModalEditor } from './modalEditors/auctionModalEditor';
 
 dotenv.config();
 
@@ -104,67 +104,37 @@ client.on('interactionCreate', async (interaction) => {
       await rejectAuction(itemId);
       await interaction.message.delete();
     } else if (action === 'edit') {
-      const auction = getAuction(itemId);
+      const auctionEditorValues = auctionModalEditor.getValue(itemId);
+      if (!auctionEditorValues) {
+        await interaction.reply({
+          content: 'Editor no longer valid, please start again',
+        });
+        return;
+      }
       await interaction.showModal(
-        new ModalBuilder()
-          .setCustomId(`auction_modal_edit_${itemId}`)
-          .setTitle('Edit Auction Card')
-          .addComponents(
-            new ActionRowBuilder<TextInputBuilder>().addComponents(
-              new TextInputBuilder()
-                .setCustomId('name')
-                .setLabel('Card Name')
-                .setStyle(TextInputStyle.Short)
-                .setRequired(true)
-                .setValue(auction?.auction?.Name ?? ''),
-            ),
-            new ActionRowBuilder<TextInputBuilder>().addComponents(
-              new TextInputBuilder()
-                .setCustomId('rarity')
-                .setLabel('Card Rarity')
-                .setStyle(TextInputStyle.Short)
-                .setRequired(true)
-                .setValue(auction?.auction?.Rarity ?? ''),
-            ),
-            new ActionRowBuilder<TextInputBuilder>().addComponents(
-              new TextInputBuilder()
-                .setCustomId('version')
-                .setLabel('Card Version')
-                .setStyle(TextInputStyle.Short)
-                .setRequired(true)
-                .setValue(auction?.auction?.Version ?? ''),
-            ),
-            new ActionRowBuilder<TextInputBuilder>().addComponents(
-              new TextInputBuilder()
-                .setCustomId('image')
-                .setLabel('Card Image Url')
-                .setStyle(TextInputStyle.Short)
-                .setRequired(true)
-                .setValue(auction?.auction?.ImageUrl ?? ''),
-            ),
-          ),
+        auctionModalEditor.getModal(itemId, auctionEditorValues),
       );
     } else if (action === 'submit') {
-      const auction = getAuction(itemId);
-      if (!auction) {
+      const auctionEditorValues = auctionModalEditor.getValue(itemId);
+      if (!auctionEditorValues) {
         await interaction.reply({
           content: 'Auction no longer valid, please start again',
           ephemeral: true,
         });
         return;
       }
-      const result = await createAuction(auction.auction, client);
 
-      await auction?.interaction.deleteReply();
+      const result = await createAuction(auctionEditorValues.object, client);
+
+      await auctionEditorValues?.interaction.deleteReply();
 
       await interaction.reply({
         content: result,
         ephemeral: true,
       });
     } else if (action === 'cancel') {
-      const auction = getAuction(itemId);
-      await auction?.interaction.deleteReply();
-      await interaction.deferUpdate();
+      const auctionEditorValues = auctionModalEditor.getValue(itemId);
+      await auctionEditorValues?.interaction.deleteReply();
     }
   }
 
@@ -179,19 +149,16 @@ client.on('interactionCreate', async (interaction: Interaction) => {
   const [prefix, , field, guid] = interaction.customId.split('_');
   if (prefix !== 'auction' || !guid || field !== 'edit') return;
 
-  const state = getAuction(guid);
-  if (!state) return;
+  const name = interaction.fields.getTextInputValue('CardName');
+  const rarity = interaction.fields.getTextInputValue('CardRarity');
+  const version = interaction.fields.getTextInputValue('CardVersion');
+  const image = interaction.fields.getTextInputValue('CardImage');
 
-  const name = interaction.fields.getTextInputValue('name');
-  const rarity = interaction.fields.getTextInputValue('rarity');
-  const version = interaction.fields.getTextInputValue('version');
-  const image = interaction.fields.getTextInputValue('image');
-
-  await editState(guid, {
-    Name: name,
-    Rarity: rarity,
-    Version: version,
-    ImageUrl: image,
+  await auctionModalEditor.editValue(interaction.user.id, guid, {
+    CardName: name,
+    CardRarity: rarity,
+    CardVersion: version,
+    CardImage: image,
   });
 
   await interaction.deferUpdate();

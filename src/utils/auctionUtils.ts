@@ -78,25 +78,21 @@ export async function getQueueAuctionChannel(serverId: string, client: Client) {
   return await getChannel(pendingAuctionId, client);
 }
 
-export async function getAttachments(
-  auction: Omit<
-    Auction,
-    'ID' | 'PositionInQueue' | 'CreatedDateTime' | 'ExpiresDateTime'
-  >,
-) {
+export async function getAttachments(imageUrl: string) {
   let attachments = [];
 
-  if (auction.ImageUrl.endsWith('.webm')) {
-    const response = await fetch(auction.ImageUrl);
-    const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+  const response = await fetch(imageUrl);
+  const arrayBuffer = await response.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
 
-    const attachment = new AttachmentBuilder(buffer, {
-      name: 'video.webm',
-    });
+  const urlParts = imageUrl.split('/');
+  const fileName = urlParts[urlParts.length - 1] || 'file';
 
-    attachments.push(attachment);
-  }
+  const attachment = new AttachmentBuilder(buffer, {
+    name: fileName,
+  });
+
+  attachments.push(attachment);
 
   return attachments;
 }
