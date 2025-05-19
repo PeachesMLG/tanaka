@@ -13,8 +13,7 @@ import { getSetting } from '../database/settingsDatabase';
 import { SettingsTypes } from '../SettingsTypes';
 import { getCardDetails } from '../utils/cardUtils';
 import { getChannelIdForAuctionRarity } from '../utils/auctionUtils';
-import { QueueType } from '../types/queueType';
-import { storeAuction } from '../utils/auctionEditor';
+import { auctionModalEditor } from '../modalEditors/auctionModalEditor';
 
 export class AuctionCommand implements Command {
   command: SharedSlashCommand;
@@ -31,6 +30,14 @@ export class AuctionCommand implements Command {
             option
               .setName('card')
               .setDescription('The ID of the card')
+              .setRequired(true),
+          )
+          .addStringOption((option) =>
+            option
+              .setName('currency')
+              .setDescription(
+                'Currency Preferences (e.g. Bloodstone / Moonstone (250:1))',
+              )
               .setRequired(true),
           )
           .addStringOption((option) =>
@@ -81,10 +88,11 @@ export class AuctionCommand implements Command {
   async createAuction(interaction: ChatInputCommandInteraction, _: Client) {
     const cardId = interaction.options.getString('card');
     const version = interaction.options.getString('version');
+    const currencyPreferences = interaction.options.getString('currency');
 
-    if (!cardId || !version) {
+    if (!cardId || !version || !currencyPreferences) {
       await interaction.reply({
-        content: 'You must set both CardId and Version',
+        content: 'You must set both CardId, Version and CurrencyPreferences',
         ephemeral: true,
       });
       return;
@@ -133,21 +141,18 @@ export class AuctionCommand implements Command {
       return;
     }
 
-    await storeAuction({
-      auction: {
-        ServerId: interaction.guild!.id,
-        UserId: interaction.user.id,
+    await auctionModalEditor.storeValue(interaction.user.id, {
+      object: {
+        CurrencyPreference: currencyPreferences,
+        CardName: cardDetails.cardName,
+        CardRarity: cardDetails.rarity,
+        CardImage: cardDetails.imageUrl,
+        CardVersion: version,
         CardId: cardId,
-        Version: version,
-        Status: AuctionStatus.PENDING,
-        Rarity: cardDetails.rarity,
-        Series: cardDetails.seriesName,
-        Name: cardDetails.cardName,
-        ThreadId: '',
-        QueueMessageId: '',
         ChannelId: channelId,
-        QueueType: QueueType.Regular,
-        ImageUrl: cardDetails.imageUrl,
+        UserId: interaction.user.id,
+        ServerId: interaction.guild!.id,
+        CardSeries: cardDetails.seriesName,
       },
       interaction,
     });

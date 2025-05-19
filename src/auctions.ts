@@ -15,7 +15,11 @@ import {
 import { getSetting } from './database/settingsDatabase';
 import { SettingsTypes } from './SettingsTypes';
 import { getForumChannel, getForumPost } from './utils/getChannel';
-import { getEmbedImage } from './utils/embeds';
+import {
+  getEmbedImage,
+  getEmbedMessage,
+  getEmbedMessageGuild,
+} from './utils/embeds';
 import {
   getAttachments,
   getMaxAuctionsPerQueue,
@@ -23,12 +27,11 @@ import {
   getQueueAuctionChannel,
 } from './utils/auctionUtils';
 import { executeAtDate } from './utils/timerUtils';
+import { AuctionEditorValues } from './modalEditors/auctionModalEditor';
+import { QueueType } from './types/queueType';
 
 export async function createAuction(
-  auction: Omit<
-    Auction,
-    'ID' | 'PositionInQueue' | 'CreatedDateTime' | 'ExpiresDateTime'
-  >,
+  auction: AuctionEditorValues,
   client: Client,
 ) {
   const { channel: pendingAuctionChannel, error } =
@@ -39,8 +42,20 @@ export async function createAuction(
   }
 
   const auctionId = await saveAuction({
-    ...auction,
+    ServerId: auction.ServerId,
+    UserId: auction.UserId,
+    CardId: auction.CardId,
+    Version: auction.CardVersion,
+    Status: AuctionStatus.PENDING,
+    Rarity: auction.CardRarity,
+    Series: auction.CardSeries,
+    Name: auction.CardName,
+    ThreadId: '',
     QueueMessageId: '',
+    ChannelId: auction.ChannelId,
+    QueueType: QueueType.Regular,
+    ImageUrl: auction.CardImage,
+    CurrencyPreferences: auction.CurrencyPreference,
   });
 
   const row =
@@ -57,14 +72,13 @@ export async function createAuction(
 
   await pendingAuctionChannel.send({
     embeds: [
-      getEmbedImage(
-        pendingAuctionChannel.guild,
-        `${auction.Rarity} ${auction.Name} Version ${auction.Version}`,
-        `<@${auction.UserId}> Posted a new Auction`,
-        auction.ImageUrl,
+      getEmbedMessage(
+        pendingAuctionChannel,
+        `${auction.CardRarity} ${auction.CardName} Version ${auction.CardVersion}`,
+        `<@${auction.UserId}> Posted a new Auction\nCurrency Preferences${auction.CurrencyPreference}`,
       ),
     ],
-    files: await getAttachments(auction),
+    files: await getAttachments(auction.CardImage),
     components: [row],
   });
 
@@ -94,14 +108,13 @@ export async function startAuction(auctionId: string, client: Client) {
     name: `${auction.Rarity} ${auction.Name} Version ${auction.Version}`,
     message: {
       embeds: [
-        getEmbedImage(
+        getEmbedMessageGuild(
           channel.guild,
           `${auction.Rarity} ${auction.Name} Version ${auction.Version}`,
-          `<@${auction.UserId}> Posted a new Auction\n Expires: <t:${unixTimestamp}:R>`,
-          auction.ImageUrl,
+          `<@${auction.UserId}> Posted a new Auction\nCurrency Preferences${auction.CurrencyPreferences}\n Expires: <t:${unixTimestamp}:R>`,
         ),
       ],
-      files: await getAttachments(auction),
+      files: await getAttachments(auction.ImageUrl),
     },
   });
 
@@ -138,14 +151,13 @@ export async function approveAuction(
 
   const message = await queueChannel.send({
     embeds: [
-      getEmbedImage(
-        queueChannel.guild,
+      getEmbedMessage(
+        queueChannel,
         `${auction.Rarity} ${auction.Name} Version ${auction.Version}`,
         `<@${auction.UserId}> Posted a new Auction`,
-        auction.ImageUrl,
       ),
     ],
-    files: await getAttachments(auction),
+    files: await getAttachments(auction.ImageUrl),
   });
 
   await updateAuction({
