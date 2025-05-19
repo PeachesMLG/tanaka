@@ -16,6 +16,7 @@ export type AuctionEditorValues = {
   CardVersion: string;
   CardImage: string;
   CardSeries: string;
+  CurrencyPreference: string;
   ServerId: string;
   UserId: string;
   CardId: string;
@@ -35,6 +36,8 @@ export class AuctionModalEditor extends ModalEditor<AuctionEditorValues> {
         return 'Card Rarity';
       case 'CardVersion':
         return 'Card Version';
+      case 'CurrencyPreference':
+        return 'Currency Preferences';
       case 'CardImage':
         return 'Card Image';
     }

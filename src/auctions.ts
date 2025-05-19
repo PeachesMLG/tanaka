@@ -55,6 +55,7 @@ export async function createAuction(
     ChannelId: auction.ChannelId,
     QueueType: QueueType.Regular,
     ImageUrl: auction.CardImage,
+    CurrencyPreferences: auction.CurrencyPreference,
   });
 
   const row =
@@ -74,7 +75,7 @@ export async function createAuction(
       getEmbedMessage(
         pendingAuctionChannel,
         `${auction.CardRarity} ${auction.CardName} Version ${auction.CardVersion}`,
-        `<@${auction.UserId}> Posted a new Auction`,
+        `<@${auction.UserId}> Posted a new Auction\nCurrency Preferences${auction.CurrencyPreference}`,
       ),
     ],
     files: await getAttachments(auction.CardImage),
@@ -110,7 +111,7 @@ export async function startAuction(auctionId: string, client: Client) {
         getEmbedMessageGuild(
           channel.guild,
           `${auction.Rarity} ${auction.Name} Version ${auction.Version}`,
-          `<@${auction.UserId}> Posted a new Auction\n Expires: <t:${unixTimestamp}:R>`,
+          `<@${auction.UserId}> Posted a new Auction\nCurrency Preferences${auction.CurrencyPreferences}\n Expires: <t:${unixTimestamp}:R>`,
         ),
       ],
       files: await getAttachments(auction.ImageUrl),
