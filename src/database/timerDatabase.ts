@@ -4,17 +4,21 @@ import { pool } from './database';
 
 export async function initialiseTimerDatabase(): Promise<void> {
   const connection = await pool.getConnection();
-  await connection.query(`
-    CREATE TABLE IF NOT EXISTS Timer
-    (
-      ID          INT AUTO_INCREMENT PRIMARY KEY,
-      UserID      VARCHAR(255),
-      ChannelID   VARCHAR(255),
-      Reason      TEXT,
-      Time        DATETIME,
-      Information TEXT
-    );
-  `);
+  try {
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS Timer
+      (
+        ID          INT AUTO_INCREMENT PRIMARY KEY,
+        UserID      VARCHAR(255),
+        ChannelID   VARCHAR(255),
+        Reason      TEXT,
+        Time        DATETIME,
+        Information TEXT
+      );
+    `);
+  } finally {
+    connection.release();
+  }
 }
 
 export async function saveTimer(

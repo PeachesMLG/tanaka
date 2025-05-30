@@ -3,15 +3,19 @@ import { ResultSetHeader } from 'mysql2/promise';
 
 export async function initialiseSettingsDatabase(): Promise<void> {
   const connection = await pool.getConnection();
-  await connection.query(`
-    CREATE TABLE IF NOT EXISTS Settings
-    (
-      ID          VARCHAR(255),
-      SettingName VARCHAR(255),
-      Value       VARCHAR(255),
-      PRIMARY KEY (ID, SettingName)
-    );
-  `);
+  try {
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS Settings
+      (
+        ID          VARCHAR(255),
+        SettingName VARCHAR(255),
+        Value       VARCHAR(255),
+        PRIMARY KEY (ID, SettingName)
+      );
+    `);
+  } finally {
+    connection.release();
+  }
 }
 
 export async function saveSetting(

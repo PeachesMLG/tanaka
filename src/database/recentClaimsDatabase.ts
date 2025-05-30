@@ -5,19 +5,23 @@ import { ClaimCount } from '../types/claimCount';
 
 export async function initialiseRecentClaimsDatabase(): Promise<void> {
   const connection = await pool.getConnection();
-  await connection.query(`
-    CREATE TABLE IF NOT EXISTS RecentClaims
-    (
-      ID       INT AUTO_INCREMENT PRIMARY KEY,
-      ServerId VARCHAR(255),
-      UserID   VARCHAR(255),
-      Name     VARCHAR(255),
-      Rarity   VARCHAR(255),
-      Series   VARCHAR(255),
-      Version  INTEGER,
-      DateTime DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
-  `);
+  try {
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS RecentClaims
+      (
+        ID       INT AUTO_INCREMENT PRIMARY KEY,
+        ServerId VARCHAR(255),
+        UserID   VARCHAR(255),
+        Name     VARCHAR(255),
+        Rarity   VARCHAR(255),
+        Series   VARCHAR(255),
+        Version  INTEGER,
+        DateTime DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+  } finally {
+    connection.release();
+  }
 }
 
 export async function saveClaim(cardClaim: CardClaim) {
@@ -82,14 +86,21 @@ export async function getTopClaimers(serverId: string): Promise<ClaimCount[]> {
       SELECT UserID, COUNT(*) AS ClaimCount
       FROM RecentClaims
       WHERE ServerId = ?
-        AND YEAR(DateTime) = YEAR(CURRENT_DATE())
-        AND MONTH(DateTime) = MONTH(CURRENT_DATE())
+        AND DateTime >= ?
+        AND DateTime < ?
       GROUP BY UserID
       ORDER BY ClaimCount DESC
       LIMIT 10;
     `;
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
-    const [rows] = await pool.query(query, [serverId]);
+    const [rows] = await pool.query(query, [
+      serverId,
+      startOfMonth,
+      endOfMonth,
+    ]);
     return (rows as { UserID: string; ClaimCount: number }[]).map(
       (row, index) =>
         ({

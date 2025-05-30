@@ -3,28 +3,32 @@ import { Auction, AuctionStatus } from '../types/auction';
 
 export async function initialiseAuctionDatabase(): Promise<void> {
   const connection = await pool.getConnection();
-  await connection.query(`
-    CREATE TABLE IF NOT EXISTS Auctions
-    (
-      ID                  INT AUTO_INCREMENT PRIMARY KEY,
-      ServerId            VARCHAR(255),
-      UserId              VARCHAR(255),
-      CardId              VARCHAR(255),
-      Version             VARCHAR(255),
-      Rarity              VARCHAR(255),
-      Series              VARCHAR(255),
-      Name                VARCHAR(255),
-      ChannelId           VARCHAR(255),
-      ThreadId            VARCHAR(255),
-      QueueMessageId      VARCHAR(255),
-      Status              VARCHAR(255),
-      QueueType           VARCHAR(255),
-      ImageUrl            VARCHAR(255),
-      CurrencyPreferences VARCHAR(255),
-      CreatedDateTime     DATETIME DEFAULT CURRENT_TIMESTAMP,
-      ExpiresDateTime     DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
-  `);
+  try {
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS Auctions
+      (
+        ID                  INT AUTO_INCREMENT PRIMARY KEY,
+        ServerId            VARCHAR(255),
+        UserId              VARCHAR(255),
+        CardId              VARCHAR(255),
+        Version             VARCHAR(255),
+        Rarity              VARCHAR(255),
+        Series              VARCHAR(255),
+        Name                VARCHAR(255),
+        ChannelId           VARCHAR(255),
+        ThreadId            VARCHAR(255),
+        QueueMessageId      VARCHAR(255),
+        Status              VARCHAR(255),
+        QueueType           VARCHAR(255),
+        ImageUrl            VARCHAR(255),
+        CurrencyPreferences VARCHAR(255),
+        CreatedDateTime     DATETIME DEFAULT CURRENT_TIMESTAMP,
+        ExpiresDateTime     DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+  } finally {
+    connection.release();
+  }
 }
 
 export async function saveAuction(
