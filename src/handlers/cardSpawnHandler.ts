@@ -5,7 +5,6 @@ import { getChannel } from '../utils/getChannel';
 import { getSetting } from '../database/settingsDatabase';
 import { SettingsTypes } from '../SettingsTypes';
 import { waitForMessage } from '../utils/messageListener';
-import { isUserPremium } from '../utils/userUtils';
 
 export const cardSpawnHandler = async (
   cardSpawn: CardSpawn,
@@ -33,7 +32,7 @@ const createSummonTimer = async (cardSpawn: CardSpawn, client: Client) => {
 
   if (enabled !== 'true') return;
 
-  const nextSpawnInMinutes = 60;
+  const nextSpawnInMinutes = 30;
 
   const channel = await getChannel(cardSpawn.ChannelId, client);
   if (channel === null) return;
