@@ -33,8 +33,7 @@ const createSummonTimer = async (cardSpawn: CardSpawn, client: Client) => {
 
   if (enabled !== 'true') return;
 
-  const userPremium = await isUserPremium(cardSpawn.SummonedBy);
-  const nextSpawnInMinutes = userPremium ? 30 : 60;
+  const nextSpawnInMinutes = 60;
 
   const channel = await getChannel(cardSpawn.ChannelId, client);
   if (channel === null) return;
