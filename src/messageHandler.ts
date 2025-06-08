@@ -8,7 +8,8 @@ import { CardInfo } from './types/cardInfo';
 
 const handledMessages = new TimedList();
 const claimPattern =
-  /^<@!?(\d+)> claimed (.+?) • \*\*(.+?)\*\* • \*(.+?)\* • `v([\d.]+)`!$/;
+  /^(.+?)\s+•\s+\*\*(.+?)\*\*\s+•\s+\*(.+?)\*\s+•\s+`v(\d+)`$/;
+const claimedByPattern = /<@!?(\d+)>/;
 const spawnPattern = /^(.*?) \*\*(.*?)\*\* • \*(.*?)\*$/;
 
 export const handleMessage = async (
@@ -19,10 +20,13 @@ export const handleMessage = async (
   if (message.author?.id !== '1242388858897956906') return;
   if (
     message.embeds.length > 0 &&
-    message.embeds[0].title?.includes('Cards Summoned')
+    message.embeds[0].title?.includes('Summon')
   ) {
     await handleCardSummon(message, client);
-  } else if (message.embeds.length === 0) {
+  } else if (
+    message.embeds.length > 0 &&
+    message.embeds[0].title?.includes('Card Claimed')
+  ) {
     await handleCardClaim(message, client);
   }
 };
@@ -35,7 +39,7 @@ const handleCardSummon = async (
 
   const cardInfo = message.embeds[0].description
     ?.split('\n')
-    .map(GetCardInfo)
+    .map(GetCardSummonInfo)
     .filter((cardInfo) => cardInfo) as CardInfo[];
 
   await cardSpawnHandler(
@@ -57,6 +61,35 @@ const handleCardClaim = async (
   message: Message | PartialMessage,
   client: Client,
 ) => {
+  handledMessages.add(message.id);
+
+  const cardInfo = message.embeds[0].description
+    ?.split('\n')
+    .map(GetCardClaimInfo)
+    .filter((cardInfo) => cardInfo) as CardInfo[];
+
+  const userIds = message.embeds[0].description
+    ?.split('\n')
+    .map(GetClaimedBy)
+    .filter((cardInfo) => cardInfo) as string[];
+
+  const userId = userIds[0] ?? 'N/A';
+
+  for (const card of cardInfo) {
+    await cardClaimHandler(
+      {
+        ServerId: message.guildId?.toString() ?? '',
+        UserID: userId,
+        Version: parseInt(card.Version),
+        Name: card.Name,
+        Series: card.Series,
+        Rarity: card.Rarity,
+        DateTime: new Date(),
+      },
+      client,
+    );
+  }
+
   const match = message.content?.match(claimPattern);
   if (match) {
     handledMessages.add(message.id);
@@ -76,7 +109,7 @@ const handleCardClaim = async (
   }
 };
 
-const GetCardInfo = (description: string) => {
+const GetCardSummonInfo = (description: string) => {
   const match = description.match(spawnPattern);
   if (match) {
     const [, emote, name, series] = match;
@@ -85,6 +118,29 @@ const GetCardInfo = (description: string) => {
       Series: series,
       Rarity: mapEmojiToTier(emote),
     } as CardInfo;
+  }
+  return undefined;
+};
+
+const GetCardClaimInfo = (description: string) => {
+  const match = description.match(claimPattern);
+  if (match) {
+    const [, emote, name, series, version] = match;
+    return {
+      Name: name,
+      Series: series,
+      Rarity: mapEmojiToTier(emote),
+      Version: version,
+    } as CardInfo;
+  }
+  return undefined;
+};
+
+const GetClaimedBy = (description: string) => {
+  const match = description.match(claimedByPattern);
+  if (match) {
+    const [, userId] = match;
+    return userId;
   }
   return undefined;
 };
