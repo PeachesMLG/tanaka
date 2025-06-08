@@ -1,4 +1,4 @@
-import { Client } from 'discord.js';
+import { Client, Message, PartialMessage } from 'discord.js';
 import { CardSpawn } from '../types/cardSpawn';
 import { createTimer } from '../timers';
 import { getChannel } from '../utils/getChannel';
@@ -9,8 +9,9 @@ import { waitForMessage } from '../utils/messageListener';
 export const cardSpawnHandler = async (
   cardSpawn: CardSpawn,
   client: Client,
+  message: Message | PartialMessage,
 ) => {
-  await createSummonTimer(cardSpawn, client);
+  await createSummonTimer(cardSpawn, client, message);
   if (
     !cardSpawn.SummonedBy &&
     cardSpawn.Cards.some(
@@ -21,7 +22,11 @@ export const cardSpawnHandler = async (
   }
 };
 
-const createSummonTimer = async (cardSpawn: CardSpawn, client: Client) => {
+const createSummonTimer = async (
+  cardSpawn: CardSpawn,
+  client: Client,
+  message: Message | PartialMessage,
+) => {
   if (!cardSpawn.SummonedBy) return;
 
   const enabled =
@@ -45,6 +50,10 @@ const createSummonTimer = async (cardSpawn: CardSpawn, client: Client) => {
     'Summons',
     client,
     'Automatically triggered by summon\n Turn this off in the /user settings command',
+  );
+
+  console.log(
+    `Created Timer for ${cardSpawn.SummonedBy} based on message ${message.id} ${JSON.stringify(message.embeds)}`,
   );
 };
 

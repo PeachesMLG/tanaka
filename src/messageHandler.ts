@@ -54,6 +54,7 @@ const handleCardSummon = async (
       Cards: cardInfo,
     },
     client,
+    message,
   );
 };
 
