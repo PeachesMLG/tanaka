@@ -1,13 +1,10 @@
 export class TimedList<T> {
   private items: T[] = [];
 
-  // Add an item and schedule its removal after 1 minute
   add(item: T): void {
     this.items.push(item);
 
-    setTimeout(() => {
-      this.remove(item);
-    }, 60_000); // 60,000 ms = 1 minute
+    setTimeout(() => this.remove(item), 1000 * 60 * 10);
   }
 
   private remove(item: T): void {
