@@ -11,7 +11,7 @@ export const cardSpawnHandler = async (
   client: Client,
   message: Message | PartialMessage,
 ) => {
-  await createSummonTimer(cardSpawn, client, message);
+  await createSummonTimer(cardSpawn, client);
   if (
     !cardSpawn.SummonedBy &&
     cardSpawn.Cards.some(
@@ -24,11 +24,7 @@ export const cardSpawnHandler = async (
   }
 };
 
-const createSummonTimer = async (
-  cardSpawn: CardSpawn,
-  client: Client,
-  message: Message | PartialMessage,
-) => {
+const createSummonTimer = async (cardSpawn: CardSpawn, client: Client) => {
   if (!cardSpawn.SummonedBy) return;
 
   const enabled =
@@ -52,10 +48,6 @@ const createSummonTimer = async (
     'Summons',
     client,
     'Automatically triggered by summon\n Turn this off in the /user settings command',
-  );
-
-  console.log(
-    `Created Timer for ${cardSpawn.SummonedBy} based on message ${message.id} ${JSON.stringify(message.embeds)}`,
   );
 };
 
