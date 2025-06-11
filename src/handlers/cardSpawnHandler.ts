@@ -18,6 +18,8 @@ export const cardSpawnHandler = async (
       (value) => value.Rarity === 'SR' || value.Rarity === 'SSR',
     )
   ) {
+    console.log('Sending High Tier Ping message!');
+    console.log(message.embeds[0].description);
     await sendHighTierPing(cardSpawn, client);
   }
 };
@@ -58,7 +60,6 @@ const createSummonTimer = async (
 };
 
 const sendHighTierPing = async (cardSpawn: CardSpawn, client: Client) => {
-  console.log('Sending High Tier Ping message!');
   const channel = await getChannel(cardSpawn.ChannelId, client);
   const highTierPingRole = await getSetting(
     cardSpawn.ServerId,
