@@ -31,7 +31,7 @@ const createSummonTimer = async (cardSpawn: CardSpawn, client: Client) => {
     (await getSetting(
       cardSpawn.SummonedBy,
       SettingsTypes.AUTOMATIC_SUMMON_TIMERS,
-    )) ?? 'true';
+    )) ?? 'false';
 
   if (enabled !== 'true') return;
 
