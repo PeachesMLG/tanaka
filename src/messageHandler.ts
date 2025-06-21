@@ -56,7 +56,7 @@ const handleBoxOpen = async (
 
   const enabled =
     (await getSetting(user, SettingsTypes.AUTOMATIC_EVENT_BOX_TIMERS)) ??
-    'true';
+    'false';
 
   if (enabled !== 'true') return;
 
