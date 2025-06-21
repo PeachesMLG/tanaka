@@ -26,10 +26,16 @@ export class UserSettingsCommand implements Command {
               .setName('setting')
               .setDescription('The setting you want to modify')
               .setRequired(true)
-              .addChoices({
-                name: 'Automatic Summon Timers',
-                value: SettingsTypes.AUTOMATIC_SUMMON_TIMERS,
-              }),
+              .addChoices([
+                {
+                  name: 'Automatic Summon Timers',
+                  value: SettingsTypes.AUTOMATIC_SUMMON_TIMERS,
+                },
+                {
+                  name: 'Automatic Event Box Timers',
+                  value: SettingsTypes.AUTOMATIC_EVENT_BOX_TIMERS,
+                },
+              ]),
           )
           .addBooleanOption((option) =>
             option
