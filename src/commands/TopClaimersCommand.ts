@@ -41,20 +41,32 @@ export class TopClaimersCommand implements Command {
 
     const channel = interaction.channel as TextChannel;
     const topClaimers = await getTopClaimers(channel.guildId);
+    const yourClaims =
+      topClaimers.filter((value) => value.UserID === interaction.user.id)[0] ||
+      undefined;
 
-    const fields = await Promise.all(
-      topClaimers.map(async (claimCount) => {
+    const leaderboardFields = await Promise.all(
+      topClaimers.slice(0, 10).map(async (claimCount) => {
         return await this.getTopClaimField(claimCount, interaction.client);
       }),
     );
 
+    const yourStatsFields = [
+      '**Your Statistics**',
+      `Cards Claimed: **${yourClaims?.ClaimCount ?? 0}** | Position: **#${yourClaims?.Rank ?? 'N/A'}`,
+    ];
+
+    const fields = [
+      ...(leaderboardFields.length === 0
+        ? ['No recent claims found.']
+        : leaderboardFields),
+      '',
+      ...yourStatsFields,
+    ];
+
     await interaction.reply({
       embeds: [
-        getEmbedMessage(
-          channel,
-          'Top Claimers this month',
-          fields.length === 0 ? 'No recent claims found.' : fields.join('\n'),
-        ),
+        getEmbedMessage(channel, 'Top Claimers this month', fields.join('\n')),
       ],
     });
 
@@ -65,9 +77,6 @@ export class TopClaimersCommand implements Command {
   }
 
   async getTopClaimField(claimCount: ClaimCount, client: Client) {
-    const user = await client.users.fetch(claimCount.UserID);
-    const userName = user.username;
-
-    return `#${claimCount.Rank} • ${userName} • **${claimCount.ClaimCount} Cards Claimed**`;
+    return `${claimCount.Rank}. • <@${claimCount.UserID}> • **${claimCount.ClaimCount} Cards Claimed**`;
   }
 }

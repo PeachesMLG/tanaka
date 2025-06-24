@@ -90,7 +90,6 @@ export async function getTopClaimers(serverId: string): Promise<ClaimCount[]> {
         AND DateTime < ?
       GROUP BY UserID
       ORDER BY ClaimCount DESC
-      LIMIT 10;
     `;
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
