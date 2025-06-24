@@ -53,7 +53,7 @@ export class TopClaimersCommand implements Command {
 
     const yourStatsFields = [
       '**Your Statistics**',
-      `Cards Claimed: **${yourClaims?.ClaimCount ?? 0}** | Position: **#${yourClaims?.Rank ?? 'N/A'}`,
+      `Cards Claimed: **${yourClaims?.ClaimCount ?? 0}** | Position: **#${yourClaims?.Rank ?? 'N/A'}**`,
     ];
 
     const fields = [
