@@ -85,7 +85,7 @@ export class TopClaimersCommand implements Command {
 
     await interaction.reply({
       embeds: [
-        getEmbedMessage(channel, 'Top Claimers this month', fields.join('\n')),
+        getEmbedMessage(channel, this.getHeader(value), fields.join('\n')),
       ],
     });
 
@@ -115,6 +115,21 @@ export class TopClaimersCommand implements Command {
         return new Date(now.getFullYear(), 1, 1);
       default:
         return new Date(now.getFullYear(), now.getMonth(), 1);
+    }
+  }
+
+  getHeader(duration?: string) {
+    switch (duration) {
+      case 'DAILY':
+        return 'Top Claimers today';
+      case 'WEEKLY':
+        return 'Top Claimers this week';
+      case 'MONTHLY':
+        return 'Top Claimers this month';
+      case 'YEARLY':
+        return 'Top Claimers this year';
+      default:
+        return 'Top Claimers this month';
     }
   }
 }
