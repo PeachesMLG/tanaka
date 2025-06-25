@@ -20,7 +20,19 @@ export class TopClaimersCommand implements Command {
       .addSubcommand((subcommand) =>
         subcommand
           .setName('claimers')
-          .setDescription('Get the top 10 claimers in your server.'),
+          .setDescription('Get the top 10 claimers in your server.')
+          .addStringOption((option) =>
+            option
+              .setName('duration')
+              .setDescription('The duration of the claims')
+              .addChoices([
+                { name: 'Today', value: 'DAILY' },
+                { name: 'This Week', value: 'WEEKLY' },
+                { name: 'This Month', value: 'MONTHLY' },
+                { name: 'This Year', value: 'YEARLY' },
+              ])
+              .setRequired(false),
+          ),
       );
   }
 
@@ -39,8 +51,15 @@ export class TopClaimersCommand implements Command {
 
     const start = Date.now();
 
+    const value = interaction.options.getString('duration') ?? 'MONTHLY';
+
     const channel = interaction.channel as TextChannel;
-    const topClaimers = await getTopClaimers(channel.guildId);
+
+    const topClaimers = await getTopClaimers(
+      channel.guildId,
+      this.getStartDate(value),
+      new Date(),
+    );
     const yourClaims =
       topClaimers.filter((value) => value.UserID === interaction.user.id)[0] ||
       undefined;
@@ -78,5 +97,24 @@ export class TopClaimersCommand implements Command {
 
   async getTopClaimField(claimCount: ClaimCount, client: Client) {
     return `${claimCount.Rank}. • <@${claimCount.UserID}> • **${claimCount.ClaimCount} Cards Claimed**`;
+  }
+
+  getStartDate(duration?: string) {
+    const now = new Date();
+    switch (duration) {
+      case 'DAILY':
+        return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      case 'WEEKLY':
+        const monday = new Date(now);
+        monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+        monday.setHours(0, 0, 0, 0);
+        return monday;
+      case 'MONTHLY':
+        return new Date(now.getFullYear(), now.getMonth(), 1);
+      case 'YEARLY':
+        return new Date(now.getFullYear(), 1, 1);
+      default:
+        return new Date(now.getFullYear(), now.getMonth(), 1);
+    }
   }
 }

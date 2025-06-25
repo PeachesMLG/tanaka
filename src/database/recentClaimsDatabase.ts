@@ -80,7 +80,11 @@ export async function getRecentClaims(
   }
 }
 
-export async function getTopClaimers(serverId: string): Promise<ClaimCount[]> {
+export async function getTopClaimers(
+  serverId: string,
+  startDate: Date,
+  endDate: Date,
+): Promise<ClaimCount[]> {
   try {
     const query = `
       SELECT UserID, COUNT(*) AS ClaimCount
@@ -91,15 +95,8 @@ export async function getTopClaimers(serverId: string): Promise<ClaimCount[]> {
       GROUP BY UserID
       ORDER BY ClaimCount DESC
     `;
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
-    const [rows] = await pool.query(query, [
-      serverId,
-      startOfMonth,
-      endOfMonth,
-    ]);
+    const [rows] = await pool.query(query, [serverId, startDate, endDate]);
     return (rows as { UserID: string; ClaimCount: number }[]).map(
       (row, index) =>
         ({
