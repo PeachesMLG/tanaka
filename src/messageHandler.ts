@@ -60,7 +60,7 @@ const handleBoxOpen = async (
 
   if (enabled !== 'true') return;
 
-  const nextSpawnInMinutes = 5;
+  const nextSpawnInMinutes = 1;
 
   const channel = await getChannel(message.channelId, client);
   if (channel === null) return;
