@@ -2,6 +2,7 @@ import mysql, { Pool } from 'mysql2/promise';
 import { initialiseTimerDatabase } from './timerDatabase';
 import { initialiseRecentClaimsDatabase } from './recentClaimsDatabase';
 import { initialiseSettingsDatabase } from './settingsDatabase';
+import { initialiseAuctionDatabase } from './auctionDatabase';
 import { createIndexs } from './indexCreator';
 
 export let pool: Pool;
@@ -22,6 +23,7 @@ export async function initialiseDatabase(): Promise<void> {
     await initialiseTimerDatabase();
     await initialiseRecentClaimsDatabase();
     await initialiseSettingsDatabase();
+    await initialiseAuctionDatabase();
     await createIndexs();
 
     console.log('Database initialized successfully.');
