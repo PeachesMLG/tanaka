@@ -5,10 +5,6 @@ import { mapEmojiToTier } from './utils/emojis';
 import { cardClaimHandler } from './handlers/cardClaimHandler';
 import { TimedList } from './utils/timedList';
 import { CardInfo } from './types/cardInfo';
-import { getSetting } from './database/settingsDatabase';
-import { SettingsTypes } from './SettingsTypes';
-import { getChannel } from './utils/getChannel';
-import { createTimer } from './timers';
 
 const handledMessages = new TimedList();
 const claimPattern =
@@ -32,48 +28,7 @@ export const handleMessage = async (
     message.embeds[0].title?.includes('Card Claimed')
   ) {
     await handleCardClaim(message, client);
-  } else if (
-    message.embeds.length > 0 &&
-    (message.embeds[0].title?.includes('Bloodstone Opened') ||
-      message.embeds[0].title?.includes('Moonstone Opened') ||
-      message.embeds[0].title?.includes('Mazoku Event Opened'))
-  ) {
-    await handleBoxOpen(message, client);
   }
-};
-
-const handleBoxOpen = async (
-  message: Message | PartialMessage,
-  client: Client,
-) => {
-  const user = await getUserByMessageReference(
-    message.reference,
-    message.interactionMetadata,
-    message.channel,
-  );
-
-  if (user === undefined) return;
-
-  const enabled =
-    (await getSetting(user, SettingsTypes.AUTOMATIC_EVENT_BOX_TIMERS)) ??
-    'true';
-
-  if (enabled !== 'true') return;
-
-  const nextSpawnInMinutes = 1;
-
-  const channel = await getChannel(message.channelId, client);
-  if (channel === null) return;
-  let futureTime = new Date(Date.now() + 1000 * 60 * nextSpawnInMinutes);
-  await createTimer(
-    channel,
-    undefined,
-    futureTime,
-    user,
-    "Event Box's",
-    client,
-    'Automatically triggered by opening an event box\n Turn this off in the /user settings command',
-  );
 };
 
 const handleCardSummon = async (

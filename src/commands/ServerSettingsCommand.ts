@@ -10,9 +10,6 @@ import {
 import { getEmbedMessage } from '../utils/embeds';
 import { getSetting, saveSetting } from '../database/settingsDatabase';
 import { SettingsTypes } from '../SettingsTypes';
-import { getAuctionsByState } from '../database/auctionDatabase';
-import { AuctionStatus } from '../types/auction';
-import { startNextAuctions } from '../auctions';
 
 export class ServerSettingsCommand implements Command {
   command: SharedSlashCommand;
@@ -38,62 +35,6 @@ export class ServerSettingsCommand implements Command {
                 {
                   name: 'High Tier Ping Message',
                   value: SettingsTypes.HIGH_TIER_PING_MESSAGE,
-                },
-                {
-                  name: 'Common Auction Channel',
-                  value: SettingsTypes.C_AUCTION_CHANNEL,
-                },
-                {
-                  name: 'Rare Auction Channel',
-                  value: SettingsTypes.R_AUCTION_CHANNEL,
-                },
-                {
-                  name: 'Super Rare Auction Channel',
-                  value: SettingsTypes.SR_AUCTION_CHANNEL,
-                },
-                {
-                  name: 'Super Super Rare Auction Channel',
-                  value: SettingsTypes.SSR_AUCTION_CHANNEL,
-                },
-                {
-                  name: 'Ultra Rare Auction Channel',
-                  value: SettingsTypes.UR_AUCTION_CHANNEL,
-                },
-                {
-                  name: 'Approval Auction Channel',
-                  value: SettingsTypes.APPROVAL_AUCTION_CHANNEL,
-                },
-                {
-                  name: 'Queue Auction Channel',
-                  value: SettingsTypes.QUEUE_AUCTION_CHANNEL,
-                },
-                {
-                  name: 'Max Auctions Per User',
-                  value: SettingsTypes.MAX_AUCTIONS_PER_USER,
-                },
-                {
-                  name: 'Max Common Auctions Per Queue',
-                  value: SettingsTypes.MAX_C_AUCTIONS_PER_QUEUE,
-                },
-                {
-                  name: 'Max Rare Auctions Per Queue',
-                  value: SettingsTypes.MAX_R_AUCTIONS_PER_QUEUE,
-                },
-                {
-                  name: 'Max Super Rare Auctions Per Queue',
-                  value: SettingsTypes.MAX_SR_AUCTIONS_PER_QUEUE,
-                },
-                {
-                  name: 'Max Super Super Rare Auctions Per Queue',
-                  value: SettingsTypes.MAX_SSR_AUCTIONS_PER_QUEUE,
-                },
-                {
-                  name: 'Max Ultra Rare Auctions Per Queue',
-                  value: SettingsTypes.MAX_UR_AUCTIONS_PER_QUEUE,
-                },
-                {
-                  name: 'Auction Lifetime (Minutes)',
-                  value: SettingsTypes.AUCTION_LIFETIME_MINUTES,
                 },
               ]),
           )
@@ -158,21 +99,6 @@ export class ServerSettingsCommand implements Command {
     }
 
     await saveSetting(interaction.guild.id, setting, value);
-
-    if (setting.includes('Auctions Per Queue')) {
-      const auctionsInQueue = await getAuctionsByState(
-        AuctionStatus.IN_QUEUE,
-        interaction.guild.id,
-      );
-      await Promise.all(
-        Array.from(
-          new Set(auctionsInQueue.map((a) => `${a.ServerId}|${a.Rarity}`)),
-        ).map((key) => {
-          const [ServerId, Rarity] = key.split('|');
-          return startNextAuctions(ServerId, Rarity, client);
-        }),
-      );
-    }
 
     const result = (await getSetting(interaction.guild.id, setting)) ?? '';
 
