@@ -22,7 +22,7 @@ export async function fetchCard(
   const encodedSeriesName = encodeURIComponent(seriesName);
   const encodedCardTier = encodeURIComponent(cardTier);
 
-  const url = `https://server.mazoku.cc/card/catalog?page=1&size=24&name=${encodedCardName}&series=${encodedSeriesName}&rarities=${encodedCardTier}`;
+  const url = `https://server.mazoku.cc/card/catalog?page=1&size=24&name=${encodedCardName}&series=${encodedSeriesName}&rarities=${encodedCardTier}&type=default`;
 
   try {
     const response = await fetch(url);
