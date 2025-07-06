@@ -36,6 +36,14 @@ export class ServerSettingsCommand implements Command {
                   name: 'High Tier Ping Message',
                   value: SettingsTypes.HIGH_TIER_PING_MESSAGE,
                 },
+                {
+                  name: 'Regular Tier Ping Role',
+                  value: SettingsTypes.REGULAR_TIER_PING_ROLE,
+                },
+                {
+                  name: 'Regular Tier Ping Message',
+                  value: SettingsTypes.REGULAR_TIER_PING_MESSAGE,
+                },
               ]),
           )
           .addStringOption((option) =>
