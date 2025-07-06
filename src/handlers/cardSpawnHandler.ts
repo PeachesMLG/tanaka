@@ -15,12 +15,6 @@ export const cardSpawnHandler = async (
   client: Client,
   message: Message | PartialMessage,
 ) => {
-  if (!cardSpawn.SummonedBy) {
-    // Just for vik
-    message.reply('<@1118848905019396176>').then(async (a) => {
-      await a.delete();
-    });
-  }
   await createSummonTimer(cardSpawn, client);
   if (
     !cardSpawn.SummonedBy &&
@@ -31,6 +25,8 @@ export const cardSpawnHandler = async (
     console.log('Sending High Tier Ping message!');
     console.log(message.embeds[0].description);
     await sendHighTierPing(cardSpawn, client);
+  } else if (!cardSpawn.SummonedBy) {
+    await sendRegularSummonPing(cardSpawn, client);
   }
   await createVersionsSummary(cardSpawn, client, message);
 };
@@ -104,14 +100,6 @@ const sendHighTierPing = async (cardSpawn: CardSpawn, client: Client) => {
   );
 
   if (!highTierPingRole || !highTierPingMessage || !channel) {
-    console.log(
-      ':c ' +
-        highTierPingRole +
-        ' - ' +
-        highTierPingMessage +
-        ' - ' +
-        channel?.id,
-    );
     return;
   }
 
@@ -130,4 +118,24 @@ const sendHighTierPing = async (cardSpawn: CardSpawn, client: Client) => {
     console.log('Sending High Tier Ping!');
     channel.send(highTierPingRole + ' ' + highTierPingMessage);
   });
+};
+
+const sendRegularSummonPing = async (cardSpawn: CardSpawn, client: Client) => {
+  const channel = await getChannel(cardSpawn.ChannelId, client);
+  const regularTierPingRole = await getSetting(
+    cardSpawn.ServerId,
+    SettingsTypes.REGULAR_TIER_PING_ROLE,
+  );
+  const regularTierPingMessage = await getSetting(
+    cardSpawn.ServerId,
+    SettingsTypes.REGULAR_TIER_PING_MESSAGE,
+  );
+
+  if (!regularTierPingRole || !regularTierPingMessage || !channel) {
+    return;
+  }
+
+  channel
+    .send(regularTierPingRole + ' ' + regularTierPingMessage)
+    .then(async (value) => await value.delete());
 };
