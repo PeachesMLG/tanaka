@@ -42,7 +42,7 @@ const getCardSummary = async (card: CardInfo) => {
   const cardUUID = await getCard(card.Name, card.Series, card.Rarity);
   const versions = await getCardVersions(cardUUID ?? '');
 
-  const cardInformation = `\`${mapTierToEmoji(card.Rarity)} - **${card.Name}** *${card.Series}*`;
+  const cardInformation = `${mapTierToEmoji(card.Rarity)} - **${card.Name}** *${card.Series}*`;
   const versionInformation =
     versions.length > 0
       ? `-# Single Vs: ${versions.join(', ')}.`
