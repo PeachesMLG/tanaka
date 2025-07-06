@@ -62,7 +62,7 @@ export class TopClaimersCommand implements Command {
     const topClaimers = await getTopClaimers(
       channel.guildId,
       this.getStartDate(value),
-      new Date(),
+      this.getEndDate(value),
     );
     const yourClaims =
       topClaimers.filter((value) => value.UserID === interaction.user.id)[0] ||
@@ -135,6 +135,34 @@ export class TopClaimersCommand implements Command {
         return new Date(now.getFullYear() - 1, 0, 1);
       default:
         return new Date(now.getFullYear(), now.getMonth(), 1);
+    }
+  }
+
+  getEndDate(duration?: string) {
+    const now = new Date();
+
+    switch (duration) {
+      case 'DAILY':
+        return now;
+      case 'YESTERDAY': {
+        return this.getStartDate('DAILY');
+      }
+      case 'WEEKLY':
+        return now;
+      case 'LAST_WEEK': {
+        return this.getStartDate('WEEKLY');
+      }
+      case 'MONTHLY':
+        return now;
+      case 'LAST_MONTH': {
+        return this.getStartDate('MONTHLY');
+      }
+      case 'YEARLY':
+        return now;
+      case 'LAST_YEAR':
+        return this.getStartDate('YEARLY');
+      default:
+        return now;
     }
   }
 
