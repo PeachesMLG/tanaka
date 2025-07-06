@@ -135,5 +135,7 @@ const sendRegularSummonPing = async (cardSpawn: CardSpawn, client: Client) => {
     return;
   }
 
-  await channel.send(regularTierPingRole + ' ' + regularTierPingMessage);
+  channel
+    .send(regularTierPingRole + ' ' + regularTierPingMessage)
+    .then(async (value) => await value.delete());
 };
