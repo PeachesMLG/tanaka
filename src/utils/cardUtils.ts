@@ -52,7 +52,7 @@ export async function getCard(
   seriesName: string,
   cardTier: string,
 ): Promise<string | undefined> {
-  const redisKey = `card_uuid_${cardName}_${seriesName}_${cardTier}`;
+  const redisKey = `card_uuid_${cardName.replace(/\s+/g, '_')}_${seriesName.replace(/\s+/g, '_')}_${cardTier.replace(/\s+/g, '_')}`;
   const cached = await getRedisKey(redisKey);
   if (cached !== null) {
     await incrementKey('card_uuid_cached_count');
