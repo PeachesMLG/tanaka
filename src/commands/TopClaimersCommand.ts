@@ -27,9 +27,13 @@ export class TopClaimersCommand implements Command {
               .setDescription('The duration of the claims')
               .addChoices([
                 { name: 'Today', value: 'DAILY' },
+                { name: 'Yesterday', value: 'YESTERDAY' },
                 { name: 'This Week', value: 'WEEKLY' },
+                { name: 'Last Week', value: 'LAST_WEEK' },
                 { name: 'This Month', value: 'MONTHLY' },
+                { name: 'Last Month', value: 'LAST_MONTH' },
                 { name: 'This Year', value: 'YEARLY' },
+                { name: 'Last Year', value: 'LAST_YEAR' },
               ])
               .setRequired(false),
           ),
@@ -101,33 +105,66 @@ export class TopClaimersCommand implements Command {
 
   getStartDate(duration?: string) {
     const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
     switch (duration) {
       case 'DAILY':
-        return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        return today;
+      case 'YESTERDAY': {
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        return yesterday;
+      }
       case 'WEEKLY':
-        const monday = new Date(now);
-        monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
-        monday.setHours(0, 0, 0, 0);
-        return monday;
+        return this.getMonday(today);
+      case 'LAST_WEEK': {
+        const lastWeekMonday = this.getMonday(today);
+        lastWeekMonday.setDate(lastWeekMonday.getDate() - 7);
+        return lastWeekMonday;
+      }
       case 'MONTHLY':
         return new Date(now.getFullYear(), now.getMonth(), 1);
+      case 'LAST_MONTH': {
+        const firstOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        firstOfThisMonth.setMonth(firstOfThisMonth.getMonth() - 1);
+        return firstOfThisMonth;
+      }
       case 'YEARLY':
-        return new Date(now.getFullYear(), 1, 1);
+        return new Date(now.getFullYear(), 0, 1);
+      case 'LAST_YEAR':
+        return new Date(now.getFullYear() - 1, 0, 1);
       default:
         return new Date(now.getFullYear(), now.getMonth(), 1);
     }
+  }
+
+  getMonday(date: Date) {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = (day + 6) % 7;
+    d.setDate(d.getDate() - diff);
+    d.setHours(0, 0, 0, 0);
+    return d;
   }
 
   getHeader(duration?: string) {
     switch (duration) {
       case 'DAILY':
         return 'Top Claimers today';
+      case 'YESTERDAY':
+        return 'Top Claimers yesterday';
       case 'WEEKLY':
         return 'Top Claimers this week';
+      case 'LAST_WEEK':
+        return 'Top Claimers last week';
       case 'MONTHLY':
         return 'Top Claimers this month';
+      case 'LAST_MONTH':
+        return 'Top Claimers last month';
       case 'YEARLY':
         return 'Top Claimers this year';
+      case 'LAST_YEAR':
+        return 'Top Claimers last year';
       default:
         return 'Top Claimers this month';
     }
