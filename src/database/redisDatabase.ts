@@ -50,3 +50,13 @@ export async function setRedisKey(
     throw err;
   }
 }
+
+export async function incrementKey(key: string): Promise<void> {
+  await connect();
+  try {
+    await client!.incr(key);
+  } catch (err) {
+    console.error(`Error incrementing key "${key}":`, err);
+    throw err;
+  }
+}
