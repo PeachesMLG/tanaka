@@ -8,6 +8,7 @@ import { waitForMessage } from '../utils/messageListener';
 import { getCard, getCardVersions } from '../utils/cardUtils';
 import { CardInfo } from '../types/cardInfo';
 import { mapTierToEmoji } from '../utils/emojis';
+import { executeAtDate } from '../utils/timerUtils';
 
 export const cardSpawnHandler = async (
   cardSpawn: CardSpawn,
@@ -33,9 +34,16 @@ const createVersionsSummary = async (
   client: Client,
   message: Message | PartialMessage,
 ) => {
+  const despawnTime = new Date();
+  despawnTime.setSeconds(despawnTime.getSeconds() + 20);
+
   const content = await Promise.all(cardSpawn.Cards.map(getCardSummary));
 
-  await message.reply(content.join('\n'));
+  const replyMessage = await message.reply(content.join('\n'));
+
+  executeAtDate(despawnTime, async () => {
+    await replyMessage.delete();
+  });
 };
 
 const getCardSummary = async (card: CardInfo) => {
