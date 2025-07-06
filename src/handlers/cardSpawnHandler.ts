@@ -15,10 +15,12 @@ export const cardSpawnHandler = async (
   client: Client,
   message: Message | PartialMessage,
 ) => {
-  // Just for vik
-  message.reply('<@1118848905019396176>').then(async (a) => {
-    await a.delete();
-  });
+  if (!cardSpawn.SummonedBy) {
+    // Just for vik
+    message.reply('<@1118848905019396176>').then(async (a) => {
+      await a.delete();
+    });
+  }
   await createSummonTimer(cardSpawn, client);
   if (
     !cardSpawn.SummonedBy &&
