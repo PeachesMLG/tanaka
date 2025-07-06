@@ -5,6 +5,9 @@ import { getChannel } from '../utils/getChannel';
 import { getSetting } from '../database/settingsDatabase';
 import { SettingsTypes } from '../SettingsTypes';
 import { waitForMessage } from '../utils/messageListener';
+import { getCard, getCardVersions } from '../utils/cardUtils';
+import { CardInfo } from '../types/cardInfo';
+import { mapTierToEmoji } from '../utils/emojis';
 
 export const cardSpawnHandler = async (
   cardSpawn: CardSpawn,
@@ -22,6 +25,30 @@ export const cardSpawnHandler = async (
     console.log(message.embeds[0].description);
     await sendHighTierPing(cardSpawn, client);
   }
+  await createVersionsSummary(cardSpawn, client, message);
+};
+
+const createVersionsSummary = async (
+  cardSpawn: CardSpawn,
+  client: Client,
+  message: Message | PartialMessage,
+) => {
+  const content = await Promise.all(cardSpawn.Cards.map(getCardSummary));
+
+  await message.reply(content.join('\n'));
+};
+
+const getCardSummary = async (card: CardInfo) => {
+  const cardUUID = await getCard(card.Name, card.Series, card.Rarity);
+  const versions = await getCardVersions(cardUUID ?? '');
+
+  const cardInformation = `\`${mapTierToEmoji(card.Rarity)} - **${card.Name}** *${card.Series}*`;
+  const versionInformation =
+    versions.length > 0
+      ? `-# Single Vs: ${versions.join(', ')}.`
+      : `-# No Single Vs Remaining.`;
+
+  return `${cardInformation}\n${versionInformation}`;
 };
 
 const createSummonTimer = async (cardSpawn: CardSpawn, client: Client) => {
