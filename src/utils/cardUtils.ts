@@ -18,7 +18,7 @@ export async function fetchCard(
   const encodedSeriesName = encodeURIComponent(seriesName);
   const encodedCardTier = encodeURIComponent(cardTier);
 
-  const url = `https://server.mazoku.cc/card/catalog?page=1&size=1&name=${encodedCardName}&series=${encodedSeriesName}&rarities=${encodedCardTier}`;
+  const url = `https://server.mazoku.cc/card/catalog?page=1&size=24&name=${encodedCardName}&series=${encodedSeriesName}&rarities=${encodedCardTier}`;
 
   try {
     const response = await fetch(url);
@@ -30,7 +30,10 @@ export async function fetchCard(
     const data = await response.json();
 
     if (data.cards && data.cards.length > 0) {
-      return data.cards[0].uuid;
+      const exactMatch = data.cards.find(
+        (card: any) => card.name.toLowerCase() === cardName.toLowerCase(),
+      );
+      return exactMatch?.uuid;
     } else {
       return undefined;
     }
