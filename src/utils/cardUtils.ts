@@ -48,7 +48,7 @@ export async function getCard(
   seriesName: string,
   cardTier: string,
 ): Promise<string | undefined> {
-  const redisKey = `card_${cardName}_${seriesName}_${cardTier}`;
+  const redisKey = `card_uuid_${cardName}_${seriesName}_${cardTier}`;
   const cached = await getRedisKey(redisKey);
   if (cached !== null) {
     return cached;
