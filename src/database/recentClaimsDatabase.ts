@@ -85,6 +85,13 @@ export async function getTopClaimers(
   startDate: Date,
   endDate: Date,
 ): Promise<ClaimCount[]> {
+  console.log(
+    'Getting top claimers by ',
+    startDate.toDateString(),
+    ' - ',
+    endDate.toDateString(),
+  );
+
   try {
     const query = `
       SELECT UserID, COUNT(*) AS ClaimCount
