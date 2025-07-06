@@ -117,7 +117,7 @@ export async function getCardVersions(cardUUID: string): Promise<string[]> {
   const cached = await getRedisKey(redisKey);
   if (cached !== null) {
     await incrementKey('card_version_cached_count');
-    return cached.split(',');
+    return cached.split(',').filter((value) => value);
   }
 
   const cardVersions = await fetchCardVersions(cardUUID);
