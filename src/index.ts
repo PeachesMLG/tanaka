@@ -2,7 +2,6 @@ import {
   ChatInputCommandInteraction,
   Client,
   GatewayIntentBits,
-  Interaction,
 } from 'discord.js';
 import * as dotenv from 'dotenv';
 import { initialiseDatabase } from './database/database';
