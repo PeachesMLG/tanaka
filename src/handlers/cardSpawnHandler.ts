@@ -24,7 +24,7 @@ export const cardSpawnHandler = async (
   ) {
     console.log('Sending High Tier Ping message!');
     console.log(message.embeds[0].description);
-    await sendHighTierPing(cardSpawn, client);
+    await sendHighTierPing(cardSpawn, message, client);
   } else if (!cardSpawn.SummonedBy) {
     await sendRegularSummonPing(cardSpawn, client);
   }
@@ -88,7 +88,11 @@ const createSummonTimer = async (cardSpawn: CardSpawn, client: Client) => {
   );
 };
 
-const sendHighTierPing = async (cardSpawn: CardSpawn, client: Client) => {
+const sendHighTierPing = async (
+  cardSpawn: CardSpawn,
+  originalMessage: Message | PartialMessage,
+  client: Client,
+) => {
   const channel = await getChannel(cardSpawn.ChannelId, client);
   const highTierPingRole = await getSetting(
     cardSpawn.ServerId,
@@ -116,7 +120,7 @@ const sendHighTierPing = async (cardSpawn: CardSpawn, client: Client) => {
     }
 
     console.log('Sending High Tier Ping!');
-    channel.send(highTierPingRole + ' ' + highTierPingMessage);
+    originalMessage.reply(highTierPingRole + ' ' + highTierPingMessage);
   });
 };
 

@@ -20,7 +20,8 @@ export const handleMessage = async (
   if (message.author?.id !== '1242388858897956906') return;
   if (
     message.embeds.length > 0 &&
-    message.embeds[0].title?.includes('Summon')
+    message.embeds[0].title?.includes('Summon') &&
+    !message.embeds[0].title?.includes('Claimed')
   ) {
     await handleCardSummon(message, client);
   } else if (
