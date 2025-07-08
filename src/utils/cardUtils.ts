@@ -73,6 +73,8 @@ export async function getCard(
 async function fetchCardVersions(
   cardUUID: string,
 ): Promise<number[] | undefined> {
+  const redisKey = `card_versions_${cardUUID}`;
+  const lastFetchedKey = `card_versions_${cardUUID}_last_fetched`;
   await incrementKey('card_version_fetch_count');
   const apiKey = await getApiKey();
 
@@ -105,7 +107,14 @@ async function fetchCardVersions(
       (item: { version: number }) => item.version,
     );
 
-    return versions.filter((v) => !returnedVersions.includes(v));
+    const singleVersions = versions.filter(
+      (v) => !returnedVersions.includes(v),
+    );
+
+    await setRedisKey(redisKey, singleVersions.join(','));
+    await setRedisKey(lastFetchedKey, new Date().toISOString());
+
+    return singleVersions;
   } catch (error) {
     console.error('Error fetching card versions:', error);
     return undefined;
@@ -117,18 +126,27 @@ export async function getCardVersions(cardUUID: string): Promise<string[]> {
   const cached = await getRedisKey(redisKey);
   if (cached !== null) {
     await incrementKey('card_version_cached_count');
+    await handleCardVersionRefresh(cardUUID);
     return cached.split(',').filter((value) => value);
   }
 
   const cardVersions = await fetchCardVersions(cardUUID);
 
   if (cardVersions !== undefined) {
-    if (cardVersions.length === 0) {
-      await setRedisKey(redisKey, cardVersions.join(','));
-    } else {
-      await setRedisKey(redisKey, cardVersions.join(','), 60 * 60 * 24);
-    }
     return cardVersions.map((value) => value.toString());
   }
   return [];
+}
+
+async function handleCardVersionRefresh(cardUUID: string) {
+  const redisKey = `card_versions_${cardUUID}_last_fetched`;
+  const lastFetched = await getRedisKey(redisKey);
+  if (
+    lastFetched === null ||
+    new Date().getTime() - new Date(lastFetched).getTime() > 24 * 60 * 60 * 1000
+  ) {
+    fetchCardVersions(cardUUID).then((_) => {
+      console.log('Refreshed card versions for ', cardUUID);
+    });
+  }
 }
