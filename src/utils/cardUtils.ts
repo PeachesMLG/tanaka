@@ -1,8 +1,4 @@
-import {
-  getRedisKey,
-  incrementKey,
-  setRedisKey,
-} from '../database/redisDatabase';
+import { getRedisKey, setRedisKey } from '../database/redisDatabase';
 
 export async function getApiKey(): Promise<string | null> {
   const key = await getRedisKey('MAZOKU_API_KEY');
@@ -17,7 +13,6 @@ export async function fetchCard(
   seriesName: string,
   cardTier: string,
 ): Promise<string | undefined> {
-  await incrementKey('card_uuid_fetch_count');
   const encodedCardName = encodeURIComponent(cardName);
   const encodedSeriesName = encodeURIComponent(seriesName);
   const encodedCardTier = encodeURIComponent(cardTier);
@@ -55,7 +50,6 @@ export async function getCard(
   const redisKey = `card_uuid_${cardName.replace(/\s+/g, '_')}_${seriesName.replace(/\s+/g, '_')}_${cardTier.replace(/\s+/g, '_')}`;
   const cached = await getRedisKey(redisKey);
   if (cached !== null) {
-    await incrementKey('card_uuid_cached_count');
     return cached;
   }
 
@@ -75,7 +69,6 @@ async function fetchCardVersions(
 ): Promise<number[] | undefined> {
   const redisKey = `card_versions_${cardUUID}`;
   const lastFetchedKey = `card_versions_${cardUUID}_last_fetched`;
-  await incrementKey('card_version_fetch_count');
   const apiKey = await getApiKey();
 
   if (!apiKey) {
@@ -125,7 +118,6 @@ export async function getCardVersions(cardUUID: string): Promise<string[]> {
   const redisKey = `card_versions_${cardUUID}`;
   const cached = await getRedisKey(redisKey);
   if (cached !== null) {
-    await incrementKey('card_version_cached_count');
     await handleCardVersionRefresh(cardUUID);
     return cached.split(',').filter((value) => value);
   }
@@ -145,8 +137,6 @@ async function handleCardVersionRefresh(cardUUID: string) {
     lastFetched === null ||
     new Date().getTime() - new Date(lastFetched).getTime() > 24 * 60 * 60 * 1000
   ) {
-    fetchCardVersions(cardUUID).then((_) => {
-      console.log('Refreshed card versions for ', cardUUID);
-    });
+    fetchCardVersions(cardUUID).then((_) => {});
   }
 }

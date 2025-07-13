@@ -53,8 +53,6 @@ export class TopClaimersCommand implements Command {
 
     if (subcommand !== 'claimers') return;
 
-    const start = Date.now();
-
     const value = interaction.options.getString('duration') ?? 'MONTHLY';
 
     const channel = interaction.channel as TextChannel;
@@ -92,11 +90,6 @@ export class TopClaimersCommand implements Command {
         getEmbedMessage(channel, this.getHeader(value), fields.join('\n')),
       ],
     });
-
-    const duration = Date.now() - start;
-    console.log(
-      `[Command Timing] Subcommand "${subcommand}" took ${duration}ms`,
-    );
   }
 
   async getTopClaimField(claimCount: ClaimCount, client: Client) {
