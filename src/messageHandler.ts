@@ -36,6 +36,7 @@ const handleCardSummon = async (
   message: Message | PartialMessage,
   client: Client,
 ) => {
+  if (!message.embeds[0].description) return;
   handledMessages.add(message.id);
 
   const cardInfo = message.embeds[0].description
