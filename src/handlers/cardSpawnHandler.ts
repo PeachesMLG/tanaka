@@ -22,7 +22,12 @@ export const cardSpawnHandler = async (
       (value) => value.Rarity === 'SR' || value.Rarity === 'SSR',
     )
   ) {
-    console.log('Sending High Tier Ping message!');
+    console.log(
+      'Sending High Tier Ping message! for ',
+      message.guild?.name,
+      ' in channel ',
+      message.channel.id,
+    );
     console.log(message.embeds[0].description);
     await sendHighTierPing(cardSpawn, message, client);
   } else if (!cardSpawn.SummonedBy) {
