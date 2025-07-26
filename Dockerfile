@@ -1,4 +1,4 @@
-FROM node:latest AS build
+FROM node:24.4.1 AS build
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ RUN npm install -g typescript
 
 RUN tsc
 
-FROM node:latest
+FROM node:24.4.1
 
 WORKDIR /app
 
