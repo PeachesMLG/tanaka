@@ -117,7 +117,11 @@ export class TopCommand implements Command {
 
     await interaction.reply({
       embeds: [
-        getEmbedMessage(channel, this.getHeader(value), fields.join('\n')),
+        getEmbedMessage(
+          channel,
+          this.getHeader('Claimers', value),
+          fields.join('\n'),
+        ),
       ],
     });
   }
@@ -153,7 +157,11 @@ export class TopCommand implements Command {
 
     await interaction.reply({
       embeds: [
-        getEmbedMessage(channel, this.getHeader(value), fields.join('\n')),
+        getEmbedMessage(
+          channel,
+          this.getHeader('Servers', value),
+          fields.join('\n'),
+        ),
       ],
     });
   }
@@ -239,26 +247,26 @@ export class TopCommand implements Command {
     return d;
   }
 
-  getHeader(duration?: string) {
+  getHeader(type: string, duration?: string) {
     switch (duration) {
       case 'DAILY':
-        return 'Top Claimers today';
+        return `Top ${type} today`;
       case 'YESTERDAY':
-        return 'Top Claimers yesterday';
+        return `Top ${type} yesterday`;
       case 'WEEKLY':
-        return 'Top Claimers this week';
+        return `Top ${type} this week`;
       case 'LAST_WEEK':
-        return 'Top Claimers last week';
+        return `Top ${type} last week`;
       case 'MONTHLY':
-        return 'Top Claimers this month';
+        return `Top ${type} this month`;
       case 'LAST_MONTH':
-        return 'Top Claimers last month';
+        return `Top ${type} last month`;
       case 'YEARLY':
-        return 'Top Claimers this year';
+        return `Top ${type} this year`;
       case 'LAST_YEAR':
-        return 'Top Claimers last year';
+        return `Top ${type} last year`;
       default:
-        return 'Top Claimers this month';
+        return `Top ${type} this month`;
     }
   }
 }
