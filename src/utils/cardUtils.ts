@@ -49,7 +49,6 @@ export async function getCardInfo(
 async function fetchCardVersions(
   cardUUID: string,
 ): Promise<number[] | undefined> {
-  const redisKey = `card_versions_${cardUUID}`;
   const lastFetchedKey = `card_versions_${cardUUID}_last_fetched`;
   const apiKey = await getApiKey();
 
@@ -86,7 +85,6 @@ async function fetchCardVersions(
       (v) => !returnedVersions.includes(v),
     );
 
-    await setRedisKey(redisKey, singleVersions.join(','));
     await setRedisKey(lastFetchedKey, new Date().toISOString());
 
     return singleVersions;
@@ -107,6 +105,8 @@ export async function getCardVersions(cardUUID: string): Promise<string[]> {
   const cardVersions = await fetchCardVersions(cardUUID);
 
   if (cardVersions !== undefined) {
+    await setRedisKey(redisKey, cardVersions.join(','));
+
     return cardVersions.map((value) => value.toString());
   }
   return [];

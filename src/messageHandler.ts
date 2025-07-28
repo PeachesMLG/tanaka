@@ -11,17 +11,17 @@ import { getChannel } from './utils/getChannel';
 import { createTimer } from './timers';
 import { getCardInfo } from './utils/cardUtils';
 
-const handledMessages = new TimedList();
+const handledCardSummonMessages = new TimedList();
+const handledCardClaimMessages = new TimedList();
+const handledSummerMessages = new TimedList();
 const claimPattern =
   /^(.+?)\s+•\s+\*\*(.+?)\*\*\s+•\s+\*(.+?)\*\s+•\s+`v(\d+)`$/;
 const claimedByPattern = /<@!?(\d+)>/;
-const spawnPattern = /^(.*?) \*\*(.*?)\*\* • \*(.*?)\*$/;
 
 export const handleMessage = async (
   message: Message | PartialMessage,
   client: Client,
 ) => {
-  if (handledMessages.getItems().includes(message.id)) return;
   if (message.author?.id !== '1242388858897956906') return;
   if (
     message.embeds.length > 0 &&
@@ -46,7 +46,8 @@ const handleSummerSpawn = async (
   message: Message | PartialMessage,
   client: Client,
 ) => {
-  handledMessages.add(message.id);
+  if (handledSummerMessages.getItems().includes(message.id)) return;
+  handledSummerMessages.add(message.id);
 
   const user = await getUserByMessageReference(
     message.reference,
@@ -81,17 +82,26 @@ const handleCardSummon = async (
   message: Message | PartialMessage,
   client: Client,
 ) => {
-  if (!message.embeds[0].description) return;
-  handledMessages.add(message.id);
+  if (handledCardSummonMessages.getItems().includes(message.id)) return;
+  if (!message.embeds[0].image) return;
+  handledCardSummonMessages.add(message.id);
 
   const cardUUIDs =
     message.embeds[0].image?.url
       .replace('https://cdn7.mazoku.cc/packs/', '')
       .split('/') ?? [];
 
+  if (cardUUIDs) {
+    handledCardSummonMessages.add(message.id);
+  }
+
   const cardInfo = (await Promise.all(cardUUIDs.map(getCardInfo))).filter(
     (cardInfo) => cardInfo,
   ) as CardInfo[];
+
+  if (!cardInfo) {
+    return;
+  }
 
   await cardSpawnHandler(
     {
@@ -113,7 +123,9 @@ const handleCardClaim = async (
   message: Message | PartialMessage,
   client: Client,
 ) => {
-  handledMessages.add(message.id);
+  if (handledCardClaimMessages.getItems().includes(message.id)) return;
+  if (!message.embeds[0].description) return;
+  handledCardClaimMessages.add(message.id);
 
   const cardInfo = message.embeds[0].description
     ?.split('\n')
@@ -144,7 +156,7 @@ const handleCardClaim = async (
 
   const match = message.content?.match(claimPattern);
   if (match) {
-    handledMessages.add(message.id);
+    handledCardSummonMessages.add(message.id);
     const [, userId, emote, name, series, version] = match;
     await cardClaimHandler(
       {
