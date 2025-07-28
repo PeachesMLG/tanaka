@@ -7,10 +7,22 @@ import {
   TextChannel,
 } from 'discord.js';
 import { getEmbedMessage } from '../utils/embeds';
-import { getTopClaimers } from '../database/recentClaimsDatabase';
+import {
+  getTopClaimers,
+  getTopServers,
+} from '../database/recentClaimsDatabase';
 import { ClaimCount } from '../types/claimCount';
+import { ServerClaimCount } from '../types/serverClaimCount';
 
-export class TopClaimersCommand implements Command {
+const validServerIds = [
+  '1293611593845706793',
+  '1069709761026728009',
+  '1222204521296691260',
+  '1139035907282972794',
+  '813217659772076043',
+];
+
+export class TopCommand implements Command {
   command: SharedSlashCommand;
 
   constructor() {
@@ -37,10 +49,31 @@ export class TopClaimersCommand implements Command {
               ])
               .setRequired(false),
           ),
+      )
+      .addSubcommand((subcommand) =>
+        subcommand
+          .setName('servers')
+          .setDescription('Get the top 10 servers by claims.')
+          .addStringOption((option) =>
+            option
+              .setName('duration')
+              .setDescription('The duration of the claims')
+              .addChoices([
+                { name: 'Today', value: 'DAILY' },
+                { name: 'Yesterday', value: 'YESTERDAY' },
+                { name: 'This Week', value: 'WEEKLY' },
+                { name: 'Last Week', value: 'LAST_WEEK' },
+                { name: 'This Month', value: 'MONTHLY' },
+                { name: 'Last Month', value: 'LAST_MONTH' },
+                { name: 'This Year', value: 'YEARLY' },
+                { name: 'Last Year', value: 'LAST_YEAR' },
+              ])
+              .setRequired(false),
+          ),
       );
   }
 
-  async execute(interaction: ChatInputCommandInteraction, _: Client) {
+  async execute(interaction: ChatInputCommandInteraction, client: Client) {
     if (!interaction.channel) {
       await interaction.reply({
         content: 'Cannot execute command outside a channel',
@@ -51,8 +84,16 @@ export class TopClaimersCommand implements Command {
 
     const subcommand = interaction.options.getSubcommand();
 
-    if (subcommand !== 'claimers') return;
+    if (subcommand === 'claimers')
+      await this.executeTopClaimersCommand(interaction, client);
+    if (subcommand === 'servers')
+      await this.executeTopServersCommand(interaction, client);
+  }
 
+  async executeTopClaimersCommand(
+    interaction: ChatInputCommandInteraction,
+    _: Client,
+  ) {
     const value = interaction.options.getString('duration') ?? 'MONTHLY';
 
     const channel = interaction.channel as TextChannel;
@@ -62,28 +103,17 @@ export class TopClaimersCommand implements Command {
       this.getStartDate(value),
       this.getEndDate(value),
     );
-    const yourClaims =
-      topClaimers.filter((value) => value.UserID === interaction.user.id)[0] ||
-      undefined;
 
     const leaderboardFields = await Promise.all(
       topClaimers.slice(0, 10).map(async (claimCount) => {
-        return await this.getTopClaimField(claimCount, interaction.client);
+        return await this.getTopClaimersField(claimCount, interaction.client);
       }),
     );
 
-    const yourStatsFields = [
-      '**Your Statistics**',
-      `Cards Claimed: **${yourClaims?.ClaimCount ?? 0}** | Position: **#${yourClaims?.Rank ?? 'N/A'}**`,
-    ];
-
-    const fields = [
-      ...(leaderboardFields.length === 0
+    const fields =
+      leaderboardFields.length === 0
         ? ['No recent claims found.']
-        : leaderboardFields),
-      '',
-      ...yourStatsFields,
-    ];
+        : leaderboardFields;
 
     await interaction.reply({
       embeds: [
@@ -92,7 +122,48 @@ export class TopClaimersCommand implements Command {
     });
   }
 
-  async getTopClaimField(claimCount: ClaimCount, client: Client) {
+  async executeTopServersCommand(
+    interaction: ChatInputCommandInteraction,
+    _: Client,
+  ) {
+    const value = interaction.options.getString('duration') ?? 'MONTHLY';
+
+    const channel = interaction.channel as TextChannel;
+
+    const topClaimers = await getTopServers(
+      this.getStartDate(value),
+      this.getEndDate(value),
+    );
+
+    const leaderboardFields = await Promise.all(
+      topClaimers
+        .filter((serverClaimCount) =>
+          validServerIds.includes(serverClaimCount.ServerId),
+        )
+        .slice(0, 10)
+        .map(async (claimCount) => {
+          return await this.getTopServersField(claimCount, interaction.client);
+        }),
+    );
+
+    const fields =
+      leaderboardFields.length === 0
+        ? ['No recent claims found.']
+        : leaderboardFields;
+
+    await interaction.reply({
+      embeds: [
+        getEmbedMessage(channel, this.getHeader(value), fields.join('\n')),
+      ],
+    });
+  }
+
+  async getTopServersField(claimCount: ServerClaimCount, client: Client) {
+    const guild = await client.guilds.fetch(claimCount.ServerId);
+    return `${claimCount.Rank}. • ${guild.name} • **${claimCount.ClaimCount} Cards Claimed**`;
+  }
+
+  async getTopClaimersField(claimCount: ClaimCount, client: Client) {
     return `${claimCount.Rank}. • <@${claimCount.UserID}> • **${claimCount.ClaimCount} Cards Claimed**`;
   }
 

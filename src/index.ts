@@ -12,8 +12,7 @@ import { handleMessage } from './messageHandler';
 import { UserSettingsCommand } from './commands/UserSettingsCommand';
 import { ServerSettingsCommand } from './commands/ServerSettingsCommand';
 import { messageListeners, recentMessages } from './utils/messageListener';
-import { TopClaimersCommand } from './commands/TopClaimersCommand';
-import { TopServersCommand } from './commands/TopServersCommand';
+import { TopCommand } from './commands/TopCommand';
 
 dotenv.config();
 
@@ -30,8 +29,7 @@ const commands = [
   new RecentCommand(),
   new UserSettingsCommand(),
   new ServerSettingsCommand(),
-  new TopClaimersCommand(),
-  new TopServersCommand(),
+  new TopCommand(),
 ];
 
 client.once('ready', async () => {
@@ -41,7 +39,6 @@ client.once('ready', async () => {
     commands.map((value) => value.command),
   );
 
-  await initialiseDatabase();
   await startAllTimers(client);
 });
 
@@ -82,6 +79,8 @@ client.on('messageUpdate', async (_, newMessage) => {
   await handleMessage(newMessage, client);
 });
 
-client.login(process.env.DISCORD_TOKEN).catch((error) => {
-  console.error('Error logging in:', error);
+initialiseDatabase().then(() => {
+  client.login(process.env.DISCORD_TOKEN).catch((error) => {
+    console.error('Error logging in:', error);
+  });
 });
