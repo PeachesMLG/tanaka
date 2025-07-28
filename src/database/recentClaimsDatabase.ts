@@ -2,6 +2,7 @@ import { pool } from './database';
 import { CardClaim } from '../types/cardClaim';
 import { ResultSetHeader } from 'mysql2/promise';
 import { ClaimCount } from '../types/claimCount';
+import { ServerClaimCount } from '../types/serverClaimCount';
 
 export async function initialiseRecentClaimsDatabase(): Promise<void> {
   const connection = await pool.getConnection();
@@ -103,6 +104,34 @@ export async function getTopClaimers(
           ...row,
           Rank: index + 1,
         }) as ClaimCount,
+    );
+  } catch (error) {
+    console.error('Error getting top claimers:', error);
+    return [];
+  }
+}
+
+export async function getTopServers(
+  startDate: Date,
+  endDate: Date,
+): Promise<ServerClaimCount[]> {
+  try {
+    const query = `
+      SELECT ServerId, COUNT(*) AS ClaimCount
+      FROM RecentClaims
+      WHERE DateTime >= ?
+        AND DateTime < ?
+      GROUP BY ServerId
+      ORDER BY ClaimCount DESC
+    `;
+
+    const [rows] = await pool.query(query, [startDate, endDate]);
+    return (rows as { ServerId: string; ClaimCount: number }[]).map(
+      (row, index) =>
+        ({
+          ...row,
+          Rank: index + 1,
+        }) as ServerClaimCount,
     );
   } catch (error) {
     console.error('Error getting top claimers:', error);
