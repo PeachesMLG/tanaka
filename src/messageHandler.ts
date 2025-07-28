@@ -90,8 +90,6 @@ const handleCardSummon = async (
     return;
   handledCardSummonMessages.add(message.id);
 
-  console.log(message.embeds[0].image);
-
   const cardUUIDs =
     message.embeds[0].image?.url
       .split('/packs/')[1]
@@ -101,8 +99,6 @@ const handleCardSummon = async (
   if (cardUUIDs) {
     handledCardSummonMessages.add(message.id);
   }
-
-  console.log(cardUUIDs);
 
   const cardInfo = (await Promise.all(cardUUIDs.map(getCardInfo))).filter(
     (cardInfo) => cardInfo,
