@@ -94,14 +94,18 @@ export async function getCardVersions(cardUUID: string): Promise<string[]> {
   const lastFetchedKey = `card_versions_${cardUUID}_last_fetched`;
   const cached = await getRedisKey(redisKey);
   if (cached !== null) {
+    const versions = cached.split(',').filter((value) => value);
     const lastFetched = await getRedisKey(lastFetchedKey);
     if (
-      lastFetched !== null &&
-      new Date().getTime() - new Date(lastFetched).getTime() <
-        7 * 24 * 60 * 60 * 1000
+      (lastFetched !== null &&
+        new Date().getTime() - new Date(lastFetched).getTime() <
+          7 * 24 * 60 * 60 * 1000) ||
+      versions.length === 0
     ) {
-      return cached.split(',').filter((value) => value);
+      return versions;
     }
+
+    console.log(cardUUID, ' Last Fetched was ', lastFetched);
   }
 
   const cardVersions = await fetchCardVersions(cardUUID);
