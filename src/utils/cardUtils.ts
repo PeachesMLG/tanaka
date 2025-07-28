@@ -98,7 +98,7 @@ export async function getCardVersions(cardUUID: string): Promise<string[]> {
     if (
       lastFetched !== null &&
       new Date().getTime() - new Date(lastFetched).getTime() <
-        24 * 60 * 60 * 1000
+        7 * 24 * 60 * 60 * 1000
     ) {
       return cached.split(',').filter((value) => value);
     }
