@@ -41,7 +41,7 @@ export async function getCardInfo(
 
     return cardInfo;
   } catch (err) {
-    console.error('Error fetching card:', err);
+    console.error('Error fetching card: ', cardUUID, err);
     return undefined;
   }
 }
