@@ -9,6 +9,7 @@ import { getSetting } from './database/settingsDatabase';
 import { SettingsTypes } from './SettingsTypes';
 import { getChannel } from './utils/getChannel';
 import { createTimer } from './timers';
+import { getCardInfo } from './utils/cardUtils';
 
 const handledMessages = new TimedList();
 const claimPattern =
@@ -83,10 +84,14 @@ const handleCardSummon = async (
   if (!message.embeds[0].description) return;
   handledMessages.add(message.id);
 
-  const cardInfo = message.embeds[0].description
-    ?.split('\n')
-    .map(GetCardSummonInfo)
-    .filter((cardInfo) => cardInfo) as CardInfo[];
+  const cardUUIDs =
+    message.embeds[0].image?.url
+      .replace('https://cdn7.mazoku.cc/packs/', '')
+      .split('/') ?? [];
+
+  const cardInfo = (await Promise.all(cardUUIDs.map(getCardInfo))).filter(
+    (cardInfo) => cardInfo,
+  ) as CardInfo[];
 
   await cardSpawnHandler(
     {
@@ -154,19 +159,6 @@ const handleCardClaim = async (
       client,
     );
   }
-};
-
-const GetCardSummonInfo = (description: string) => {
-  const match = description.match(spawnPattern);
-  if (match) {
-    const [, emote, name, series] = match;
-    return {
-      Name: name,
-      Series: series,
-      Rarity: mapEmojiToTier(emote),
-    } as CardInfo;
-  }
-  return undefined;
 };
 
 const GetCardClaimInfo = (description: string) => {

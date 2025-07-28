@@ -3,4 +3,5 @@ export type CardInfo = {
   Series: string;
   Rarity: string;
   Version: string;
+  UUID: string;
 };

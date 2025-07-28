@@ -5,7 +5,7 @@ import { getChannel } from '../utils/getChannel';
 import { getSetting } from '../database/settingsDatabase';
 import { SettingsTypes } from '../SettingsTypes';
 import { waitForMessage } from '../utils/messageListener';
-import { getCard, getCardVersions } from '../utils/cardUtils';
+import { getCardVersions } from '../utils/cardUtils';
 import { CardInfo } from '../types/cardInfo';
 import { mapTierToEmoji } from '../utils/emojis';
 import { executeAtDate } from '../utils/timerUtils';
@@ -54,8 +54,7 @@ const createVersionsSummary = async (
 };
 
 const getCardSummary = async (card: CardInfo) => {
-  const cardUUID = await getCard(card.Name, card.Series, card.Rarity);
-  const versions = await getCardVersions(cardUUID ?? '');
+  const versions = await getCardVersions(card.UUID ?? '');
 
   const cardInformation = `${mapTierToEmoji(card.Rarity)} - **${card.Name}** *${card.Series}*`;
   const versionInformation =

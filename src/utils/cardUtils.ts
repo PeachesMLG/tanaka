@@ -1,4 +1,5 @@
 import { getRedisKey, setRedisKey } from '../database/redisDatabase';
+import { CardInfo } from '../types/cardInfo';
 
 export async function getApiKey(): Promise<string | null> {
   const key = await getRedisKey('MAZOKU_API_KEY');
@@ -8,16 +9,16 @@ export async function getApiKey(): Promise<string | null> {
   return key;
 }
 
-export async function fetchCard(
-  cardName: string,
-  seriesName: string,
-  cardTier: string,
-): Promise<string | undefined> {
-  const encodedCardName = encodeURIComponent(cardName);
-  const encodedSeriesName = encodeURIComponent(seriesName);
-  const encodedCardTier = encodeURIComponent(cardTier);
+export async function getCardInfo(
+  cardUUID: string,
+): Promise<CardInfo | undefined> {
+  const redisKey = `card_catalog_${cardUUID}`;
+  const cached = await getRedisKey(redisKey);
+  if (cached !== null) {
+    return JSON.parse(cached) as CardInfo;
+  }
 
-  const url = `https://server.mazoku.cc/card/catalog?page=1&size=24&name=${encodedCardName}&series=${encodedSeriesName}&rarities=${encodedCardTier}&type=default`;
+  const url = `https://server.mazoku.cc/card/catalog/${cardUUID}`;
 
   try {
     const response = await fetch(url);
@@ -28,40 +29,21 @@ export async function fetchCard(
 
     const data = await response.json();
 
-    if (data.cards && data.cards.length > 0) {
-      const exactMatch = data.cards.find(
-        (card: any) => card.name.toLowerCase() === cardName.toLowerCase(),
-      );
-      return exactMatch?.uuid;
-    } else {
-      return undefined;
-    }
+    const cardInfo: CardInfo = {
+      Name: data.name,
+      Series: data.series.name,
+      Rarity: data.rarity.name.toUpperCase(),
+      UUID: data.uuid,
+      Version: '0',
+    };
+
+    await setRedisKey(redisKey, JSON.stringify(cardInfo));
+
+    return cardInfo;
   } catch (err) {
     console.error('Error fetching card:', err);
     return undefined;
   }
-}
-
-export async function getCard(
-  cardName: string,
-  seriesName: string,
-  cardTier: string,
-): Promise<string | undefined> {
-  const redisKey = `card_uuid_${cardName.replace(/\s+/g, '_')}_${seriesName.replace(/\s+/g, '_')}_${cardTier.replace(/\s+/g, '_')}`;
-  const cached = await getRedisKey(redisKey);
-  if (cached !== null) {
-    return cached;
-  }
-
-  const cardUUID = await fetchCard(cardName, seriesName, cardTier);
-
-  if (cardUUID) {
-    await setRedisKey(redisKey, cardUUID);
-    return cardUUID;
-  }
-
-  await setRedisKey(redisKey, '', 60 * 60 * 24);
-  console.warn('Failed to retrieve redis key');
 }
 
 async function fetchCardVersions(
