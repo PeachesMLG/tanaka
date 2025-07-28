@@ -45,6 +45,8 @@ const handleSummerSpawn = async (
   message: Message | PartialMessage,
   client: Client,
 ) => {
+  handledMessages.add(message.id);
+
   const user = await getUserByMessageReference(
     message.reference,
     message.interactionMetadata,
@@ -68,7 +70,7 @@ const handleSummerSpawn = async (
     undefined,
     futureTime,
     user,
-    'Summons',
+    'Summer Time',
     client,
     'Automatically triggered by Summer Spawn\n Turn this off in the /user settings command',
   );
