@@ -5,6 +5,10 @@ import { mapEmojiToTier } from './utils/emojis';
 import { cardClaimHandler } from './handlers/cardClaimHandler';
 import { TimedList } from './utils/timedList';
 import { CardInfo } from './types/cardInfo';
+import { getSetting } from './database/settingsDatabase';
+import { SettingsTypes } from './SettingsTypes';
+import { getChannel } from './utils/getChannel';
+import { createTimer } from './timers';
 
 const handledMessages = new TimedList();
 const claimPattern =
@@ -29,7 +33,45 @@ export const handleMessage = async (
     message.embeds[0].title?.includes('Card Claimed')
   ) {
     await handleCardClaim(message, client);
+  } else if (
+    message.embeds.length > 0 &&
+    message.embeds[0].title?.includes('☀️ Summer Rewards ☀️')
+  ) {
+    await handleSummerSpawn(message, client);
   }
+};
+
+const handleSummerSpawn = async (
+  message: Message | PartialMessage,
+  client: Client,
+) => {
+  const user = await getUserByMessageReference(
+    message.reference,
+    message.interactionMetadata,
+    message.channel,
+  );
+
+  if (!user) return;
+
+  const enabled =
+    (await getSetting(user, SettingsTypes.AUTOMATIC_SUMMER_TIMERS)) ?? 'true';
+
+  if (enabled !== 'true') return;
+
+  const nextSpawnInMinutes = 30;
+
+  const channel = await getChannel(message.channelId, client);
+  if (channel === null) return;
+  let futureTime = new Date(Date.now() + 1000 * 60 * nextSpawnInMinutes);
+  await createTimer(
+    channel,
+    undefined,
+    futureTime,
+    user,
+    'Summons',
+    client,
+    'Automatically triggered by Summer Spawn\n Turn this off in the /user settings command',
+  );
 };
 
 const handleCardSummon = async (
