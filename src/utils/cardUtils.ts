@@ -116,5 +116,11 @@ export async function getCardVersions(cardUUID: string): Promise<string[]> {
 
     return cardVersions.map((value) => value.toString());
   }
+
+  // If the cache has expired but for whatever reason we cannot get latest card versions return the cache anywasy
+  if (cached !== null) {
+    return cached.split(',').filter((value) => value);
+  }
+
   return [];
 }
