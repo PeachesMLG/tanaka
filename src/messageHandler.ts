@@ -86,6 +86,8 @@ const handleCardSummon = async (
   if (!message.embeds[0].image) return;
   handledCardSummonMessages.add(message.id);
 
+  console.log(message.embeds[0].image);
+
   const cardUUIDs =
     message.embeds[0].image?.url
       .replace('https://cdn7.mazoku.cc/packs/', '')
@@ -94,6 +96,8 @@ const handleCardSummon = async (
   if (cardUUIDs) {
     handledCardSummonMessages.add(message.id);
   }
+
+  console.log(cardUUIDs);
 
   const cardInfo = (await Promise.all(cardUUIDs.map(getCardInfo))).filter(
     (cardInfo) => cardInfo,

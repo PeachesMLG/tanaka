@@ -44,19 +44,26 @@ const createVersionsSummary = async (
   const despawnTime = new Date();
   despawnTime.setSeconds(despawnTime.getSeconds() + 20);
 
-  const content = await Promise.all(cardSpawn.Cards.map(getCardSummary));
+  const content = (
+    await Promise.all(cardSpawn.Cards.map(getCardSummary))
+  ).filter((value) => value) as string[];
 
-  const replyMessage = await message.reply(content.join('\n'));
+  if (content) {
+    const replyMessage = await message.reply(content.join('\n'));
 
-  executeAtDate(despawnTime, async () => {
-    await replyMessage.delete();
-  });
+    executeAtDate(despawnTime, async () => {
+      await replyMessage.delete();
+    });
+  }
 };
 
 const getCardSummary = async (card: CardInfo) => {
-  const versions = await getCardVersions(card.UUID ?? '');
-
+  if (!card.UUID) {
+    return undefined;
+  }
+  const versions = await getCardVersions(card.UUID);
   const cardInformation = `${mapTierToEmoji(card.Rarity)} - **${card.Name}** *${card.Series}*`;
+
   const versionInformation =
     versions.length > 0
       ? `-# Single Vs: ${versions.join(', ')}.`
