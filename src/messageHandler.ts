@@ -85,7 +85,7 @@ const handleCardSummon = async (
   if (handledCardSummonMessages.getItems().includes(message.id)) return;
   if (
     !message.embeds[0].image ||
-    message.embeds[0].image.url.includes('/packs/')
+    !message.embeds[0].image.url.includes('/packs/')
   )
     return;
   handledCardSummonMessages.add(message.id);
