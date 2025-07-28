@@ -83,15 +83,20 @@ const handleCardSummon = async (
   client: Client,
 ) => {
   if (handledCardSummonMessages.getItems().includes(message.id)) return;
-  if (!message.embeds[0].image) return;
+  if (
+    !message.embeds[0].image ||
+    message.embeds[0].image.url.includes('/packs/')
+  )
+    return;
   handledCardSummonMessages.add(message.id);
 
   console.log(message.embeds[0].image);
 
   const cardUUIDs =
     message.embeds[0].image?.url
-      .replace('https://cdn7.mazoku.cc/packs/', '')
-      .split('/') ?? [];
+      .split('/packs/')[1]
+      .split('/')
+      .filter((uuid) => uuid) ?? [];
 
   if (cardUUIDs) {
     handledCardSummonMessages.add(message.id);
