@@ -35,6 +35,10 @@ export class UserSettingsCommand implements Command {
                   name: 'Automatic Summer Timers',
                   value: SettingsTypes.AUTOMATIC_SUMMER_TIMERS,
                 },
+                {
+                  name: 'Automatic Clan War Timers',
+                  value: SettingsTypes.AUTOMATIC_CLAN_WAR_TIMERS,
+                },
               ]),
           )
           .addBooleanOption((option) =>
