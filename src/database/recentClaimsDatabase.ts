@@ -35,7 +35,7 @@ export async function saveClaim(cardClaim: CardClaim) {
     const [rows] = await connection.query<ResultSetHeader>(
       `
         INSERT INTO RecentClaims (ServerId, UserID, Name, Rarity, Series, Version, UUID, Event)
-        VALUES (?, ?, ?, ?, ?, ?);
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?);
       `,
       [
         cardClaim.ServerId,
