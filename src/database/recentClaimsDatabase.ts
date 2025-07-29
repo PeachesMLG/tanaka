@@ -3,6 +3,8 @@ import { CardClaim } from '../types/cardClaim';
 import { ResultSetHeader } from 'mysql2/promise';
 import { ClaimCount } from '../types/claimCount';
 import { ServerClaimCount } from '../types/serverClaimCount';
+import { CardItem } from '../types/cardItem';
+import { CardDetails } from '../types/cardDetails';
 
 export async function initialiseRecentClaimsDatabase(): Promise<void> {
   const connection = await pool.getConnection();
@@ -74,7 +76,32 @@ export async function getRecentClaims(
     const params = [serverId, rarity, maxVersion].filter((param) => param);
     const [rows] = await pool.query(query, params);
 
-    return rows as CardClaim[];
+    const a = rows as {
+      ServerID: string;
+      UserID: string;
+      Name: string;
+      Rarity: string;
+      Series: string;
+      Version: number;
+      DateTime: Date;
+    }[];
+    return a.map((value) => {
+      return {
+        ServerId: value.ServerID,
+        UserID: value.UserID,
+        DateTime: value.DateTime,
+        CardItem: {
+          Version: value.Version.toString(),
+          Details: {
+            CardName: value.Name,
+            Rarity: value.Rarity,
+            SeriesName: value.Series,
+            UUID: '',
+            EventName: '',
+          } as CardDetails,
+        } as CardItem,
+      } as CardClaim;
+    });
   } catch (error) {
     console.error('Error querying cards:', error);
     return [];
