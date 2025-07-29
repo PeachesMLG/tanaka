@@ -34,7 +34,7 @@ export async function saveClaim(cardClaim: CardClaim) {
 
     const [rows] = await connection.query<ResultSetHeader>(
       `
-        INSERT INTO RecentClaims (ServerId, UserID, Name, Rarity, Series, Version)
+        INSERT INTO RecentClaims (ServerId, UserID, Name, Rarity, Series, Version, UUID, Event)
         VALUES (?, ?, ?, ?, ?, ?);
       `,
       [
@@ -44,6 +44,8 @@ export async function saveClaim(cardClaim: CardClaim) {
         cardClaim.CardItem.Details.Rarity,
         cardClaim.CardItem.Details.SeriesName,
         cardClaim.CardItem.Version,
+        cardClaim.CardItem.Details.UUID,
+        cardClaim.CardItem.Details.EventName,
       ],
     );
 
@@ -83,6 +85,8 @@ export async function getRecentClaims(
       Rarity: string;
       Series: string;
       Version: number;
+      UUID: string;
+      Event: string;
       DateTime: Date;
     }[];
     return a.map((value) => {
@@ -96,8 +100,8 @@ export async function getRecentClaims(
             CardName: value.Name,
             Rarity: value.Rarity,
             SeriesName: value.Series,
-            UUID: '',
-            EventName: '',
+            UUID: value.UUID,
+            EventName: value.Event,
           } as CardDetails,
         } as CardItem,
       } as CardClaim;
