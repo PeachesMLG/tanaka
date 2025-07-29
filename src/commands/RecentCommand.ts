@@ -79,6 +79,6 @@ export class RecentCommand implements Command {
     const user = await client.users.fetch(claim.UserID);
     const userName = user.username;
 
-    return `${mapTierToEmoji(claim.Rarity)} • **${discordTimestamp}** • #${claim.Version} • **${claim.Name}** • ${userName}`;
+    return `${mapTierToEmoji(claim.CardItem.Details.Rarity)} • **${discordTimestamp}** • #${claim.CardItem.Version} • **${claim.CardItem.Details.CardName}** • ${userName}`;
   }
 }

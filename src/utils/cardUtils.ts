@@ -1,5 +1,6 @@
 import { getRedisKey, setRedisKey } from '../database/redisDatabase';
-import { CardInfo } from '../types/cardInfo';
+import { CardItem } from '../types/cardItem';
+import { CardDetails } from '../types/cardDetails';
 
 export async function getApiKey(): Promise<string | null> {
   const key = await getRedisKey('MAZOKU_API_KEY');
@@ -11,11 +12,11 @@ export async function getApiKey(): Promise<string | null> {
 
 export async function getCardInfo(
   cardUUID: string,
-): Promise<CardInfo | undefined> {
+): Promise<CardDetails | undefined> {
   const redisKey = `card_catalog_${cardUUID}`;
   const cached = await getRedisKey(redisKey);
   if (cached !== null) {
-    return JSON.parse(cached) as CardInfo;
+    return JSON.parse(cached) as CardDetails;
   }
 
   const url = `https://server.mazoku.cc/card/catalog/${cardUUID}`;
@@ -30,12 +31,12 @@ export async function getCardInfo(
 
     const data = await response.json();
 
-    const cardInfo: CardInfo = {
-      Name: data.name,
-      Series: data.series.name,
+    const cardInfo: CardDetails = {
+      CardName: data.name,
+      SeriesName: data.series.name,
       Rarity: data.rarity.name.toUpperCase(),
       UUID: data.uuid,
-      Version: '0',
+      EventName: data.type.name,
     };
 
     await setRedisKey(redisKey, JSON.stringify(cardInfo));
@@ -92,6 +93,9 @@ async function fetchCardVersions(
 export async function getCardVersions(cardUUID: string): Promise<string[]> {
   const redisKey = `card_versions_${cardUUID}`;
   const lastFetchedKey = `card_versions_${cardUUID}_last_fetched`;
+  const cardDetails = await getCardInfo(cardUUID);
+  const cardRefreshTime =
+    cardDetails?.EventName === 'default' ? 24 * 60 * 60 * 1000 : 60 * 60 * 1000;
   const cached = await getRedisKey(redisKey);
   if (cached !== null) {
     const versions = cached.split(',').filter((value) => value);
@@ -99,7 +103,7 @@ export async function getCardVersions(cardUUID: string): Promise<string[]> {
     if (
       (lastFetched !== null &&
         new Date().getTime() - new Date(lastFetched).getTime() <
-          7 * 24 * 60 * 60 * 1000) ||
+          cardRefreshTime) ||
       versions.length === 0
     ) {
       return versions;
@@ -123,4 +127,15 @@ export async function getCardVersions(cardUUID: string): Promise<string[]> {
   }
 
   return [];
+}
+
+export async function refreshCardVersions(cardUUID: string) {
+  const redisKey = `card_versions_${cardUUID}`;
+  const lastFetchedKey = `card_versions_${cardUUID}_last_fetched`;
+  const cardVersions = await fetchCardVersions(cardUUID);
+
+  if (cardVersions !== undefined) {
+    await setRedisKey(redisKey, cardVersions.join(','));
+    await setRedisKey(lastFetchedKey, new Date().toISOString());
+  }
 }

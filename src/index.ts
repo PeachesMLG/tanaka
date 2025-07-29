@@ -61,22 +61,30 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 client.on('messageCreate', async (message) => {
-  await handleMessage(message, client);
+  try {
+    await handleMessage(message, client);
 
-  recentMessages.add(message);
-  for (const [key, listener] of messageListeners.entries()) {
-    if (listener.predicate(message)) {
-      listener.resolve(message);
-      if (listener.timeout) {
-        clearTimeout(listener.timeout);
+    recentMessages.add(message);
+    for (const [key, listener] of messageListeners.entries()) {
+      if (listener.predicate(message)) {
+        listener.resolve(message);
+        if (listener.timeout) {
+          clearTimeout(listener.timeout);
+        }
+        messageListeners.delete(key);
       }
-      messageListeners.delete(key);
     }
+  } catch (exception) {
+    console.error(exception);
   }
 });
 
 client.on('messageUpdate', async (_, newMessage) => {
-  await handleMessage(newMessage, client);
+  try {
+    await handleMessage(newMessage, client);
+  } catch (exception) {
+    console.error(exception);
+  }
 });
 
 initialiseDatabase().then(() => {

@@ -38,10 +38,10 @@ export async function saveClaim(cardClaim: CardClaim) {
       [
         cardClaim.ServerId,
         cardClaim.UserID,
-        cardClaim.Name,
-        cardClaim.Rarity,
-        cardClaim.Series,
-        cardClaim.Version,
+        cardClaim.CardItem.Details.CardName,
+        cardClaim.CardItem.Details.Rarity,
+        cardClaim.CardItem.Details.SeriesName,
+        cardClaim.CardItem.Version,
       ],
     );
 

@@ -1,15 +1,14 @@
 import { Client, Message, PartialMessage } from 'discord.js';
 import { getUserByMessageReference } from './utils/messageUtils';
 import { cardSpawnHandler } from './handlers/cardSpawnHandler';
-import { mapEmojiToTier } from './utils/emojis';
 import { cardClaimHandler } from './handlers/cardClaimHandler';
 import { TimedList } from './utils/timedList';
-import { CardInfo } from './types/cardInfo';
 import { getSetting } from './database/settingsDatabase';
 import { SettingsTypes } from './SettingsTypes';
 import { getChannel } from './utils/getChannel';
 import { createTimer } from './timers';
 import { getCardInfo } from './utils/cardUtils';
+import { CardDetails } from './types/cardDetails';
 
 const handledCardSummonMessages = new TimedList();
 const handledCardClaimMessages = new TimedList();
@@ -31,7 +30,8 @@ export const handleMessage = async (
     await handleCardSummon(message, client);
   } else if (
     message.embeds.length > 0 &&
-    message.embeds[0].title?.includes('Card Claimed')
+    message.embeds[0].title?.includes('Claimed') &&
+    message.embeds[0].image
   ) {
     await handleCardClaim(message, client);
   } else if (
@@ -102,7 +102,7 @@ const handleCardSummon = async (
 
   const cardInfo = (await Promise.all(cardUUIDs.map(getCardInfo))).filter(
     (cardInfo) => cardInfo,
-  ) as CardInfo[];
+  ) as CardDetails[];
 
   if (!cardInfo) {
     return;
@@ -130,12 +130,19 @@ const handleCardClaim = async (
 ) => {
   if (handledCardClaimMessages.getItems().includes(message.id)) return;
   if (!message.embeds[0].description) return;
+
+  const cardUUID = message.embeds[0]
+    .image!.url.split('/cards/')[1]
+    .split('.')[0];
+  const cardDetails = await getCardInfo(cardUUID);
+  if (!cardDetails) return;
+
   handledCardClaimMessages.add(message.id);
 
   const cardInfo = message.embeds[0].description
     ?.split('\n')
     .map(GetCardClaimInfo)
-    .filter((cardInfo) => cardInfo) as CardInfo[];
+    .filter((cardInfo) => cardInfo);
 
   const userIds = message.embeds[0].description
     ?.split('\n')
@@ -143,39 +150,20 @@ const handleCardClaim = async (
     .filter((cardInfo) => cardInfo) as string[];
 
   const userId = userIds[0] ?? 'N/A';
+  const version = cardInfo[0]?.Version ?? 'N/A';
 
-  for (const card of cardInfo) {
-    await cardClaimHandler(
-      {
-        ServerId: message.guildId?.toString() ?? '',
-        UserID: userId,
-        Version: parseInt(card.Version),
-        Name: card.Name,
-        Series: card.Series,
-        Rarity: card.Rarity,
-        DateTime: new Date(),
+  await cardClaimHandler(
+    {
+      ServerId: message.guildId?.toString() ?? '',
+      UserID: userId,
+      CardItem: {
+        Version: version,
+        Details: cardDetails,
       },
-      client,
-    );
-  }
-
-  const match = message.content?.match(claimPattern);
-  if (match) {
-    handledCardSummonMessages.add(message.id);
-    const [, userId, emote, name, series, version] = match;
-    await cardClaimHandler(
-      {
-        ServerId: message.guildId?.toString() ?? '',
-        UserID: userId,
-        Version: parseInt(version),
-        Name: name,
-        Series: series,
-        Rarity: mapEmojiToTier(emote),
-        DateTime: new Date(),
-      },
-      client,
-    );
-  }
+      DateTime: new Date(),
+    },
+    client,
+  );
 };
 
 const GetCardClaimInfo = (description: string) => {
@@ -183,11 +171,8 @@ const GetCardClaimInfo = (description: string) => {
   if (match) {
     const [, emote, name, series, version] = match;
     return {
-      Name: name,
-      Series: series,
-      Rarity: mapEmojiToTier(emote),
       Version: version,
-    } as CardInfo;
+    };
   }
   return undefined;
 };

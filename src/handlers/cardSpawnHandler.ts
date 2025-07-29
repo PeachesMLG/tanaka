@@ -6,9 +6,9 @@ import { getSetting } from '../database/settingsDatabase';
 import { SettingsTypes } from '../SettingsTypes';
 import { waitForMessage } from '../utils/messageListener';
 import { getCardVersions } from '../utils/cardUtils';
-import { CardInfo } from '../types/cardInfo';
 import { mapTierToEmoji } from '../utils/emojis';
 import { executeAtDate } from '../utils/timerUtils';
+import { CardDetails } from '../types/cardDetails';
 
 export const cardSpawnHandler = async (
   cardSpawn: CardSpawn,
@@ -50,12 +50,12 @@ const createVersionsSummary = async (
   }
 };
 
-const getCardSummary = async (card: CardInfo) => {
+const getCardSummary = async (card: CardDetails) => {
   if (!card.UUID) {
     return undefined;
   }
   const versions = await getCardVersions(card.UUID);
-  const cardInformation = `${mapTierToEmoji(card.Rarity)} - **${card.Name}** *${card.Series}*`;
+  const cardInformation = `${mapTierToEmoji(card.Rarity)} - **${card.CardName}** *${card.SeriesName}*`;
 
   const versionInformation =
     versions.length > 0
