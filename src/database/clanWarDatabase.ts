@@ -30,7 +30,7 @@ export async function saveClanWarAttack(
 
     const [result] = await connection.query<ResultSetHeader>(
       `
-        INSERT INTO ClanWar (ID, UserId, Clan, Type)
+        INSERT INTO ClanWar (UserId, Clan, Type)
         VALUES (?, ?, ?);
       `,
       [userId, clan, type],
