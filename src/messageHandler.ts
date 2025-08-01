@@ -9,17 +9,13 @@ import { getChannel } from './utils/getChannel';
 import { createTimer } from './timers';
 import { getCardInfo } from './utils/cardUtils';
 import { CardDetails } from './types/cardDetails';
-import { saveClanWarAttack } from './database/clanWarDatabase';
 
 const handledCardSummonMessages = new TimedList();
 const handledCardClaimMessages = new TimedList();
 const handledSummerMessages = new TimedList();
-const handledWarMessages = new TimedList();
 const claimPattern =
   /^(.+?)\s+•\s+\*\*(.+?)\*\*\s+•\s+\*(.+?)\*\s+•\s+`v(\d+)`$/;
 const claimedByPattern = /<@!?(\d+)>/;
-const clanWarRegex =
-  /Your (<:[\w]+:\d+>) \*\*(\w+)\*\* has been applied on \*\*(\w+)\*\*\./;
 
 export const handleMessage = async (
   message: Message | PartialMessage,
@@ -28,55 +24,22 @@ export const handleMessage = async (
   if (message.author?.id !== '1242388858897956906') return;
   if (
     message.embeds.length > 0 &&
-    message.embeds[0].title?.includes('Item Sent!')
+    message.embeds[0].title?.includes('Summon') &&
+    !message.embeds[0].title?.includes('Claimed')
   ) {
-    await handleClanWarSummons(message, client);
+    await handleCardSummon(message, client);
+  } else if (
+    message.embeds.length > 0 &&
+    message.embeds[0].title?.includes('Claimed') &&
+    message.embeds[0].image
+  ) {
+    await handleCardClaim(message, client);
+  } else if (
+    message.embeds.length > 0 &&
+    message.embeds[0].title?.includes('☀️ Summer Rewards ☀️')
+  ) {
+    await handleSummerSpawn(message, client);
   }
-};
-
-const handleClanWarSummons = async (
-  message: Message | PartialMessage,
-  client: Client,
-) => {
-  if (handledWarMessages.getItems().includes(message.id)) return;
-  handledWarMessages.add(message.id);
-
-  const user = await getUserByMessageReference(
-    message.reference,
-    message.interactionMetadata,
-    message.channel,
-  );
-
-  if (!user) return;
-
-  const description = message.embeds[0].description?.split('\n') ?? [];
-  for (const line of description) {
-    const match = line.match(clanWarRegex);
-
-    if (match) {
-      await saveClanWarAttack(user, match[2], match[3]);
-    }
-  }
-
-  const enabled =
-    (await getSetting(user, SettingsTypes.AUTOMATIC_CLAN_WAR_TIMERS)) ?? 'true';
-
-  if (enabled !== 'true') return;
-
-  const nextSpawnInMinutes = 15;
-
-  const channel = await getChannel(message.channelId, client);
-  if (channel === null) return;
-  let futureTime = new Date(Date.now() + 1000 * 60 * nextSpawnInMinutes);
-  await createTimer(
-    channel,
-    undefined,
-    futureTime,
-    user,
-    'Clan War Time!',
-    client,
-    'Automatically triggered by Clan Wars\n Turn this off in the /user settings command',
-  );
 };
 
 const handleSummerSpawn = async (

@@ -3,7 +3,6 @@ import { initialiseTimerDatabase } from './timerDatabase';
 import { initialiseRecentClaimsDatabase } from './recentClaimsDatabase';
 import { initialiseSettingsDatabase } from './settingsDatabase';
 import { createIndexs } from './indexCreator';
-import { initialiseClanWarDatabase } from './clanWarDatabase';
 
 export let pool: Pool;
 
@@ -23,7 +22,6 @@ export async function initialiseDatabase(): Promise<void> {
     await initialiseTimerDatabase();
     await initialiseRecentClaimsDatabase();
     await initialiseSettingsDatabase();
-    await initialiseClanWarDatabase();
     await createIndexs();
 
     console.log('Database initialized successfully.');
