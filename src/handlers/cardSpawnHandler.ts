@@ -19,7 +19,10 @@ export const cardSpawnHandler = async (
   if (
     !cardSpawn.SummonedBy &&
     cardSpawn.Cards.some(
-      (value) => value.Rarity === 'SR' || value.Rarity === 'SSR',
+      (value) =>
+        value.Rarity === 'SR' ||
+        value.Rarity === 'SSR' ||
+        value.Rarity === 'UR',
     )
   ) {
     await sendHighTierPing(cardSpawn, message, client);
