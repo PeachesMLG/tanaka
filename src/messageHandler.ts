@@ -57,8 +57,15 @@ const handleSummerSpawn = async (
 
   if (!user) return;
 
+  const defaultSetting =
+    (await getSetting(
+      message.guild?.id ?? '',
+      SettingsTypes.ENABLE_AUTOMATIC_TIMERS_AS_DEFAULT,
+    )) ?? 'true';
+
   const enabled =
-    (await getSetting(user, SettingsTypes.AUTOMATIC_SUMMER_TIMERS)) ?? 'true';
+    (await getSetting(user, SettingsTypes.AUTOMATIC_SUMMER_TIMERS)) ??
+    defaultSetting;
 
   if (enabled !== 'true') return;
 

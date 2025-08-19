@@ -44,6 +44,10 @@ export class ServerSettingsCommand implements Command {
                   name: 'Regular Tier Ping Message',
                   value: SettingsTypes.REGULAR_TIER_PING_MESSAGE,
                 },
+                {
+                  name: 'Enable Automatic Timers as Default',
+                  value: SettingsTypes.ENABLE_AUTOMATIC_TIMERS_AS_DEFAULT,
+                },
               ]),
           )
           .addStringOption((option) =>
