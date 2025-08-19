@@ -28,6 +28,7 @@ export class RecentCommand implements Command {
             { name: 'R', value: 'R' },
             { name: 'SR', value: 'SR' },
             { name: 'SSR', value: 'SSR' },
+            { name: 'UR', value: 'UR' },
           ),
       )
       .addIntegerOption((option) =>
