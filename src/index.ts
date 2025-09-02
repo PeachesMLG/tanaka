@@ -13,6 +13,7 @@ import { UserSettingsCommand } from './commands/UserSettingsCommand';
 import { ServerSettingsCommand } from './commands/ServerSettingsCommand';
 import { messageListeners, recentMessages } from './utils/messageListener';
 import { TopCommand } from './commands/TopCommand';
+import { handleConnection } from './handleConnection';
 
 dotenv.config();
 
@@ -86,6 +87,8 @@ client.on('messageUpdate', async (_, newMessage) => {
     console.error(exception);
   }
 });
+
+handleConnection(client);
 
 initialiseDatabase().then(() => {
   client.login(process.env.DISCORD_TOKEN).catch((error) => {
