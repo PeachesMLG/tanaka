@@ -19,7 +19,7 @@ const claimedByPattern = /<@!?(\d+)>/;
 
 const timers = [
   {
-    title: 'Refreshing Box Opened',
+    title: 'Box Opened',
     cooldown: 1,
     timerMessage: 'Box Time',
     timerInformation:
