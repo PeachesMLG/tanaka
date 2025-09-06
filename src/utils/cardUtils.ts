@@ -63,7 +63,6 @@ async function fetchCardVersions(
   )}&size=10&owner=none&order=ASC&order_column=version`;
 
   try {
-    console.log('Fetching Card Versions...');
     const response = await fetch(url, {
       headers: {
         Authorization: `${apiKey}`,
@@ -108,8 +107,6 @@ export async function getCardVersions(cardUUID: string): Promise<string[]> {
     ) {
       return versions;
     }
-
-    console.log(cardUUID, ' Last Fetched was ', lastFetched);
   }
 
   const cardVersions = await fetchCardVersions(cardUUID);
