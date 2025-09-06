@@ -37,6 +37,10 @@ const createVersionsSummary = async (
   client: Client,
   message: Message | PartialMessage,
 ) => {
+  if ((await getChannel(message.channelId, client)) === null) {
+    return;
+  }
+
   const despawnTime = new Date();
   despawnTime.setSeconds(despawnTime.getSeconds() + 20);
 
