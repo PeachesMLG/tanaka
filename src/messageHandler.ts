@@ -12,10 +12,29 @@ import { CardDetails } from './types/cardDetails';
 
 const handledCardSummonMessages = new TimedList();
 const handledCardClaimMessages = new TimedList();
-const handledSummerMessages = new TimedList();
+const handledTimerMessages = new TimedList();
 const claimPattern =
   /^(.+?)\s+•\s+\*\*(.+?)\*\*\s+•\s+\*(.+?)\*\s+•\s+`v(\d+)`$/;
 const claimedByPattern = /<@!?(\d+)>/;
+
+const timers = [
+  {
+    title: 'Refreshing Box Opened',
+    cooldown: 1,
+    timerMessage: 'Box Time',
+    timerInformation:
+      'Automatically triggered by Opening a box\n Turn this off in the /user settings command',
+    setting: SettingsTypes.AUTOMATIC_BOX_TIMERS,
+  },
+  {
+    title: 'Summer Cards',
+    cooldown: 30,
+    timerMessage: 'Summer Time',
+    timerInformation:
+      'Automatically triggered by Summer Spawn\n Turn this off in the /user settings command',
+    setting: SettingsTypes.AUTOMATIC_SUMMER_TIMERS,
+  },
+];
 
 export const handleMessage = async (
   message: Message | PartialMessage,
@@ -34,55 +53,56 @@ export const handleMessage = async (
     message.embeds[0].image
   ) {
     await handleCardClaim(message, client);
-  } else if (
-    message.embeds.length > 0 &&
-    message.embeds[0].title?.includes('☀️ Summer Rewards ☀️')
-  ) {
-    await handleSummerSpawn(message, client);
   }
+
+  await handleTimers(message, client);
 };
 
-const handleSummerSpawn = async (
+const handleTimers = async (
   message: Message | PartialMessage,
   client: Client,
 ) => {
-  if (handledSummerMessages.getItems().includes(message.id)) return;
-  handledSummerMessages.add(message.id);
+  for (const timer of timers) {
+    if (
+      message.embeds.length > 0 &&
+      message.embeds[0].title?.includes(timer.title)
+    ) {
+      if (handledTimerMessages.getItems().includes(message.id)) return;
+      handledTimerMessages.add(message.id);
 
-  const user = await getUserByMessageReference(
-    message.reference,
-    message.interactionMetadata,
-    message.channel,
-  );
+      const user = await getUserByMessageReference(
+        message.reference,
+        message.interactionMetadata,
+        message.channel,
+      );
 
-  if (!user) return;
+      if (!user) return;
 
-  const defaultSetting =
-    (await getSetting(
-      message.guild?.id ?? '',
-      SettingsTypes.ENABLE_AUTOMATIC_TIMERS_AS_DEFAULT,
-    )) ?? 'true';
+      const defaultSetting =
+        (await getSetting(
+          message.guild?.id ?? '',
+          SettingsTypes.ENABLE_AUTOMATIC_TIMERS_AS_DEFAULT,
+        )) ?? 'true';
 
-  const enabled =
-    (await getSetting(user, SettingsTypes.AUTOMATIC_SUMMER_TIMERS)) ??
-    defaultSetting;
+      const enabled = (await getSetting(user, timer.setting)) ?? defaultSetting;
 
-  if (enabled !== 'true') return;
+      if (enabled !== 'true') return;
 
-  const nextSpawnInMinutes = 30;
-
-  const channel = await getChannel(message.channelId, client);
-  if (channel === null) return;
-  let futureTime = new Date(Date.now() + 1000 * 60 * nextSpawnInMinutes);
-  await createTimer(
-    channel,
-    undefined,
-    futureTime,
-    user,
-    'Summer Time',
-    client,
-    'Automatically triggered by Summer Spawn\n Turn this off in the /user settings command',
-  );
+      const channel = await getChannel(message.channelId, client);
+      if (channel === null) return;
+      let futureTime = new Date(Date.now() + 1000 * 60 * timer.cooldown);
+      await createTimer(
+        channel,
+        undefined,
+        futureTime,
+        user,
+        timer.timerMessage,
+        client,
+        timer.timerInformation,
+      );
+      return;
+    }
+  }
 };
 
 const handleCardSummon = async (

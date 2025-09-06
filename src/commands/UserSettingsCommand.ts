@@ -35,6 +35,10 @@ export class UserSettingsCommand implements Command {
                   name: 'Automatic Summer Timers',
                   value: SettingsTypes.AUTOMATIC_SUMMER_TIMERS,
                 },
+                {
+                  name: 'Automatic Box Timers',
+                  value: SettingsTypes.AUTOMATIC_BOX_TIMERS,
+                },
               ]),
           )
           .addBooleanOption((option) =>
