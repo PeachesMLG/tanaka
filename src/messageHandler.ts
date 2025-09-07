@@ -30,7 +30,7 @@ const timers = [
   {
     title: 'Summer Cards',
     cooldown: 30,
-    timerMessage: '</summer:1301277778385174601>',
+    timerMessage: '</summer:1410782373427286109>',
     timerInformation:
       'Automatically triggered by Summer Spawn\n Turn this off in the /user settings command',
     setting: SettingsTypes.AUTOMATIC_SUMMER_TIMERS,
