@@ -22,7 +22,7 @@ const timers = [
   {
     title: 'Box Opened',
     cooldown: 1,
-    timerMessage: 'Box Time',
+    timerMessage: '</open-boxes:1385696147485753517>',
     timerInformation:
       'Automatically triggered by Opening a box\n Turn this off in the /user settings command',
     setting: SettingsTypes.AUTOMATIC_BOX_TIMERS,
@@ -30,7 +30,7 @@ const timers = [
   {
     title: 'Summer Cards',
     cooldown: 30,
-    timerMessage: 'Summer Time',
+    timerMessage: '</summer:1301277778385174601>',
     timerInformation:
       'Automatically triggered by Summer Spawn\n Turn this off in the /user settings command',
     setting: SettingsTypes.AUTOMATIC_SUMMER_TIMERS,
@@ -39,7 +39,7 @@ const timers = [
     title: 'On a date with',
     cooldown: 180,
     premiumCooldown: 90,
-    timerMessage: 'Date Time',
+    timerMessage: '</date:1410808024070619217>',
     timerInformation:
       'Automatically triggered by Dates\n Turn this off in the /user settings command',
     setting: SettingsTypes.AUTOMATIC_DATE_TIMERS,

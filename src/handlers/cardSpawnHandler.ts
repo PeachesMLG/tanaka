@@ -99,7 +99,7 @@ const createSummonTimer = async (cardSpawn: CardSpawn, client: Client) => {
     undefined,
     futureTime,
     cardSpawn.SummonedBy,
-    'Summons',
+    '</summon:1301277778385174601>',
     client,
     'Automatically triggered by summon\n Turn this off in the /user settings command',
   );
