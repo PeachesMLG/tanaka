@@ -36,7 +36,7 @@ const timers = [
     setting: SettingsTypes.AUTOMATIC_SUMMER_TIMERS,
   },
   {
-    title: 'On a date with',
+    title: 'Date Reward Claimed!',
     cooldown: 180,
     premiumCooldown: 90,
     timerMessage: '</date:1410808024070619217>',
