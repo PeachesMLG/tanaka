@@ -34,6 +34,14 @@ const timers = [
       'Automatically triggered by Summer Spawn\n Turn this off in the /user settings command',
     setting: SettingsTypes.AUTOMATIC_SUMMER_TIMERS,
   },
+  {
+    title: 'On a date with',
+    cooldown: 30,
+    timerMessage: 'Date Time',
+    timerInformation:
+      'Automatically triggered by Dates\n Turn this off in the /user settings command',
+    setting: SettingsTypes.AUTOMATIC_DATE_TIMERS,
+  },
 ];
 
 export const handleMessage = async (
