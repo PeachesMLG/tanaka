@@ -9,6 +9,7 @@ import { getChannel } from './utils/getChannel';
 import { createTimer } from './timers';
 import { getCardInfo } from './utils/cardUtils';
 import { CardDetails } from './types/cardDetails';
+import { isUserPremium } from './utils/userUtils';
 
 const handledCardSummonMessages = new TimedList();
 const handledCardClaimMessages = new TimedList();
@@ -36,7 +37,8 @@ const timers = [
   },
   {
     title: 'On a date with',
-    cooldown: 30,
+    cooldown: 180,
+    premiumCooldown: 90,
     timerMessage: 'Date Time',
     timerInformation:
       'Automatically triggered by Dates\n Turn this off in the /user settings command',
@@ -98,7 +100,14 @@ const handleTimers = async (
 
       const channel = await getChannel(message.channelId, client);
       if (channel === null) return;
-      let futureTime = new Date(Date.now() + 1000 * 60 * timer.cooldown);
+
+      let cooldown = timer.cooldown;
+
+      if (timer.premiumCooldown && (await isUserPremium(user))) {
+        cooldown = timer.premiumCooldown;
+      }
+
+      let futureTime = new Date(Date.now() + 1000 * 60 * cooldown);
       await createTimer(
         channel,
         undefined,
