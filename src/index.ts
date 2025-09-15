@@ -90,8 +90,13 @@ client.on('messageUpdate', async (_, newMessage) => {
 
 handleConnection(client);
 
-initialiseDatabase().then(() => {
-  client.login(process.env.DISCORD_TOKEN).catch((error) => {
-    console.error('Error logging in:', error);
+initialiseDatabase()
+  .then(async () => {
+    await client.login(process.env.DISCORD_TOKEN).catch((error) => {
+      console.error('Error logging in:', error);
+    });
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+    process.exit(1);
   });
-});
