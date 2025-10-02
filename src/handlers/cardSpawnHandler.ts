@@ -29,7 +29,7 @@ export const cardSpawnHandler = async (
   } else if (!cardSpawn.SummonedBy) {
     await sendRegularSummonPing(cardSpawn, client);
   }
-  await createVersionsSummary(cardSpawn, client, message);
+  // await createVersionsSummary(cardSpawn, client, message);
 };
 
 const createVersionsSummary = async (
