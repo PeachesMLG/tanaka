@@ -36,4 +36,8 @@ export const handleConnection = (client: Client) => {
     console.error(err);
     process.exit(1);
   });
+
+  setInterval(() => {
+    console.log(`WS Status: ${client.ws.status}`);
+  }, 60_000);
 };
