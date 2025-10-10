@@ -1,7 +1,7 @@
 import { Client } from 'discord.js';
 import { CardClaim } from '../types/cardClaim';
 import { saveClaim } from '../database/recentClaimsDatabase';
-import { refreshCardVersions } from '../utils/cardUtils';
+// import { refreshCardVersions } from '../utils/cardUtils';
 
 export const cardClaimHandler = async (
   cardClaim: CardClaim,
@@ -10,6 +10,6 @@ export const cardClaimHandler = async (
   await saveClaim(cardClaim);
 
   if (parseInt(cardClaim.CardItem.Version) <= 10) {
-    await refreshCardVersions(cardClaim.CardItem.Details.UUID);
+    // await refreshCardVersions(cardClaim.CardItem.Details.UUID);
   }
 };
