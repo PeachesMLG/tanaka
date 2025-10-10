@@ -29,7 +29,7 @@ export const cardSpawnHandler = async (
   } else if (!cardSpawn.SummonedBy) {
     await sendRegularSummonPing(cardSpawn, client);
   }
-  // await createVersionsSummary(cardSpawn, client, message);
+  await createVersionsSummary(cardSpawn, client, message);
 };
 
 const createVersionsSummary = async (
@@ -69,7 +69,7 @@ const getCardSummary = async (card: CardDetails) => {
       ? `-# Single Vs: ${versions.join(', ')}.`
       : `-# No Single Vs Remaining.`;
 
-  return `${cardInformation}\n${versionInformation}`;
+  return `${cardInformation}\n${versionInformation}\n -# Data from 2nd October 2025, may be outdated`;
 };
 
 const createSummonTimer = async (cardSpawn: CardSpawn, client: Client) => {
