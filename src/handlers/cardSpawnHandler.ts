@@ -49,7 +49,9 @@ const createVersionsSummary = async (
   ).filter((value) => value) as string[];
 
   if (content) {
-    const replyMessage = await message.reply(content.join('\n'));
+    const replyMessage = await message.reply(
+      content.join('\n') + '-# Data from 2nd October 2025, may be outdated',
+    );
 
     executeAtDate(despawnTime, async () => {
       await replyMessage.delete();
@@ -69,7 +71,7 @@ const getCardSummary = async (card: CardDetails) => {
       ? `-# Single Vs: ${versions.join(', ')}.`
       : `-# No Single Vs Remaining.`;
 
-  return `${cardInformation}\n${versionInformation}\n -# Data from 2nd October 2025, may be outdated`;
+  return `${cardInformation}\n${versionInformation}\n`;
 };
 
 const createSummonTimer = async (cardSpawn: CardSpawn, client: Client) => {
