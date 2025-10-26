@@ -38,6 +38,9 @@ export const handleConnection = (client: Client) => {
   });
 
   setInterval(() => {
-    console.log(`WS Status: ${client.ws.status}`);
+    if (client.ws.status > 2) {
+      console.log(`WS Status: ${client.ws.status}`);
+      process.exit(1);
+    }
   }, 60_000);
 };
