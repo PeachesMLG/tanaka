@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "axios": "^1.13.1",
-    "discord.js": "^14.24.0",
+    "discord.js": "^14.24.2",
     "dotenv": "^17.2.3",
     "mysql2": "^3.15.3",
     "redis": "^5.9.0",
