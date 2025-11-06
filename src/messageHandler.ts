@@ -22,7 +22,7 @@ const timers = [
   {
     title: 'Box Opened',
     cooldown: 2,
-    timerMessage: '</open-boxes:1385696147485753517>',
+    timerMessage: '</open-boxes:1435883794254004256>',
     timerInformation:
       'Automatically triggered by Opening a box\n Turn this off in the /user settings command',
     setting: SettingsTypes.AUTOMATIC_BOX_TIMERS,
