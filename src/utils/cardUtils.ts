@@ -19,35 +19,33 @@ export async function getCardInfo(
     return JSON.parse(cached) as CardDetails;
   }
 
-  return undefined;
+  const url = `https://server.mazoku.cc/card/catalog/${cardUUID}`;
 
-  // const url = `https://server.mazoku.cc/card/catalog/${cardUUID}`;
-  //
-  // try {
-  //   console.log('Fetching Card Details...');
-  //   const response = await fetch(url);
-  //   if (!response.ok) {
-  //     console.error(`Failed to fetch card: ${response.statusText}`);
-  //     return undefined;
-  //   }
-  //
-  //   const data = await response.json();
-  //
-  //   const cardInfo: CardDetails = {
-  //     CardName: data.name,
-  //     SeriesName: data.series.name,
-  //     Rarity: data.rarity.name.toUpperCase(),
-  //     UUID: data.uuid,
-  //     EventName: data.type.name,
-  //   };
-  //
-  //   await setRedisKey(redisKey, JSON.stringify(cardInfo));
-  //
-  //   return cardInfo;
-  // } catch (err) {
-  //   console.error('Error fetching card: ', cardUUID, err);
-  //   return undefined;
-  // }
+  try {
+    console.log('Fetching Card Details...');
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error(`Failed to fetch card: ${response.statusText}`);
+      return undefined;
+    }
+
+    const data = await response.json();
+
+    const cardInfo: CardDetails = {
+      CardName: data.name,
+      SeriesName: data.series.name,
+      Rarity: data.rarity.name.toUpperCase(),
+      UUID: data.uuid,
+      EventName: data.type.name,
+    };
+
+    await setRedisKey(redisKey, JSON.stringify(cardInfo));
+
+    return cardInfo;
+  } catch (err) {
+    console.error('Error fetching card: ', cardUUID, err);
+    return undefined;
+  }
 }
 
 // async function fetchCardVersions(
