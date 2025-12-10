@@ -37,9 +37,16 @@ const timers = [
   },
   {
     title: 'Date Reward Claimed!',
-    cooldown: 180,
-    premiumCooldown: 90,
+    cooldown: 1800,
     timerMessage: '</date:1410808024070619217>',
+    timerInformation:
+      'Automatically triggered by Clan Summon\n Turn this off in the /user settings command',
+    setting: SettingsTypes.AUTOMATIC_DATE_TIMERS,
+  },
+  {
+    title: 'Clan War - Spell Summon!',
+    cooldown: 180,
+    timerMessage: '</clan-summon:1448360325807214703>',
     timerInformation:
       'Automatically triggered by Dates\n Turn this off in the /user settings command',
     setting: SettingsTypes.AUTOMATIC_DATE_TIMERS,

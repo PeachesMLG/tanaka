@@ -39,6 +39,10 @@ export class UserSettingsCommand implements Command {
                   name: 'Automatic Box Timers',
                   value: SettingsTypes.AUTOMATIC_BOX_TIMERS,
                 },
+                {
+                  name: 'Automatic Clan Summons',
+                  value: SettingsTypes.AUTOMATIC_CLAN_SUMMONS,
+                },
               ]),
           )
           .addBooleanOption((option) =>
