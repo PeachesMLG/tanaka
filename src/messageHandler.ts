@@ -45,7 +45,7 @@ const timers = [
     setting: SettingsTypes.AUTOMATIC_DATE_TIMERS,
   },
   {
-    title: 'Clan War - Spell Summon!',
+    title: 'Casting for Round',
     cooldown: 1800,
     timerMessage: '</clan-summon:1448360325807214703>',
     timerInformation:
@@ -80,9 +80,6 @@ const handleTimers = async (
   message: Message | PartialMessage,
   client: Client,
 ) => {
-  if(message.embeds.length > 0){
-    console.log(message.embeds[0].title);
-  }
   for (const timer of timers) {
     if (
       message.embeds.length > 0 &&
