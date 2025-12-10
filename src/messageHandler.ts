@@ -46,7 +46,7 @@ const timers = [
   },
   {
     title: 'Casting for Round',
-    cooldown: 1800,
+    cooldown: 30,
     timerMessage: '</clan-summon:1448360325807214703>',
     timerInformation:
       'Automatically triggered by Clan Summon\n Turn this off in the /user settings command',
