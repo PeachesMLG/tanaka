@@ -80,6 +80,9 @@ const handleTimers = async (
   message: Message | PartialMessage,
   client: Client,
 ) => {
+  if(message.embeds.length > 0){
+    console.log(message.embeds[0].title);
+  }
   for (const timer of timers) {
     if (
       message.embeds.length > 0 &&
