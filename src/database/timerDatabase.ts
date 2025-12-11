@@ -86,3 +86,20 @@ export async function getTimers() {
     return [];
   }
 }
+
+export async function getUserTimers(userId: string): Promise<TimerEntry[]> {
+  try {
+    const query = `
+        SELECT * FROM Timer 
+        WHERE UserID = ? 
+        ORDER BY Time ASC;
+    `;
+
+    const [rows] = await pool.query(query, [userId]);
+
+    return rows as TimerEntry[];
+  } catch (error) {
+    console.error('Error getting user timers:', error);
+    return [];
+  }
+}

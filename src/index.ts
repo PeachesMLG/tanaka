@@ -6,6 +6,7 @@ import {
 import * as dotenv from 'dotenv';
 import { initialiseDatabase } from './database/database';
 import { TimerCommand } from './commands/TimerCommand';
+import { TimersCommand } from './commands/TimersCommand';
 import { startAllTimers } from './timers';
 import { RecentCommand } from './commands/RecentCommand';
 import { handleMessage } from './messageHandler';
@@ -27,6 +28,7 @@ const client = new Client({
 
 const commands = [
   new TimerCommand(client),
+  new TimersCommand(),
   new RecentCommand(),
   new UserSettingsCommand(),
   new ServerSettingsCommand(),
