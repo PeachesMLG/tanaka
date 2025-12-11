@@ -10,6 +10,8 @@ import { createTimer } from './timers';
 import { getCardInfo } from './utils/cardUtils';
 import { CardDetails } from './types/cardDetails';
 import { isUserPremium } from './utils/userUtils';
+import { LeaderboardType } from './types/leaderboardType';
+import { incrementLeaderboard } from './database/leaderboardDatabase';
 
 const handledCardSummonMessages = new TimedList();
 const handledCardClaimMessages = new TimedList();
@@ -47,6 +49,7 @@ const timers = [
   {
     title: 'Casting for Round',
     cooldown: 30,
+    leaderboard: LeaderboardType.CLAN_SUMMON,
     timerMessage: '</clan-summon:1448360325807214703>',
     timerInformation:
       'Automatically triggered by Clan Summon\n Turn this off in the /user settings command',
@@ -95,6 +98,10 @@ const handleTimers = async (
       );
 
       if (!user) return;
+
+      if(timer.leaderboard){
+        await incrementLeaderboard(user, timer.leaderboard);
+      }
 
       const defaultSetting =
         (await getSetting(
