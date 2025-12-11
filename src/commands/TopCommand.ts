@@ -10,6 +10,7 @@ import { getEmbedMessage } from '../utils/embeds';
 import {
   getTopClaimers,
   getTopServers,
+  getUserClaimPosition,
 } from '../database/recentClaimsDatabase';
 import {
   getTopLeaderboard,
@@ -107,10 +108,17 @@ export class TopCommand implements Command {
     _: Client,
   ) {
     const value = interaction.options.getString('duration') ?? 'MONTHLY';
-
     const channel = interaction.channel as TextChannel;
+    const userId = interaction.user.id;
 
     const topClaimers = await getTopClaimers(
+      channel.guildId,
+      this.getStartDate(value),
+      this.getEndDate(value),
+    );
+
+    const userPosition = await getUserClaimPosition(
+      userId,
       channel.guildId,
       this.getStartDate(value),
       this.getEndDate(value),
@@ -122,6 +130,13 @@ export class TopCommand implements Command {
       }),
     );
 
+    let userPositionText = '';
+    if (userPosition) {
+      userPositionText = `\n\n**Your Position:**\n${userPosition.position}. • <@${userId}> • **${userPosition.claimCount} Cards Claimed**`;
+    } else {
+      userPositionText = `\n\n**Your Position:**\nNo claims found for this period.`;
+    }
+
     const fields =
       leaderboardFields.length === 0
         ? ['No recent claims found.']
@@ -132,7 +147,7 @@ export class TopCommand implements Command {
         getEmbedMessage(
           channel,
           this.getHeader('Claimers', value),
-          fields.join('\n'),
+          fields.join('\n') + userPositionText,
         ),
       ],
     });

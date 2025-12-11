@@ -169,3 +169,38 @@ export async function getTopServers(
     return [];
   }
 }
+
+export async function getUserClaimPosition(
+  userId: string,
+  serverId: string,
+  startDate: Date,
+  endDate: Date,
+): Promise<{ position: number; claimCount: number } | null> {
+  try {
+    const query = `
+      SELECT 
+        (SELECT COUNT(*) + 1 
+         FROM (SELECT UserID, COUNT(*) as ClaimCount 
+               FROM RecentClaims 
+               WHERE ServerId = ? AND DateTime >= ? AND DateTime < ? 
+               GROUP BY UserID) as subquery 
+         WHERE subquery.ClaimCount > user_claims.ClaimCount) as position,
+        user_claims.ClaimCount as claimCount
+      FROM (SELECT UserID, COUNT(*) as ClaimCount 
+            FROM RecentClaims 
+            WHERE ServerId = ? AND DateTime >= ? AND DateTime < ? AND UserID = ? 
+            GROUP BY UserID) as user_claims;
+    `;
+
+    const [rows] = await pool.query(query, [
+      serverId, startDate, endDate,
+      serverId, startDate, endDate, userId
+    ]);
+    const results = rows as { position: number; claimCount: number }[];
+
+    return results.length > 0 ? results[0] : null;
+  } catch (error) {
+    console.error('Error getting user claim position:', error);
+    return null;
+  }
+}
