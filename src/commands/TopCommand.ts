@@ -100,7 +100,13 @@ export class TopCommand implements Command {
     if (subcommand === 'servers')
       await this.executeTopServersCommand(interaction, client);
     if (subcommand === 'summons')
-      await this.executeTopSummonsCommand(interaction, client);
+      await this.executeTopLeaderboardCommand(
+        interaction,
+        LeaderboardType.CLAN_SUMMON,
+        'Summons',
+        'Top Clan Summoners',
+        'Not ranked yet - perform your first summon!'
+      );
   }
 
   async executeTopClaimersCommand(
@@ -193,36 +199,39 @@ export class TopCommand implements Command {
     });
   }
 
-  async executeTopSummonsCommand(
+  async executeTopLeaderboardCommand(
     interaction: ChatInputCommandInteraction,
-    _: Client,
+    leaderboardType: LeaderboardType,
+    itemName: string,
+    headerTitle: string,
+    noRankMessage: string,
   ) {
     const channel = interaction.channel as TextChannel;
     const userId = interaction.user.id;
 
-    const topSummoners = await getTopLeaderboard(LeaderboardType.CLAN_SUMMON, 10);
-    const userPosition = await getUserLeaderboardPosition(userId, LeaderboardType.CLAN_SUMMON);
+    const topEntries = await getTopLeaderboard(leaderboardType, 10);
+    const userPosition = await getUserLeaderboardPosition(userId, leaderboardType);
 
-    const leaderboardFields = topSummoners.map((summoner, index) => {
-      return `${index + 1}. • <@${summoner.UserId}> • **${summoner.Amount} Summons**`;
+    const leaderboardFields = topEntries.map((entry, index) => {
+      return `${index + 1}. • <@${entry.UserId}> • **${entry.Amount} ${itemName}**`;
     });
 
     let userPositionText = '';
     if (userPosition) {
-      userPositionText = `\n\n**Your Position:**\n${userPosition.position}. • <@${userId}> • **${userPosition.amount} Summons**`;
+      userPositionText = `\n\n**Your Position:**\n${userPosition.position}. • <@${userId}> • **${userPosition.amount} ${itemName}**`;
     } else {
-      userPositionText = `\n\n**Your Position:**\nNot ranked yet - perform your first summon!`;
+      userPositionText = `\n\n**Your Position:**\n${noRankMessage}`;
     }
 
     const fields = leaderboardFields.length === 0
-      ? ['No summons found yet.']
+      ? [`No ${itemName.toLowerCase()} found yet.`]
       : leaderboardFields;
 
     await interaction.reply({
       embeds: [
         getEmbedMessage(
           channel,
-          'Top Clan Summoners',
+          headerTitle,
           fields.join('\n') + userPositionText,
         ),
       ],
