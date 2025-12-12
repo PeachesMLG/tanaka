@@ -74,13 +74,13 @@ export const handleMessage = async (
     message.embeds[0].title?.includes('Summon') &&
     !message.embeds[0].title?.includes('Claimed')
   ) {
-    await handleCardSummon(message, client);
+    // await handleCardSummon(message, client);
   } else if (
     message.embeds.length > 0 &&
     message.embeds[0].title?.includes('Claimed') &&
     message.embeds[0].image
   ) {
-    await handleCardClaim(message, client);
+    // await handleCardClaim(message, client);
   } else if (
     message.embeds.length > 0 &&
     message.embeds[0].title?.includes('Casting for Round')
@@ -88,7 +88,7 @@ export const handleMessage = async (
     await handleChoosingSpell(message, client);
   }
 
-  await handleTimers(message, client);
+  // await handleTimers(message, client);
 };
 
 const handleTimers = async (
@@ -327,7 +327,9 @@ const handleChoosingSpell = async (
   ];
 
   const validSpells = spellPriority.filter((spell) =>
-    spellsAvailableLower.includes(spell.spellName.toLowerCase()),
+    spellsAvailableLower.some((available) =>
+      available.includes(spell.spellName.toLowerCase()),
+    ),
   );
 
   console.log(JSON.stringify(validSpells, null, 2));
@@ -335,9 +337,9 @@ const handleChoosingSpell = async (
   validSpells.sort((a, b) => a.priority - b.priority);
 
   const chosenSpell = validSpells[0];
-  
+
   if (!chosenSpell) {
-    console.log("No available spells")
+    console.log('No available spells');
     return;
   }
 
