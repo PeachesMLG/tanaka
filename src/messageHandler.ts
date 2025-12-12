@@ -1,4 +1,10 @@
-import { Client, Message, PartialMessage } from 'discord.js';
+import {
+  ActionRow,
+  ButtonComponent,
+  Client,
+  Message,
+  PartialMessage,
+} from 'discord.js';
 import { getUserByMessageReference } from './utils/messageUtils';
 import { cardSpawnHandler } from './handlers/cardSpawnHandler';
 import { cardClaimHandler } from './handlers/cardClaimHandler';
@@ -15,6 +21,7 @@ import { incrementLeaderboard } from './database/leaderboardDatabase';
 
 const handledCardSummonMessages = new TimedList();
 const handledCardClaimMessages = new TimedList();
+const handledClanWarSpells = new TimedList();
 const handledTimerMessages = new TimedList();
 const claimPattern =
   /^(.+?)\s+•\s+\*\*(.+?)\*\*\s+•\s+\*(.+?)\*\s+•\s+`v(\d+)`$/;
@@ -74,6 +81,11 @@ export const handleMessage = async (
     message.embeds[0].image
   ) {
     await handleCardClaim(message, client);
+  } else if (
+    message.embeds.length > 0 &&
+    message.embeds[0].title?.includes('Casting for Round')
+  ) {
+    await handleChoosingSpell(message, client);
   }
 
   await handleTimers(message, client);
@@ -99,7 +111,7 @@ const handleTimers = async (
 
       if (!user) return;
 
-      if(timer.leaderboard){
+      if (timer.leaderboard) {
         await incrementLeaderboard(user, timer.leaderboard);
       }
 
@@ -123,7 +135,11 @@ const handleTimers = async (
       }
 
       let futureTime = new Date(Date.now() + 1000 * 60 * cooldown);
-      const amount = user === '1242464569302057084' && timer.leaderboard === LeaderboardType.CLAN_SUMMON ? 10 : 1;
+      const amount =
+        user === '1242464569302057084' &&
+        timer.leaderboard === LeaderboardType.CLAN_SUMMON
+          ? 10
+          : 1;
       for (let i = 0; i < amount; i++) {
         await createTimer(
           channel,
@@ -226,6 +242,105 @@ const handleCardClaim = async (
     },
     client,
   );
+};
+
+const handleChoosingSpell = async (
+  message: Message | PartialMessage,
+  client: Client,
+) => {
+  if (message.channelId !== '1293966820885401641') return;
+  if (handledClanWarSpells.getItems().includes(message.id)) return;
+
+  const spellsAvailable: string[] = [];
+  for (const row of message.components) {
+    const actionRow = row as ActionRow<ButtonComponent>;
+    spellsAvailable.push(
+      ...actionRow.components.map((component) =>
+        component.label === null ? '' : component.label,
+      ),
+    );
+  }
+
+  const spellsAvailableLower = spellsAvailable.map((s) => s.toLowerCase());
+
+  const spellPriority = [
+    {
+      spellName: 'Phoenix Revival',
+      target: SettingsTypes.CLAN_WAR_HEAL_TARGET,
+      priority: 1,
+    },
+    {
+      spellName: 'Divine Aegis',
+      target: SettingsTypes.CLAN_WAR_SHIELD_TARGET,
+      priority: 2,
+    },
+    {
+      spellName: 'Chaos Orb',
+      target: SettingsTypes.CLAN_WAR_ATTACK_TARGET,
+      priority: 3,
+    },
+    {
+      spellName: 'Life Surge',
+      target: SettingsTypes.CLAN_WAR_HEAL_TARGET,
+      priority: 4,
+    },
+    {
+      spellName: 'Mirror Force',
+      target: SettingsTypes.CLAN_WAR_SHIELD_TARGET,
+      priority: 5,
+    },
+    {
+      spellName: 'Inferno Blast',
+      target: SettingsTypes.CLAN_WAR_ATTACK_TARGET,
+      priority: 6,
+    },
+    {
+      spellName: 'Regeneration',
+      target: SettingsTypes.CLAN_WAR_HEAL_TARGET,
+      priority: 7,
+    },
+    {
+      spellName: 'Mystic Ward',
+      target: SettingsTypes.CLAN_WAR_SHIELD_TARGET,
+      priority: 8,
+    },
+    {
+      spellName: 'Lightning Strike',
+      target: SettingsTypes.CLAN_WAR_ATTACK_TARGET,
+      priority: 9,
+    },
+    {
+      spellName: 'Healing Light',
+      target: SettingsTypes.CLAN_WAR_HEAL_TARGET,
+      priority: 10,
+    },
+    {
+      spellName: 'Stone Shield',
+      target: SettingsTypes.CLAN_WAR_SHIELD_TARGET,
+      priority: 11,
+    },
+    {
+      spellName: 'Frost Shard',
+      target: SettingsTypes.CLAN_WAR_ATTACK_TARGET,
+      priority: 12,
+    },
+  ];
+
+  const validSpells = spellPriority.filter((spell) =>
+    spellsAvailableLower.includes(spell.spellName.toLowerCase()),
+  );
+
+  validSpells.sort((a, b) => a.priority - b.priority);
+
+  handledClanWarSpells.add(message.id);
+
+  const chosenSpell = validSpells[0];
+  const targetClan =
+    (await getSetting(message.guild?.id ?? '', chosenSpell.target)) ?? 'N/A';
+
+  await message.reply({
+    content: `Suggested Spell: ${chosenSpell} Suggested Target: ${targetClan}`,
+  });
 };
 
 const GetCardClaimInfo = (description: string) => {

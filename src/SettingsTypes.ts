@@ -9,4 +9,7 @@ export enum SettingsTypes {
   HIGH_TIER_PING_MESSAGE = 'High Tier Ping Message',
   REGULAR_TIER_PING_ROLE = 'Regular Tier Ping Role',
   REGULAR_TIER_PING_MESSAGE = 'Regular Tier Ping Message',
+  CLAN_WAR_ATTACK_TARGET = 'Clan war Attack Target',
+  CLAN_WAR_HEAL_TARGET = 'Clan war Heal Target',
+  CLAN_WAR_SHIELD_TARGET = 'Clan war Shield Target',
 }

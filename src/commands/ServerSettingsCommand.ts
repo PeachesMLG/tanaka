@@ -48,6 +48,18 @@ export class ServerSettingsCommand implements Command {
                   name: 'Enable Automatic Timers as Default',
                   value: SettingsTypes.ENABLE_AUTOMATIC_TIMERS_AS_DEFAULT,
                 },
+                {
+                  name: 'Clan war Attacker Target',
+                  value: SettingsTypes.CLAN_WAR_ATTACK_TARGET,
+                },
+                {
+                  name: 'Clan war Shield Target',
+                  value: SettingsTypes.CLAN_WAR_SHIELD_TARGET,
+                },
+                {
+                  name: 'Clan war Heal Target',
+                  value: SettingsTypes.CLAN_WAR_HEAL_TARGET,
+                },
               ]),
           )
           .addStringOption((option) =>
