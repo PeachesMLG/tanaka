@@ -330,16 +330,24 @@ const handleChoosingSpell = async (
     spellsAvailableLower.includes(spell.spellName.toLowerCase()),
   );
 
+  console.log(JSON.stringify(validSpells, null, 2));
+
   validSpells.sort((a, b) => a.priority - b.priority);
 
   handledClanWarSpells.add(message.id);
 
   const chosenSpell = validSpells[0];
+  
+  if (!chosenSpell) {
+    console.log("No available spells")
+    return;
+  }
+
   const targetClan =
     (await getSetting(message.guild?.id ?? '', chosenSpell.target)) ?? 'N/A';
 
   await message.reply({
-    content: `Suggested Spell: ${chosenSpell} Suggested Target: ${targetClan}`,
+    content: `Suggested Spell: ${chosenSpell.spellName} Suggested Target: ${targetClan}`,
   });
 };
 
