@@ -75,13 +75,13 @@ export const handleMessage = async (
     message.embeds[0].title?.includes('Summon') &&
     !message.embeds[0].title?.includes('Claimed')
   ) {
-    // await handleCardSummon(message, client);
+    await handleCardSummon(message, client);
   } else if (
     message.embeds.length > 0 &&
     message.embeds[0].title?.includes('Claimed') &&
     message.embeds[0].image
   ) {
-    // await handleCardClaim(message, client);
+    await handleCardClaim(message, client);
   } else if (
     message.embeds.length > 0 &&
     message.embeds[0].title?.includes('Casting for Round')
@@ -89,7 +89,7 @@ export const handleMessage = async (
     await handleChoosingSpell(message, client);
   }
 
-  // await handleTimers(message, client);
+  await handleTimers(message, client);
 };
 
 const handleTimers = async (
