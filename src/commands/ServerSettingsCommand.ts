@@ -60,6 +60,18 @@ export class ServerSettingsCommand implements Command {
                   name: 'Clan war Heal Target',
                   value: SettingsTypes.CLAN_WAR_HEAL_TARGET,
                 },
+                {
+                  name: 'Clan war Attacker Priority',
+                  value: SettingsTypes.CLAN_WAR_ATTACK_PRIORITY,
+                },
+                {
+                  name: 'Clan war Shield Priority',
+                  value: SettingsTypes.CLAN_WAR_SHIELD_PRIORITY,
+                },
+                {
+                  name: 'Clan war Heal Priority',
+                  value: SettingsTypes.CLAN_WAR_HEAL_PRIORITY,
+                },
               ]),
           )
           .addStringOption((option) =>

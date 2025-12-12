@@ -12,4 +12,7 @@ export enum SettingsTypes {
   CLAN_WAR_ATTACK_TARGET = 'Clan war Attack Target',
   CLAN_WAR_HEAL_TARGET = 'Clan war Heal Target',
   CLAN_WAR_SHIELD_TARGET = 'Clan war Shield Target',
+  CLAN_WAR_ATTACK_PRIORITY = 'Clan war Attack Priority',
+  CLAN_WAR_HEAL_PRIORITY = 'Clan war Heal Priority',
+  CLAN_WAR_SHIELD_PRIORITY = 'Clan war Shield Priority',
 }
