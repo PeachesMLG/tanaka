@@ -123,15 +123,18 @@ const handleTimers = async (
       }
 
       let futureTime = new Date(Date.now() + 1000 * 60 * cooldown);
-      await createTimer(
-        channel,
-        undefined,
-        futureTime,
-        user,
-        timer.timerMessage,
-        client,
-        timer.timerInformation,
-      );
+      const amount = user === '1242464569302057084' && timer.leaderboard === LeaderboardType.CLAN_SUMMON ? 10 : 1;
+      for (let i = 0; i < amount; i++) {
+        await createTimer(
+          channel,
+          undefined,
+          futureTime,
+          user,
+          timer.timerMessage,
+          client,
+          timer.timerInformation,
+        );
+      }
       return;
     }
   }
