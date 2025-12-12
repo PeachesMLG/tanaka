@@ -18,6 +18,7 @@ import { CardDetails } from './types/cardDetails';
 import { isUserPremium } from './utils/userUtils';
 import { LeaderboardType } from './types/leaderboardType';
 import { incrementLeaderboard } from './database/leaderboardDatabase';
+import { getEmbedMessage, getEmbedMessageGuild } from './utils/embeds';
 
 const handledCardSummonMessages = new TimedList();
 const handledCardClaimMessages = new TimedList();
@@ -349,7 +350,13 @@ const handleChoosingSpell = async (
     (await getSetting(message.guild?.id ?? '', chosenSpell.target)) ?? 'N/A';
 
   await message.reply({
-    content: `Suggested Spell: ${chosenSpell.spellName} Suggested Target: ${targetClan}`,
+    embeds: [
+      getEmbedMessageGuild(
+        message.guild!,
+        'Clan Attack Recommendations',
+        `Suggested Spell: ${chosenSpell.spellName}\nSuggested Target ${targetClan}`,
+      ),
+    ],
   });
 };
 
