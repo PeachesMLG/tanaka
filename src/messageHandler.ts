@@ -278,73 +278,73 @@ const handleChoosingSpell = async (
       spellName: 'Phoenix Revival',
       target: SettingsTypes.CLAN_WAR_HEAL_TARGET,
       priorityModifier: healPriorityModifier,
-      priority: 1,
+      priority: 0,
     },
     {
       spellName: 'Divine Aegis',
       target: SettingsTypes.CLAN_WAR_SHIELD_TARGET,
       priorityModifier: shieldPriorityModifier,
-      priority: 1,
+      priority: 0,
     },
     {
       spellName: 'Chaos Orb',
       target: SettingsTypes.CLAN_WAR_ATTACK_TARGET,
       priorityModifier: attackPriorityModifier,
-      priority: 1,
+      priority: 0,
     },
     {
       spellName: 'Life Surge',
       target: SettingsTypes.CLAN_WAR_HEAL_TARGET,
       priorityModifier: healPriorityModifier,
-      priority: 2,
+      priority: 1,
     },
     {
       spellName: 'Mirror Force',
       target: SettingsTypes.CLAN_WAR_SHIELD_TARGET,
       priorityModifier: shieldPriorityModifier,
-      priority: 2,
+      priority: 1,
     },
     {
       spellName: 'Inferno Blast',
       target: SettingsTypes.CLAN_WAR_ATTACK_TARGET,
       priorityModifier: attackPriorityModifier,
-      priority: 2,
+      priority: 1,
     },
     {
       spellName: 'Regeneration',
       target: SettingsTypes.CLAN_WAR_HEAL_TARGET,
       priorityModifier: healPriorityModifier,
-      priority: 3,
+      priority: 2,
     },
     {
       spellName: 'Mystic Ward',
       target: SettingsTypes.CLAN_WAR_SHIELD_TARGET,
       priorityModifier: shieldPriorityModifier,
-      priority: 3,
+      priority: 2,
     },
     {
       spellName: 'Lightning Strike',
       target: SettingsTypes.CLAN_WAR_ATTACK_TARGET,
       priorityModifier: attackPriorityModifier,
-      priority: 3,
+      priority: 2,
     },
     {
       spellName: 'Healing Light',
       target: SettingsTypes.CLAN_WAR_HEAL_TARGET,
       priorityModifier: healPriorityModifier,
-      priority: 4,
+      priority: 3,
     },
     {
       spellName: 'Stone Shield',
       target: SettingsTypes.CLAN_WAR_SHIELD_TARGET,
       priorityModifier: shieldPriorityModifier,
-      priority: 4,
+      priority: 3,
     },
     {
       spellName: 'Frost Shard',
       target: SettingsTypes.CLAN_WAR_ATTACK_TARGET,
       priorityModifier: attackPriorityModifier,
-      priority: 4,
+      priority: 3,
     },
   ];
 
@@ -356,7 +356,7 @@ const handleChoosingSpell = async (
 
   console.log(JSON.stringify(validSpells, null, 2));
 
-  validSpells.sort((a, b) => (a.priority * a.priorityModifier) - (b.priority * b.priorityModifier));
+  validSpells.sort((a, b) => ((a.priority * 3) + a.priorityModifier) - ((b.priority * 3) + b.priorityModifier));
 
   const chosenSpell = validSpells[0];
 
