@@ -334,14 +334,14 @@ const handleChoosingSpell = async (
 
   validSpells.sort((a, b) => a.priority - b.priority);
 
-  handledClanWarSpells.add(message.id);
-
   const chosenSpell = validSpells[0];
   
   if (!chosenSpell) {
     console.log("No available spells")
     return;
   }
+
+  handledClanWarSpells.add(message.id);
 
   const targetClan =
     (await getSetting(message.guild?.id ?? '', chosenSpell.target)) ?? 'N/A';
