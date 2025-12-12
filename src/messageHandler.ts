@@ -249,7 +249,7 @@ const handleChoosingSpell = async (
   message: Message | PartialMessage,
   client: Client,
 ) => {
-  if (message.channelId !== '1293966820885401641') return;
+  if (message.guildId !== '1222204521296691260') return;
   if (handledClanWarSpells.getItems().includes(message.id)) return;
 
   const spellsAvailable: string[] = [];
