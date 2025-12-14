@@ -296,20 +296,27 @@ export class ServerSettingsCommand implements Command {
 
     const channel = interaction.channel as TextChannel;
 
-    const spellTemplate = {
-      [SettingsTypes.PHOENIX_REVIVAL_PRIORITY]: "1",
-      [SettingsTypes.DIVINE_AEGIS_PRIORITY]: "2",
-      [SettingsTypes.CHAOS_ORB_PRIORITY]: "3",
-      [SettingsTypes.LIFE_SURGE_PRIORITY]: "4",
-      [SettingsTypes.MIRROR_FORCE_PRIORITY]: "5",
-      [SettingsTypes.INFERNO_BLAST_PRIORITY]: "6",
-      [SettingsTypes.REGENERATION_PRIORITY]: "7",
-      [SettingsTypes.MYSTIC_WARD_PRIORITY]: "8",
-      [SettingsTypes.LIGHTNING_STRIKE_PRIORITY]: "9",
-      [SettingsTypes.HEALING_LIGHT_PRIORITY]: "10",
-      [SettingsTypes.STONE_SHIELD_PRIORITY]: "11",
-      [SettingsTypes.FROST_SHARD_PRIORITY]: "12"
-    };
+    // Define spell settings with their default values
+    const spellSettings = [
+      { setting: SettingsTypes.PHOENIX_REVIVAL_PRIORITY, default: "1" },
+      { setting: SettingsTypes.DIVINE_AEGIS_PRIORITY, default: "2" },
+      { setting: SettingsTypes.CHAOS_ORB_PRIORITY, default: "3" },
+      { setting: SettingsTypes.LIFE_SURGE_PRIORITY, default: "4" },
+      { setting: SettingsTypes.MIRROR_FORCE_PRIORITY, default: "5" },
+      { setting: SettingsTypes.INFERNO_BLAST_PRIORITY, default: "6" },
+      { setting: SettingsTypes.REGENERATION_PRIORITY, default: "7" },
+      { setting: SettingsTypes.MYSTIC_WARD_PRIORITY, default: "8" },
+      { setting: SettingsTypes.LIGHTNING_STRIKE_PRIORITY, default: "9" },
+      { setting: SettingsTypes.HEALING_LIGHT_PRIORITY, default: "10" },
+      { setting: SettingsTypes.STONE_SHIELD_PRIORITY, default: "11" },
+      { setting: SettingsTypes.FROST_SHARD_PRIORITY, default: "12" },
+    ];
+
+    const spellTemplate: Record<string, string> = {};
+    for (const { setting, default: defaultValue } of spellSettings) {
+      const currentValue = await getSetting(interaction.guild.id, setting);
+      spellTemplate[setting] = currentValue || defaultValue;
+    }
 
     const jsonTemplate = JSON.stringify(spellTemplate, null, 2);
 
@@ -317,8 +324,8 @@ export class ServerSettingsCommand implements Command {
       embeds: [
         getEmbedMessage(
           channel,
-          'Spell Priority JSON Template',
-          `Copy and modify this template, then use \`/server bulk-update\`:\n\n\`\`\`json\n${jsonTemplate}\`\`\`\n\n*Lower numbers = higher priority*`,
+          'Current Spell Priority Configuration',
+          `Current values (copy and modify, then use \`/server bulk-update\`):\n\n\`\`\`json\n${jsonTemplate}\`\`\`\n\n*Lower numbers = higher priority*`,
         ),
       ],
       ephemeral: true,
