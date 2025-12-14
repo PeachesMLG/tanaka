@@ -116,6 +116,22 @@ export class ServerSettingsCommand implements Command {
               .setDescription('Value of the setting')
               .setRequired(false),
           ),
+      )
+      .addSubcommand((subcommand) =>
+        subcommand
+          .setName('bulk-update')
+          .setDescription('Update multiple settings at once using JSON')
+          .addStringOption((option) =>
+            option
+              .setName('json')
+              .setDescription('JSON object with setting keys and values')
+              .setRequired(true),
+          ),
+      )
+      .addSubcommand((subcommand) =>
+        subcommand
+          .setName('spell-template')
+          .setDescription('Generate a JSON template for spell priorities'),
       );
   }
 
@@ -137,7 +153,17 @@ export class ServerSettingsCommand implements Command {
 
     const subcommand = interaction.options.getSubcommand();
 
-    if (subcommand !== 'settings') return;
+    if (subcommand === 'settings') {
+      await this.handleSingleSetting(interaction, client);
+    } else if (subcommand === 'bulk-update') {
+      await this.handleBulkUpdate(interaction, client);
+    } else if (subcommand === 'spell-template') {
+      await this.handleSpellTemplate(interaction, client);
+    }
+  }
+
+  private async handleSingleSetting(interaction: ChatInputCommandInteraction, client: Client) {
+    if (!interaction.channel || !interaction.guild) return;
 
     const member = interaction.member;
     if (!member || !('permissions' in member)) {
@@ -180,6 +206,119 @@ export class ServerSettingsCommand implements Command {
           channel,
           'Server Setting changed!',
           `${setting} set to \"${result}\".`,
+        ),
+      ],
+      ephemeral: true,
+    });
+  }
+
+  private async handleBulkUpdate(interaction: ChatInputCommandInteraction, client: Client) {
+    if (!interaction.channel || !interaction.guild) return;
+
+    const member = interaction.member;
+    if (!member || !('permissions' in member)) {
+      await interaction.reply({
+        content: 'Cannot determine your permissions.',
+        ephemeral: true,
+      });
+      return;
+    }
+
+    const permissions = member.permissions as Readonly<PermissionsBitField>;
+
+    if (!permissions.has(PermissionsBitField.Flags.Administrator)) {
+      await interaction.reply({
+        content: 'You must have Administrator permissions to use this command.',
+        ephemeral: true,
+      });
+      return;
+    }
+
+    const channel = interaction.channel as TextChannel;
+    const jsonString = interaction.options.getString('json', true);
+
+    let settingsObject: Record<string, string>;
+    try {
+      settingsObject = JSON.parse(jsonString);
+    } catch (error) {
+      await interaction.reply({
+        embeds: [
+          getEmbedMessage(
+            channel,
+            'Error!',
+            'Invalid JSON format. Please provide a valid JSON object.',
+          ),
+        ],
+        ephemeral: true,
+      });
+      return;
+    }
+
+    const validSettings = Object.values(SettingsTypes);
+    const invalidSettings = Object.keys(settingsObject).filter(
+      (key) => !validSettings.includes(key as SettingsTypes),
+    );
+
+    if (invalidSettings.length > 0) {
+      await interaction.reply({
+        embeds: [
+          getEmbedMessage(
+            channel,
+            'Error!',
+            `Invalid settings found: ${invalidSettings.join(', ')}\n\nUse \`/spell-priorities\` to see valid spell priority settings.`,
+          ),
+        ],
+        ephemeral: true,
+      });
+      return;
+    }
+
+    const results: string[] = [];
+    for (const [setting, value] of Object.entries(settingsObject)) {
+      await saveSetting(interaction.guild.id, setting, value);
+      results.push(`${setting}: "${value}"`);
+    }
+
+    await interaction.reply({
+      embeds: [
+        getEmbedMessage(
+          channel,
+          'Bulk Settings Updated!',
+          `Successfully updated ${results.length} settings:\n\n${results.join('\n')}`,
+        ),
+      ],
+      ephemeral: true,
+    });
+  }
+
+  private async handleSpellTemplate(interaction: ChatInputCommandInteraction, client: Client) {
+    if (!interaction.channel || !interaction.guild) return;
+
+    const channel = interaction.channel as TextChannel;
+
+    const spellTemplate = {
+      [SettingsTypes.PHOENIX_REVIVAL_PRIORITY]: "1",
+      [SettingsTypes.DIVINE_AEGIS_PRIORITY]: "2",
+      [SettingsTypes.CHAOS_ORB_PRIORITY]: "3",
+      [SettingsTypes.LIFE_SURGE_PRIORITY]: "4",
+      [SettingsTypes.MIRROR_FORCE_PRIORITY]: "5",
+      [SettingsTypes.INFERNO_BLAST_PRIORITY]: "6",
+      [SettingsTypes.REGENERATION_PRIORITY]: "7",
+      [SettingsTypes.MYSTIC_WARD_PRIORITY]: "8",
+      [SettingsTypes.LIGHTNING_STRIKE_PRIORITY]: "9",
+      [SettingsTypes.HEALING_LIGHT_PRIORITY]: "10",
+      [SettingsTypes.STONE_SHIELD_PRIORITY]: "11",
+      [SettingsTypes.FROST_SHARD_PRIORITY]: "12"
+    };
+
+    const jsonTemplate = JSON.stringify(spellTemplate, null, 2);
+
+    await interaction.reply({
+      embeds: [
+        getEmbedMessage(
+          channel,
+          'Spell Priority JSON Template',
+          `Copy and modify this template, then use \`/server bulk-update\`:\n\n\`\`\`json\n${jsonTemplate}\`\`\`\n\n*Lower numbers = higher priority*`,
         ),
       ],
       ephemeral: true,
