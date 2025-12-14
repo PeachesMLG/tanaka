@@ -14,6 +14,7 @@ import { UserSettingsCommand } from './commands/UserSettingsCommand';
 import { ServerSettingsCommand } from './commands/ServerSettingsCommand';
 import { messageListeners, recentMessages } from './utils/messageListener';
 import { TopCommand } from './commands/TopCommand';
+import { SpellPrioritiesCommand } from './commands/SpellPrioritiesCommand';
 import { handleConnection } from './handleConnection';
 
 dotenv.config();
@@ -33,6 +34,7 @@ const commands = [
   new UserSettingsCommand(),
   new ServerSettingsCommand(),
   new TopCommand(),
+  new SpellPrioritiesCommand(),
 ];
 
 client.once('ready', async () => {
