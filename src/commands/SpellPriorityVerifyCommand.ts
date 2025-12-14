@@ -82,7 +82,7 @@ export class SpellPriorityVerifyCommand implements Command {
         const current = spellPriorities[i];
         const next = spellPriorities[i + 1];
         
-        if (current.priority > next.priority) {
+        if (current.priority < next.priority) {
           groupIssues.push(
             `${current.name} (${current.priority}) should have higher priority than ${next.name} (${next.priority})`
           );
