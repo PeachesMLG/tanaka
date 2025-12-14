@@ -43,61 +43,85 @@ export class SpellPrioritiesCommand implements Command {
         name: 'Phoenix Revival',
         setting: SettingsTypes.PHOENIX_REVIVAL_PRIORITY,
         defaultPriority: 1,
-      },
-      {
-        name: 'Divine Aegis',
-        setting: SettingsTypes.DIVINE_AEGIS_PRIORITY,
-        defaultPriority: 2,
-      },
-      {
-        name: 'Chaos Orb',
-        setting: SettingsTypes.CHAOS_ORB_PRIORITY,
-        defaultPriority: 3,
+        type: 'Heal',
+        tier: 4,
       },
       {
         name: 'Life Surge',
         setting: SettingsTypes.LIFE_SURGE_PRIORITY,
         defaultPriority: 4,
-      },
-      {
-        name: 'Mirror Force',
-        setting: SettingsTypes.MIRROR_FORCE_PRIORITY,
-        defaultPriority: 5,
-      },
-      {
-        name: 'Inferno Blast',
-        setting: SettingsTypes.INFERNO_BLAST_PRIORITY,
-        defaultPriority: 6,
+        type: 'Heal',
+        tier: 3,
       },
       {
         name: 'Regeneration',
         setting: SettingsTypes.REGENERATION_PRIORITY,
         defaultPriority: 7,
-      },
-      {
-        name: 'Mystic Ward',
-        setting: SettingsTypes.MYSTIC_WARD_PRIORITY,
-        defaultPriority: 8,
-      },
-      {
-        name: 'Lightning Strike',
-        setting: SettingsTypes.LIGHTNING_STRIKE_PRIORITY,
-        defaultPriority: 9,
+        type: 'Heal',
+        tier: 2,
       },
       {
         name: 'Healing Light',
         setting: SettingsTypes.HEALING_LIGHT_PRIORITY,
         defaultPriority: 10,
+        type: 'Heal',
+        tier: 1,
+      },
+      {
+        name: 'Divine Aegis',
+        setting: SettingsTypes.DIVINE_AEGIS_PRIORITY,
+        defaultPriority: 2,
+        type: 'Shield',
+        tier: 4,
+      },
+      {
+        name: 'Mirror Force',
+        setting: SettingsTypes.MIRROR_FORCE_PRIORITY,
+        defaultPriority: 5,
+        type: 'Shield',
+        tier: 3,
+      },
+      {
+        name: 'Mystic Ward',
+        setting: SettingsTypes.MYSTIC_WARD_PRIORITY,
+        defaultPriority: 8,
+        type: 'Shield',
+        tier: 2,
       },
       {
         name: 'Stone Shield',
         setting: SettingsTypes.STONE_SHIELD_PRIORITY,
         defaultPriority: 11,
+        type: 'Shield',
+        tier: 1,
+      },
+      {
+        name: 'Chaos Orb',
+        setting: SettingsTypes.CHAOS_ORB_PRIORITY,
+        defaultPriority: 3,
+        type: 'Attack',
+        tier: 4,
+      },
+      {
+        name: 'Inferno Blast',
+        setting: SettingsTypes.INFERNO_BLAST_PRIORITY,
+        defaultPriority: 6,
+        type: 'Attack',
+        tier: 3,
+      },
+      {
+        name: 'Lightning Strike',
+        setting: SettingsTypes.LIGHTNING_STRIKE_PRIORITY,
+        defaultPriority: 9,
+        type: 'Attack',
+        tier: 2,
       },
       {
         name: 'Frost Shard',
         setting: SettingsTypes.FROST_SHARD_PRIORITY,
         defaultPriority: 12,
+        type: 'Attack',
+        tier: 1,
       },
     ];
 
@@ -110,6 +134,8 @@ export class SpellPrioritiesCommand implements Command {
         return {
           name: spell.name,
           priority,
+          type: spell.type,
+          tier: spell.tier,
         };
       }),
     );
@@ -119,7 +145,11 @@ export class SpellPrioritiesCommand implements Command {
     const description = spellPriorities
       .map((spell, index) => {
         const rank = index + 1;
-        return `**${rank}.** ${spell.name} (Priority: ${spell.priority})`;
+        const maxStars = 4;
+        const stars =
+          '★'.repeat(spell.tier) +
+          '☆'.repeat(maxStars - spell.tier);
+        return `**${rank}.** ${spell.name} - ${spell.type} ${stars} (Priority: ${spell.priority})`;
       })
       .join('\n');
 
