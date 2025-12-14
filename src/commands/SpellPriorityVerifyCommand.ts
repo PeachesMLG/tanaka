@@ -84,7 +84,7 @@ export class SpellPriorityVerifyCommand implements Command {
         
         if (current.priority < next.priority) {
           groupIssues.push(
-            `${current.name} (${current.priority}) should have higher priority than ${next.name} (${next.priority})`
+            `${current.name} (${current.priority}) should have lower priority than ${next.name} (${next.priority})`
           );
         }
       }
