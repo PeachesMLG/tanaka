@@ -15,6 +15,7 @@ import { ServerSettingsCommand } from './commands/ServerSettingsCommand';
 import { messageListeners, recentMessages } from './utils/messageListener';
 import { TopCommand } from './commands/TopCommand';
 import { SpellPrioritiesCommand } from './commands/SpellPrioritiesCommand';
+import { SpellPriorityVerifyCommand } from './commands/SpellPriorityVerifyCommand';
 import { handleConnection } from './handleConnection';
 
 dotenv.config();
@@ -35,6 +36,7 @@ const commands = [
   new ServerSettingsCommand(),
   new TopCommand(),
   new SpellPrioritiesCommand(),
+  new SpellPriorityVerifyCommand(),
 ];
 
 client.once('ready', async () => {

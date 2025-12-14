@@ -354,7 +354,7 @@ const handleChoosingSpell = async (
       getEmbedMessageGuild(
         message.guild!,
         'Clan Attack Recommendations',
-        `Suggested Spell: ${chosenSpell.spellName}\nSuggested Target ${targetClan}`,
+        `Suggested Spell: ${chosenSpell.spellName}\nSuggested Target: ${targetClan}`,
       ),
     ],
   });
