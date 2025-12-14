@@ -140,7 +140,7 @@ const handleTimers = async (
         user === '1242464569302057084' &&
         timer.leaderboard === LeaderboardType.CLAN_SUMMON
           ? 10
-          : 1;
+          : 3;
       for (let i = 0; i < amount; i++) {
         await createTimer(
           channel,
@@ -356,7 +356,12 @@ const handleChoosingSpell = async (
 
   console.log(JSON.stringify(validSpells, null, 2));
 
-  validSpells.sort((a, b) => ((a.priority * 3) + a.priorityModifier) - ((b.priority * 3) + b.priorityModifier));
+  validSpells.sort(
+    (a, b) =>
+      a.priority * 3 +
+      a.priorityModifier -
+      (b.priority * 3 + b.priorityModifier),
+  );
 
   const chosenSpell = validSpells[0];
 
