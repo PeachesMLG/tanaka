@@ -61,16 +61,52 @@ export class ServerSettingsCommand implements Command {
                   value: SettingsTypes.CLAN_WAR_HEAL_TARGET,
                 },
                 {
-                  name: 'Clan war Attacker Priority',
-                  value: SettingsTypes.CLAN_WAR_ATTACK_PRIORITY,
+                  name: 'Phoenix Revival Priority',
+                  value: SettingsTypes.PHOENIX_REVIVAL_PRIORITY,
                 },
                 {
-                  name: 'Clan war Shield Priority',
-                  value: SettingsTypes.CLAN_WAR_SHIELD_PRIORITY,
+                  name: 'Divine Aegis Priority',
+                  value: SettingsTypes.DIVINE_AEGIS_PRIORITY,
                 },
                 {
-                  name: 'Clan war Heal Priority',
-                  value: SettingsTypes.CLAN_WAR_HEAL_PRIORITY,
+                  name: 'Chaos Orb Priority',
+                  value: SettingsTypes.CHAOS_ORB_PRIORITY,
+                },
+                {
+                  name: 'Life Surge Priority',
+                  value: SettingsTypes.LIFE_SURGE_PRIORITY,
+                },
+                {
+                  name: 'Mirror Force Priority',
+                  value: SettingsTypes.MIRROR_FORCE_PRIORITY,
+                },
+                {
+                  name: 'Inferno Blast Priority',
+                  value: SettingsTypes.INFERNO_BLAST_PRIORITY,
+                },
+                {
+                  name: 'Regeneration Priority',
+                  value: SettingsTypes.REGENERATION_PRIORITY,
+                },
+                {
+                  name: 'Mystic Ward Priority',
+                  value: SettingsTypes.MYSTIC_WARD_PRIORITY,
+                },
+                {
+                  name: 'Lightning Strike Priority',
+                  value: SettingsTypes.LIGHTNING_STRIKE_PRIORITY,
+                },
+                {
+                  name: 'Healing Light Priority',
+                  value: SettingsTypes.HEALING_LIGHT_PRIORITY,
+                },
+                {
+                  name: 'Stone Shield Priority',
+                  value: SettingsTypes.STONE_SHIELD_PRIORITY,
+                },
+                {
+                  name: 'Frost Shard Priority',
+                  value: SettingsTypes.FROST_SHARD_PRIORITY,
                 },
               ]),
           )

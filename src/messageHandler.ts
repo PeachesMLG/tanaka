@@ -264,87 +264,66 @@ const handleChoosingSpell = async (
 
   const spellsAvailableLower = spellsAvailable.map((s) => s.toLowerCase());
 
-  const healPriorityModifier =
-    parseInt(await getSetting(message.guildId, SettingsTypes.CLAN_WAR_HEAL_PRIORITY) ?? '') || 1;
-
-  const attackPriorityModifier =
-    parseInt(await getSetting(message.guildId, SettingsTypes.CLAN_WAR_ATTACK_PRIORITY) ?? '') || 1;
-
-  const shieldPriorityModifier =
-    parseInt(await getSetting(message.guildId, SettingsTypes.CLAN_WAR_SHIELD_PRIORITY) ?? '') || 1;
-
   const spellPriority = [
     {
       spellName: 'Phoenix Revival',
       target: SettingsTypes.CLAN_WAR_HEAL_TARGET,
-      priorityModifier: healPriorityModifier,
-      priority: 0,
+      priority: parseInt(await getSetting(message.guildId, SettingsTypes.PHOENIX_REVIVAL_PRIORITY) ?? '') || 1,
     },
     {
       spellName: 'Divine Aegis',
       target: SettingsTypes.CLAN_WAR_SHIELD_TARGET,
-      priorityModifier: shieldPriorityModifier,
-      priority: 0,
+      priority: parseInt(await getSetting(message.guildId, SettingsTypes.DIVINE_AEGIS_PRIORITY) ?? '') || 2,
     },
     {
       spellName: 'Chaos Orb',
       target: SettingsTypes.CLAN_WAR_ATTACK_TARGET,
-      priorityModifier: attackPriorityModifier,
-      priority: 0,
+      priority: parseInt(await getSetting(message.guildId, SettingsTypes.CHAOS_ORB_PRIORITY) ?? '') || 3,
     },
     {
       spellName: 'Life Surge',
       target: SettingsTypes.CLAN_WAR_HEAL_TARGET,
-      priorityModifier: healPriorityModifier,
-      priority: 1,
+      priority: parseInt(await getSetting(message.guildId, SettingsTypes.LIFE_SURGE_PRIORITY) ?? '') || 4,
     },
     {
       spellName: 'Mirror Force',
       target: SettingsTypes.CLAN_WAR_SHIELD_TARGET,
-      priorityModifier: shieldPriorityModifier,
-      priority: 1,
+      priority: parseInt(await getSetting(message.guildId, SettingsTypes.MIRROR_FORCE_PRIORITY) ?? '') || 5,
     },
     {
       spellName: 'Inferno Blast',
       target: SettingsTypes.CLAN_WAR_ATTACK_TARGET,
-      priorityModifier: attackPriorityModifier,
-      priority: 1,
+      priority: parseInt(await getSetting(message.guildId, SettingsTypes.INFERNO_BLAST_PRIORITY) ?? '') || 6,
     },
     {
       spellName: 'Regeneration',
       target: SettingsTypes.CLAN_WAR_HEAL_TARGET,
-      priorityModifier: healPriorityModifier,
-      priority: 2,
+      priority: parseInt(await getSetting(message.guildId, SettingsTypes.REGENERATION_PRIORITY) ?? '') || 7,
     },
     {
       spellName: 'Mystic Ward',
       target: SettingsTypes.CLAN_WAR_SHIELD_TARGET,
-      priorityModifier: shieldPriorityModifier,
-      priority: 2,
+      priority: parseInt(await getSetting(message.guildId, SettingsTypes.MYSTIC_WARD_PRIORITY) ?? '') || 8,
     },
     {
       spellName: 'Lightning Strike',
       target: SettingsTypes.CLAN_WAR_ATTACK_TARGET,
-      priorityModifier: attackPriorityModifier,
-      priority: 2,
+      priority: parseInt(await getSetting(message.guildId, SettingsTypes.LIGHTNING_STRIKE_PRIORITY) ?? '') || 9,
     },
     {
       spellName: 'Healing Light',
       target: SettingsTypes.CLAN_WAR_HEAL_TARGET,
-      priorityModifier: healPriorityModifier,
-      priority: 3,
+      priority: parseInt(await getSetting(message.guildId, SettingsTypes.HEALING_LIGHT_PRIORITY) ?? '') || 10,
     },
     {
       spellName: 'Stone Shield',
       target: SettingsTypes.CLAN_WAR_SHIELD_TARGET,
-      priorityModifier: shieldPriorityModifier,
-      priority: 3,
+      priority: parseInt(await getSetting(message.guildId, SettingsTypes.STONE_SHIELD_PRIORITY) ?? '') || 11,
     },
     {
       spellName: 'Frost Shard',
       target: SettingsTypes.CLAN_WAR_ATTACK_TARGET,
-      priorityModifier: attackPriorityModifier,
-      priority: 3,
+      priority: parseInt(await getSetting(message.guildId, SettingsTypes.FROST_SHARD_PRIORITY) ?? '') || 12,
     },
   ];
 
@@ -356,12 +335,7 @@ const handleChoosingSpell = async (
 
   console.log(JSON.stringify(validSpells, null, 2));
 
-  validSpells.sort(
-    (a, b) =>
-      a.priority * 3 +
-      a.priorityModifier -
-      (b.priority * 3 + b.priorityModifier),
-  );
+  validSpells.sort((a, b) => a.priority - b.priority);
 
   const chosenSpell = validSpells[0];
 
