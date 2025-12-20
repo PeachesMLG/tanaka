@@ -4,7 +4,6 @@ import { createTimer } from '../timers';
 import { getChannel } from '../utils/getChannel';
 import { getSetting } from '../database/settingsDatabase';
 import { SettingsTypes } from '../SettingsTypes';
-import { waitForMessage } from '../utils/messageListener';
 import { getCardVersions } from '../utils/cardUtils';
 import { mapTierToEmoji } from '../utils/emojis';
 import { executeAtDate } from '../utils/timerUtils';
@@ -16,23 +15,10 @@ export const cardSpawnHandler = async (
   message: Message | PartialMessage,
 ) => {
   await createSummonTimer(cardSpawn, client);
-  if (
-    !cardSpawn.SummonedBy &&
-    cardSpawn.Cards.some(
-      (value) =>
-        value.Rarity === 'SR' ||
-        value.Rarity === 'SSR' ||
-        value.Rarity === 'UR',
-    )
-  ) {
-    await sendHighTierPing(cardSpawn, message, client);
-  } else if (!cardSpawn.SummonedBy) {
-    await sendRegularSummonPing(cardSpawn, client);
-  }
-  await createVersionsSummary(cardSpawn, client, message);
+  await createSummary(cardSpawn, client, message);
 };
 
-const createVersionsSummary = async (
+const createSummary = async (
   cardSpawn: CardSpawn,
   client: Client,
   message: Message | PartialMessage,
@@ -48,10 +34,19 @@ const createVersionsSummary = async (
     await Promise.all(cardSpawn.Cards.map(getCardSummary))
   ).filter((value) => value) as string[];
 
+  let finalMessage = '';
+
+  if (!cardSpawn.SummonedBy) {
+    const tierPing = await getTierPingForCards(cardSpawn, client);
+    if (tierPing) {
+      finalMessage = tierPing + '\n\n';
+    }
+  }
+
   if (content) {
-    const replyMessage = await message.reply(
-      content.join('\n') + '\n-# Data from 2nd October 2025, may be outdated',
-    );
+    finalMessage += content.join('\n') + '\n-# Data from 2nd October 2025, may be outdated';
+    
+    const replyMessage = await message.reply(finalMessage);
 
     executeAtDate(despawnTime, async () => {
       await replyMessage.delete();
@@ -72,6 +67,28 @@ const getCardSummary = async (card: CardDetails) => {
       : `-# No Single Vs Remaining.`;
 
   return `${cardInformation}\n${versionInformation}`;
+};
+
+const getTierPingForCards = async (
+  cardSpawn: CardSpawn,
+  client: Client,
+): Promise<string | null> => {
+  const tiers = cardSpawn.Cards.map(card => card.Rarity);
+
+  let highestTier = SettingsTypes.COMMON_TIER_PING_ROLE;
+  
+  if (tiers.includes('UR')) {
+    highestTier = SettingsTypes.UR_TIER_PING_ROLE;
+  } else if (tiers.includes('SSR')) {
+    highestTier = SettingsTypes.SSR_TIER_PING_ROLE;
+  } else if (tiers.includes('SR')) {
+    highestTier = SettingsTypes.SR_TIER_PING_ROLE;
+  } else if (tiers.includes('R')) {
+    highestTier = SettingsTypes.RARE_TIER_PING_ROLE;
+  }
+
+  const pingRole = await getSetting(cardSpawn.ServerId, highestTier);
+  return pingRole || null;
 };
 
 const createSummonTimer = async (cardSpawn: CardSpawn, client: Client) => {
@@ -105,56 +122,4 @@ const createSummonTimer = async (cardSpawn: CardSpawn, client: Client) => {
     client,
     'Automatically triggered by summon\n Turn this off in the /user settings command',
   );
-};
-
-const sendHighTierPing = async (
-  cardSpawn: CardSpawn,
-  originalMessage: Message | PartialMessage,
-  client: Client,
-) => {
-  const channel = await getChannel(cardSpawn.ChannelId, client);
-  const highTierPingRole = await getSetting(
-    cardSpawn.ServerId,
-    SettingsTypes.HIGH_TIER_PING_ROLE,
-  );
-  const highTierPingMessage = await getSetting(
-    cardSpawn.ServerId,
-    SettingsTypes.HIGH_TIER_PING_MESSAGE,
-  );
-
-  if (!highTierPingRole || !highTierPingMessage || !channel) {
-    return;
-  }
-
-  // Lets just check if any other bot is going to send this first
-  waitForMessage(
-    (message) => message.content.includes(highTierPingRole),
-    1000,
-  ).then((message) => {
-    if (message) {
-      return;
-    }
-
-    originalMessage.reply(highTierPingRole + ' ' + highTierPingMessage);
-  });
-};
-
-const sendRegularSummonPing = async (cardSpawn: CardSpawn, client: Client) => {
-  const channel = await getChannel(cardSpawn.ChannelId, client);
-  const regularTierPingRole = await getSetting(
-    cardSpawn.ServerId,
-    SettingsTypes.REGULAR_TIER_PING_ROLE,
-  );
-  const regularTierPingMessage = await getSetting(
-    cardSpawn.ServerId,
-    SettingsTypes.REGULAR_TIER_PING_MESSAGE,
-  );
-
-  if (!regularTierPingRole || !regularTierPingMessage || !channel) {
-    return;
-  }
-
-  channel
-    .send(regularTierPingRole + ' ' + regularTierPingMessage)
-    .then(async (value) => await value.delete());
 };

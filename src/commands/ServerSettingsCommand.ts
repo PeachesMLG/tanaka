@@ -29,84 +29,28 @@ export class ServerSettingsCommand implements Command {
               .setRequired(false)
               .addChoices([
                 {
-                  name: 'High Tier Ping Role',
-                  value: SettingsTypes.HIGH_TIER_PING_ROLE,
+                  name: 'Common Tier Ping Role',
+                  value: SettingsTypes.COMMON_TIER_PING_ROLE,
                 },
                 {
-                  name: 'High Tier Ping Message',
-                  value: SettingsTypes.HIGH_TIER_PING_MESSAGE,
+                  name: 'Rare Tier Ping Role',
+                  value: SettingsTypes.RARE_TIER_PING_ROLE,
                 },
                 {
-                  name: 'Regular Tier Ping Role',
-                  value: SettingsTypes.REGULAR_TIER_PING_ROLE,
+                  name: 'SR Tier Ping Role',
+                  value: SettingsTypes.SR_TIER_PING_ROLE,
                 },
                 {
-                  name: 'Regular Tier Ping Message',
-                  value: SettingsTypes.REGULAR_TIER_PING_MESSAGE,
+                  name: 'SSR Tier Ping Role',
+                  value: SettingsTypes.SSR_TIER_PING_ROLE,
+                },
+                {
+                  name: 'UR Tier Ping Role',
+                  value: SettingsTypes.UR_TIER_PING_ROLE,
                 },
                 {
                   name: 'Enable Automatic Timers as Default',
                   value: SettingsTypes.ENABLE_AUTOMATIC_TIMERS_AS_DEFAULT,
-                },
-                {
-                  name: 'Clan war Attacker Target',
-                  value: SettingsTypes.CLAN_WAR_ATTACK_TARGET,
-                },
-                {
-                  name: 'Clan war Shield Target',
-                  value: SettingsTypes.CLAN_WAR_SHIELD_TARGET,
-                },
-                {
-                  name: 'Clan war Heal Target',
-                  value: SettingsTypes.CLAN_WAR_HEAL_TARGET,
-                },
-                {
-                  name: 'Phoenix Revival Priority',
-                  value: SettingsTypes.PHOENIX_REVIVAL_PRIORITY,
-                },
-                {
-                  name: 'Divine Aegis Priority',
-                  value: SettingsTypes.DIVINE_AEGIS_PRIORITY,
-                },
-                {
-                  name: 'Chaos Orb Priority',
-                  value: SettingsTypes.CHAOS_ORB_PRIORITY,
-                },
-                {
-                  name: 'Life Surge Priority',
-                  value: SettingsTypes.LIFE_SURGE_PRIORITY,
-                },
-                {
-                  name: 'Mirror Force Priority',
-                  value: SettingsTypes.MIRROR_FORCE_PRIORITY,
-                },
-                {
-                  name: 'Inferno Blast Priority',
-                  value: SettingsTypes.INFERNO_BLAST_PRIORITY,
-                },
-                {
-                  name: 'Regeneration Priority',
-                  value: SettingsTypes.REGENERATION_PRIORITY,
-                },
-                {
-                  name: 'Mystic Ward Priority',
-                  value: SettingsTypes.MYSTIC_WARD_PRIORITY,
-                },
-                {
-                  name: 'Lightning Strike Priority',
-                  value: SettingsTypes.LIGHTNING_STRIKE_PRIORITY,
-                },
-                {
-                  name: 'Healing Light Priority',
-                  value: SettingsTypes.HEALING_LIGHT_PRIORITY,
-                },
-                {
-                  name: 'Stone Shield Priority',
-                  value: SettingsTypes.STONE_SHIELD_PRIORITY,
-                },
-                {
-                  name: 'Frost Shard Priority',
-                  value: SettingsTypes.FROST_SHARD_PRIORITY,
                 },
               ]),
           )
