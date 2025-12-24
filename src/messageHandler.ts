@@ -63,6 +63,14 @@ const timers = [
       'Automatically triggered by Clan Summon\n Turn this off in the /user settings command',
     setting: SettingsTypes.AUTOMATIC_CLAN_SUMMONS,
   },
+  {
+    title: 'Merry Christmas',
+    cooldown: 30,
+    timerMessage: '</christmas minigame:1453417062612467822>',
+    timerInformation:
+      'Automatically triggered by Christmas Event\n Turn this off in the /user settings command',
+    setting: SettingsTypes.AUTOMATIC_CHRISTMAS_TIMERS,
+  },
 ];
 
 export const handleMessage = async (

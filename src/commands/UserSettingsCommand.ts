@@ -43,6 +43,10 @@ export class UserSettingsCommand implements Command {
                   name: 'Automatic Clan Summons',
                   value: SettingsTypes.AUTOMATIC_CLAN_SUMMONS,
                 },
+                {
+                  name: 'Automatic Christmas Timers',
+                  value: SettingsTypes.AUTOMATIC_CHRISTMAS_TIMERS,
+                },
               ]),
           )
           .addBooleanOption((option) =>
