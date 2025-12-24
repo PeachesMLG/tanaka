@@ -111,11 +111,12 @@ const handleTimers = async (
       message.embeds[0].title?.includes(timer.title) &&
       (!timer.description || message.embeds[0].description?.includes(timer.description))
     ) {
-      console.log(timer.description);
-      console.log(JSON.stringify(message.embeds[0]));
       if(timer.title === 'Merry Christmas')return;
       if (handledTimerMessages.getItems().includes(message.id)) return;
       handledTimerMessages.add(message.id);
+
+      console.log(timer.description);
+      console.log(JSON.stringify(message.embeds[0]));
 
       const user = await getUserByMessageReference(
         message.reference,
