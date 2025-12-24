@@ -63,15 +63,6 @@ const timers = [
       'Automatically triggered by Clan Summon\n Turn this off in the /user settings command',
     setting: SettingsTypes.AUTOMATIC_CLAN_SUMMONS,
   },
-  {
-    title: 'Merry Christmas',
-    description: 'Click all the Christmas emojis!',
-    cooldown: 30,
-    timerMessage: '</christmas minigame:1453417062612467822>',
-    timerInformation:
-      'Automatically triggered by Christmas Event\n Turn this off in the /user settings command',
-    setting: SettingsTypes.AUTOMATIC_CHRISTMAS_TIMERS,
-  },
 ];
 
 export const handleMessage = async (
@@ -108,15 +99,10 @@ const handleTimers = async (
   for (const timer of timers) {
     if (
       message.embeds.length > 0 &&
-      message.embeds[0].title?.includes(timer.title) &&
-      (!timer.description || message.embeds[0].description?.includes(timer.description))
+      message.embeds[0].title?.includes(timer.title)
     ) {
       if (handledTimerMessages.getItems().includes(message.id)) return;
       handledTimerMessages.add(message.id);
-
-      console.log(timer.description);
-      console.log(JSON.stringify(message.embeds[0]));
-      if(timer.title === 'Merry Christmas')return;
 
       const user = await getUserByMessageReference(
         message.reference,
