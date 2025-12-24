@@ -112,7 +112,8 @@ const handleTimers = async (
       (!timer.description || message.embeds[0].description?.includes(timer.description))
     ) {
       console.log(timer.description);
-      console.log(message.embeds[0].description);
+      console.log(JSON.stringify(message.embeds[0]));
+      if(timer.title === 'Merry Christmas')return;
       if (handledTimerMessages.getItems().includes(message.id)) return;
       handledTimerMessages.add(message.id);
 
