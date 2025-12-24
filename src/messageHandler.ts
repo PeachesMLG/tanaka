@@ -111,6 +111,8 @@ const handleTimers = async (
       message.embeds[0].title?.includes(timer.title) &&
       (!timer.description || message.embeds[0].description?.includes(timer.description))
     ) {
+      console.log(timer.description);
+      console.log(message.embeds[0].description);
       if (handledTimerMessages.getItems().includes(message.id)) return;
       handledTimerMessages.add(message.id);
 
