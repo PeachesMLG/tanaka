@@ -65,6 +65,7 @@ const timers = [
   },
   {
     title: 'Merry Christmas',
+    description: 'Click all the Christmas emojis!',
     cooldown: 30,
     timerMessage: '</christmas minigame:1453417062612467822>',
     timerInformation:
@@ -107,7 +108,8 @@ const handleTimers = async (
   for (const timer of timers) {
     if (
       message.embeds.length > 0 &&
-      message.embeds[0].title?.includes(timer.title)
+      message.embeds[0].title?.includes(timer.title) &&
+      (!timer.description || message.embeds[0].description?.includes(timer.description))
     ) {
       if (handledTimerMessages.getItems().includes(message.id)) return;
       handledTimerMessages.add(message.id);
