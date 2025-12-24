@@ -144,22 +144,15 @@ const handleTimers = async (
       }
 
       let futureTime = new Date(Date.now() + 1000 * 60 * cooldown);
-      const amount =
-        user === '1242464569302057084' &&
-        timer.leaderboard === LeaderboardType.CLAN_SUMMON
-          ? 10
-          : 3;
-      for (let i = 0; i < amount; i++) {
-        await createTimer(
-          channel,
-          undefined,
-          futureTime,
-          user,
-          timer.timerMessage,
-          client,
-          timer.timerInformation,
-        );
-      }
+      await createTimer(
+        channel,
+        undefined,
+        futureTime,
+        user,
+        timer.timerMessage,
+        client,
+        timer.timerInformation,
+      );
       return;
     }
   }
@@ -276,62 +269,134 @@ const handleChoosingSpell = async (
     {
       spellName: 'Phoenix Revival',
       target: SettingsTypes.CLAN_WAR_HEAL_TARGET,
-      priority: parseInt(await getSetting(message.guildId, SettingsTypes.PHOENIX_REVIVAL_PRIORITY) ?? '') || 1,
+      priority:
+        parseInt(
+          (await getSetting(
+            message.guildId,
+            SettingsTypes.PHOENIX_REVIVAL_PRIORITY,
+          )) ?? '',
+        ) || 1,
     },
     {
       spellName: 'Divine Aegis',
       target: SettingsTypes.CLAN_WAR_SHIELD_TARGET,
-      priority: parseInt(await getSetting(message.guildId, SettingsTypes.DIVINE_AEGIS_PRIORITY) ?? '') || 2,
+      priority:
+        parseInt(
+          (await getSetting(
+            message.guildId,
+            SettingsTypes.DIVINE_AEGIS_PRIORITY,
+          )) ?? '',
+        ) || 2,
     },
     {
       spellName: 'Chaos Orb',
       target: SettingsTypes.CLAN_WAR_ATTACK_TARGET,
-      priority: parseInt(await getSetting(message.guildId, SettingsTypes.CHAOS_ORB_PRIORITY) ?? '') || 3,
+      priority:
+        parseInt(
+          (await getSetting(
+            message.guildId,
+            SettingsTypes.CHAOS_ORB_PRIORITY,
+          )) ?? '',
+        ) || 3,
     },
     {
       spellName: 'Life Surge',
       target: SettingsTypes.CLAN_WAR_HEAL_TARGET,
-      priority: parseInt(await getSetting(message.guildId, SettingsTypes.LIFE_SURGE_PRIORITY) ?? '') || 4,
+      priority:
+        parseInt(
+          (await getSetting(
+            message.guildId,
+            SettingsTypes.LIFE_SURGE_PRIORITY,
+          )) ?? '',
+        ) || 4,
     },
     {
       spellName: 'Mirror Force',
       target: SettingsTypes.CLAN_WAR_SHIELD_TARGET,
-      priority: parseInt(await getSetting(message.guildId, SettingsTypes.MIRROR_FORCE_PRIORITY) ?? '') || 5,
+      priority:
+        parseInt(
+          (await getSetting(
+            message.guildId,
+            SettingsTypes.MIRROR_FORCE_PRIORITY,
+          )) ?? '',
+        ) || 5,
     },
     {
       spellName: 'Inferno Blast',
       target: SettingsTypes.CLAN_WAR_ATTACK_TARGET,
-      priority: parseInt(await getSetting(message.guildId, SettingsTypes.INFERNO_BLAST_PRIORITY) ?? '') || 6,
+      priority:
+        parseInt(
+          (await getSetting(
+            message.guildId,
+            SettingsTypes.INFERNO_BLAST_PRIORITY,
+          )) ?? '',
+        ) || 6,
     },
     {
       spellName: 'Regeneration',
       target: SettingsTypes.CLAN_WAR_HEAL_TARGET,
-      priority: parseInt(await getSetting(message.guildId, SettingsTypes.REGENERATION_PRIORITY) ?? '') || 7,
+      priority:
+        parseInt(
+          (await getSetting(
+            message.guildId,
+            SettingsTypes.REGENERATION_PRIORITY,
+          )) ?? '',
+        ) || 7,
     },
     {
       spellName: 'Mystic Ward',
       target: SettingsTypes.CLAN_WAR_SHIELD_TARGET,
-      priority: parseInt(await getSetting(message.guildId, SettingsTypes.MYSTIC_WARD_PRIORITY) ?? '') || 8,
+      priority:
+        parseInt(
+          (await getSetting(
+            message.guildId,
+            SettingsTypes.MYSTIC_WARD_PRIORITY,
+          )) ?? '',
+        ) || 8,
     },
     {
       spellName: 'Lightning Strike',
       target: SettingsTypes.CLAN_WAR_ATTACK_TARGET,
-      priority: parseInt(await getSetting(message.guildId, SettingsTypes.LIGHTNING_STRIKE_PRIORITY) ?? '') || 9,
+      priority:
+        parseInt(
+          (await getSetting(
+            message.guildId,
+            SettingsTypes.LIGHTNING_STRIKE_PRIORITY,
+          )) ?? '',
+        ) || 9,
     },
     {
       spellName: 'Healing Light',
       target: SettingsTypes.CLAN_WAR_HEAL_TARGET,
-      priority: parseInt(await getSetting(message.guildId, SettingsTypes.HEALING_LIGHT_PRIORITY) ?? '') || 10,
+      priority:
+        parseInt(
+          (await getSetting(
+            message.guildId,
+            SettingsTypes.HEALING_LIGHT_PRIORITY,
+          )) ?? '',
+        ) || 10,
     },
     {
       spellName: 'Stone Shield',
       target: SettingsTypes.CLAN_WAR_SHIELD_TARGET,
-      priority: parseInt(await getSetting(message.guildId, SettingsTypes.STONE_SHIELD_PRIORITY) ?? '') || 11,
+      priority:
+        parseInt(
+          (await getSetting(
+            message.guildId,
+            SettingsTypes.STONE_SHIELD_PRIORITY,
+          )) ?? '',
+        ) || 11,
     },
     {
       spellName: 'Frost Shard',
       target: SettingsTypes.CLAN_WAR_ATTACK_TARGET,
-      priority: parseInt(await getSetting(message.guildId, SettingsTypes.FROST_SHARD_PRIORITY) ?? '') || 12,
+      priority:
+        parseInt(
+          (await getSetting(
+            message.guildId,
+            SettingsTypes.FROST_SHARD_PRIORITY,
+          )) ?? '',
+        ) || 12,
     },
   ];
 
