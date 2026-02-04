@@ -82,14 +82,7 @@ export const handleMessage = async (
     message.embeds[0].image
   ) {
     await handleCardClaim(message, client);
-  } else if (
-    message.embeds.length > 0 &&
-    message.embeds[0].title?.includes('Casting for Round')
-  ) {
-    await handleChoosingSpell(message, client);
   }
-
-  await handleTimers(message, client);
 };
 
 const handleTimers = async (
