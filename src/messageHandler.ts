@@ -38,6 +38,7 @@ const timers = [
   {
     title: 'Summon',
     cooldown: 30,
+    premiumCooldown: 15,
     timerMessage: '</summon:1301277778385174601>',
     timerInformation:
       'Automatically triggered by summon\n Turn this off in the /user settings command',
