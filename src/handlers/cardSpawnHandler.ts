@@ -1,6 +1,5 @@
 import { Client, Message, PartialMessage } from 'discord.js';
 import { CardSpawn } from '../types/cardSpawn';
-import { createTimer } from '../timers';
 import { getChannel } from '../utils/getChannel';
 import { getSetting } from '../database/settingsDatabase';
 import { SettingsTypes } from '../SettingsTypes';
@@ -14,7 +13,6 @@ export const cardSpawnHandler = async (
   client: Client,
   message: Message | PartialMessage,
 ) => {
-  await createSummonTimer(cardSpawn, client);
   await createSummary(cardSpawn, client, message);
 };
 
@@ -91,35 +89,4 @@ const getTierPingForCards = async (
   return pingRole || null;
 };
 
-const createSummonTimer = async (cardSpawn: CardSpawn, client: Client) => {
-  if (!cardSpawn.SummonedBy) return;
 
-  const defaultSetting =
-    (await getSetting(
-      cardSpawn.ServerId,
-      SettingsTypes.ENABLE_AUTOMATIC_TIMERS_AS_DEFAULT,
-    )) ?? 'true';
-
-  const enabled =
-    (await getSetting(
-      cardSpawn.SummonedBy,
-      SettingsTypes.AUTOMATIC_SUMMON_TIMERS,
-    )) ?? defaultSetting;
-
-  if (enabled !== 'true') return;
-
-  const nextSpawnInMinutes = 30;
-
-  const channel = await getChannel(cardSpawn.ChannelId, client);
-  if (channel === null) return;
-  let futureTime = new Date(Date.now() + 1000 * 60 * nextSpawnInMinutes);
-  await createTimer(
-    channel,
-    undefined,
-    futureTime,
-    cardSpawn.SummonedBy,
-    '</summon:1301277778385174601>',
-    client,
-    'Automatically triggered by summon\n Turn this off in the /user settings command',
-  );
-};

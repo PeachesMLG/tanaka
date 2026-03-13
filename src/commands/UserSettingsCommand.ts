@@ -30,23 +30,7 @@ export class UserSettingsCommand implements Command {
                 {
                   name: 'Automatic Summon Timers',
                   value: SettingsTypes.AUTOMATIC_SUMMON_TIMERS,
-                },
-                {
-                  name: 'Automatic Summer Timers',
-                  value: SettingsTypes.AUTOMATIC_SUMMER_TIMERS,
-                },
-                {
-                  name: 'Automatic Box Timers',
-                  value: SettingsTypes.AUTOMATIC_BOX_TIMERS,
-                },
-                {
-                  name: 'Automatic Clan Summons',
-                  value: SettingsTypes.AUTOMATIC_CLAN_SUMMONS,
-                },
-                {
-                  name: 'Automatic Christmas Timers',
-                  value: SettingsTypes.AUTOMATIC_CHRISTMAS_TIMERS,
-                },
+                }
               ]),
           )
           .addBooleanOption((option) =>
