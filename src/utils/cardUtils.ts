@@ -42,6 +42,7 @@ export async function getCardInfo(
 async function fetchCardVersions(
   cardUUID: string,
 ): Promise<number[] | undefined> {
+  console.log('Fetching Card Versions...');
   const url = `https://api.mazoku.cc/card-instances?page=0&pageSize=15&orderBy=version&order=ASC&cardId=${encodeURIComponent(cardUUID)}&spicy=false`;
 
   try {

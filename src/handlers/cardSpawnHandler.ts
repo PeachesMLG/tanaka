@@ -41,7 +41,9 @@ const createSummary = async (
     }
   }
 
-  if (content) {
+  if (content.length > 0) {
+    finalMessage += content.join('\n');
+
     const replyMessage = await message.reply(finalMessage);
 
     executeAtDate(despawnTime, async () => {
