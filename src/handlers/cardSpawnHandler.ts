@@ -42,8 +42,6 @@ const createSummary = async (
   }
 
   if (content) {
-    finalMessage += content.join('\n') + '\n-# Data from 2nd October 2025, may be outdated';
-    
     const replyMessage = await message.reply(finalMessage);
 
     executeAtDate(despawnTime, async () => {
