@@ -16,6 +16,7 @@ function getCacheTtl(user: UserData): number {
 }
 
 async function fetchUser(userId: string): Promise<UserData> {
+  console.log(`Fetching User ${userId}...`);
   const response = await fetch(`https://api.mazoku.cc/users/${userId}`);
   if (!response.ok) {
     throw new Error(`Failed to fetch user ${userId}: ${response.statusText}`);
