@@ -1,8 +1,4 @@
-import {
-  Client,
-  Message,
-  PartialMessage,
-} from 'discord.js';
+import { Client, Message, PartialMessage } from 'discord.js';
 import { getUserByMessageReference } from './utils/messageUtils';
 import { cardSpawnHandler } from './handlers/cardSpawnHandler';
 import { cardClaimHandler } from './handlers/cardClaimHandler';
@@ -86,6 +82,8 @@ const handleTimers = async (
       );
 
       if (!user) return;
+
+      if (client.users.cache.get(user)?.bot) return;
 
       if (timer.leaderboard) {
         await incrementLeaderboard(user, timer.leaderboard);
