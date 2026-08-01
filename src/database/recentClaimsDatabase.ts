@@ -19,7 +19,9 @@ export async function initialiseRecentClaimsDatabase(): Promise<void> {
         Rarity   VARCHAR(255),
         Series   VARCHAR(255),
         Version  INTEGER,
-        DateTime DATETIME DEFAULT CURRENT_TIMESTAMP
+        DateTime DATETIME DEFAULT CURRENT_TIMESTAMP,
+        UUID   VARCHAR(255),
+        Event   VARCHAR(255)
       );
     `);
   } finally {
