@@ -46,7 +46,11 @@ export const handleMessage = async (
   message: Message | PartialMessage,
   client: Client,
 ) => {
-  if (message.author?.id !== '1242388858897956906') return;
+  if (
+    message.author?.id !== '1242388858897956906' ||
+    Date.now() - message.createdTimestamp > 1000 * 60 * 2.5
+  )
+    return;
   await handleTimers(message, client);
   if (
     message.embeds.length > 0 &&
