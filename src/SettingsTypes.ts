@@ -1,5 +1,6 @@
 export enum SettingsTypes {
   AUTOMATIC_SUMMON_TIMERS = 'Automatic Summon Timers',
+  AUTOMATIC_EVENT_TIMERS = 'Automatic Event Timers',
   ENABLE_AUTOMATIC_TIMERS_AS_DEFAULT = 'Enable Automatic Timers as Default',
   COMMON_TIER_PING_ROLE = 'Common Tier Ping Role',
   RARE_TIER_PING_ROLE = 'Rare Tier Ping Role',

@@ -40,6 +40,15 @@ const timers = [
       'Automatically triggered by summon\n Turn this off in the /user settings command',
     setting: SettingsTypes.AUTOMATIC_SUMMON_TIMERS,
   },
+  {
+    title: 'Gala Summon',
+    cooldown: 60,
+    premiumCooldown: 30,
+    timerMessage: '</event summon:1531824046507950310>',
+    timerInformation:
+      'Automatically triggered by event summon\n Turn this off in the /user settings command',
+    setting: SettingsTypes.AUTOMATIC_EVENT_TIMERS,
+  },
 ] as Timer[];
 
 export const handleMessage = async (
@@ -72,10 +81,7 @@ const handleTimers = async (
   client: Client,
 ) => {
   for (const timer of timers) {
-    if (
-      message.embeds.length > 0 &&
-      message.embeds[0].title?.includes(timer.title)
-    ) {
+    if (message.embeds.length > 0 && message.embeds[0].title === timer.title) {
       if (handledTimerMessages.getItems().includes(message.id)) return;
       handledTimerMessages.add(message.id);
 
