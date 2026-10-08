@@ -145,11 +145,18 @@ const handleCardSummon = async (
     return;
   handledCardSummonMessages.add(message.id);
 
-  const cardUUIDs =
-    message.embeds[0].image?.url
+  const rawSegments =
+    message.embeds[0].image.url
       .split('/packs/')[1]
       .split('/')
       .filter((uuid) => uuid) ?? [];
+
+  const cardUUIDs: string[] = rawSegments.map((segment, index) => {
+    if (index === rawSegments.length - 1 && segment.includes('.')) {
+      return segment.split('.')[0];
+    }
+    return segment;
+  });
 
   if (cardUUIDs) {
     handledCardSummonMessages.add(message.id);
