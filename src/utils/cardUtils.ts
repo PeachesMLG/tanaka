@@ -1,5 +1,6 @@
 import { getRedisKey, setRedisKey } from '../database/redisDatabase';
 import { CardDetails } from '../types/cardDetails';
+import { MazokuVersionsApiResponse } from '../types/mazokuApi';
 
 export async function getCardInfo(
   cardUUID: string,
@@ -43,7 +44,7 @@ async function fetchCardVersions(
   cardUUID: string,
 ): Promise<number[] | undefined> {
   console.log('Fetching Card Versions...');
-  const url = `https://api.mazoku.cc/card-instances?page=0&pageSize=15&orderBy=version&order=ASC&cardId=${encodeURIComponent(cardUUID)}&spicy=false`;
+  const url = `https://api.mazoku.cc/cards/${encodeURIComponent(cardUUID)}/versions?page=0&pageSize=15&orderBy=version&order=ASC`;
 
   try {
     const response = await fetch(url);
@@ -53,12 +54,12 @@ async function fetchCardVersions(
       return undefined;
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as MazokuVersionsApiResponse;
 
     const versions = Array.from({ length: 10 }, (_, i) => i + 1);
 
-    const returnedVersions: number[] = data.cards.map(
-      (item: { version: number }) => item.version,
+    const returnedVersions: number[] = data.versions.map(
+      (item) => item.version,
     );
 
     return versions.filter((v) => !returnedVersions.includes(v));
