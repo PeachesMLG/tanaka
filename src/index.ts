@@ -11,6 +11,7 @@ import { startAllTimers } from './timers';
 import { RecentCommand } from './commands/RecentCommand';
 import { handleMessage } from './messageHandler';
 import { handlePhoenixMessage } from './phoenixHandler';
+import { logRecentMessages } from './debugMessages';
 import { UserSettingsCommand } from './commands/UserSettingsCommand';
 import { ServerSettingsCommand } from './commands/ServerSettingsCommand';
 import { messageListeners, recentMessages } from './utils/messageListener';
@@ -44,6 +45,7 @@ client.once('ready', async () => {
   );
 
   await startAllTimers(client);
+  await logRecentMessages(client);
 });
 
 client.on('interactionCreate', async (interaction) => {
