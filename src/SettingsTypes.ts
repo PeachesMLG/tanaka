@@ -1,6 +1,8 @@
 export enum SettingsTypes {
   AUTOMATIC_SUMMON_TIMERS = 'Automatic Summon Timers',
   AUTOMATIC_EVENT_TIMERS = 'Automatic Event Timers',
+  PHOENIX_DAILY_TIMERS = 'Phoenix Daily Timers',
+  PHOENIX_DROP_TIMERS = 'Phoenix Drop Timers',
   ENABLE_AUTOMATIC_TIMERS_AS_DEFAULT = 'Enable Automatic Timers as Default',
   COMMON_TIER_PING_ROLE = 'Common Tier Ping Role',
   RARE_TIER_PING_ROLE = 'Rare Tier Ping Role',

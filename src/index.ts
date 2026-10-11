@@ -10,6 +10,7 @@ import { TimersCommand } from './commands/TimersCommand';
 import { startAllTimers } from './timers';
 import { RecentCommand } from './commands/RecentCommand';
 import { handleMessage } from './messageHandler';
+import { handlePhoenixMessage } from './phoenixHandler';
 import { UserSettingsCommand } from './commands/UserSettingsCommand';
 import { ServerSettingsCommand } from './commands/ServerSettingsCommand';
 import { messageListeners, recentMessages } from './utils/messageListener';
@@ -66,6 +67,7 @@ client.on('interactionCreate', async (interaction) => {
 client.on('messageCreate', async (message) => {
   try {
     await handleMessage(message, client);
+    await handlePhoenixMessage(message, client);
 
     recentMessages.add(message);
     for (const [key, listener] of messageListeners.entries()) {
@@ -85,6 +87,7 @@ client.on('messageCreate', async (message) => {
 client.on('messageUpdate', async (_, newMessage) => {
   try {
     await handleMessage(newMessage, client);
+    await handlePhoenixMessage(newMessage, client);
   } catch (exception) {
     console.error(exception);
   }

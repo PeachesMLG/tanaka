@@ -35,6 +35,14 @@ export class UserSettingsCommand implements Command {
                   name: 'Event Reminder',
                   value: SettingsTypes.AUTOMATIC_EVENT_TIMERS,
                 },
+                {
+                  name: 'Phoenix Daily Reminder',
+                  value: SettingsTypes.PHOENIX_DAILY_TIMERS,
+                },
+                {
+                  name: 'Phoenix Drop Reminder',
+                  value: SettingsTypes.PHOENIX_DROP_TIMERS,
+                },
               ]),
           )
           .addBooleanOption((option) =>
