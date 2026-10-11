@@ -26,19 +26,32 @@ export const handlePhoenixMessage = async (
   )
     return;
 
-  if (message.embeds.length > 0) {
+  if (message.components.length > 0) {
     await handleDaily(message, client);
   } else if (message.content) {
     await handleDrop(message, client);
   }
 };
 
+type RawComponent = { content?: string; components?: RawComponent[] };
+
+const getComponentText = (components: RawComponent[]): string =>
+  components
+    .map((component) =>
+      [component.content ?? '', getComponentText(component.components ?? [])]
+        .filter((text) => text)
+        .join('\n'),
+    )
+    .filter((text) => text)
+    .join('\n');
+
 const handleDaily = async (
   message: Message | PartialMessage,
   client: Client,
 ) => {
-  const embed = message.embeds[0];
-  const text = `${embed.title ?? ''}\n${embed.description ?? ''}`;
+  const text = getComponentText(
+    message.components.map((component) => component.toJSON() as RawComponent),
+  );
   if (
     !text.includes('Daily Reward') ||
     !text.includes('You claimed your daily reward')
