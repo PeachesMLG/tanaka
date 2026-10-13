@@ -191,7 +191,7 @@ const handleCardSummon = async (
         `https://mazoku.cc/api/public/cards?page=1&pageSize=4&orderBy=created_at&order=DESC&spicy=false&eventName=default&tiers=${card.rarity}&name="${card.name}"&seriesName="${card.series}"`,
         {
           headers: {
-            'User-Agent': 'Lasagna-Bot/1.0 (@1marius)',
+            'User-Agent': 'Tanaka-Bot/1.0 (@Peachesmlg)',
             Accept: 'application/json',
           },
         },
@@ -290,7 +290,7 @@ const handleCardClaim = async (
     `https://mazoku.cc/api/public/cards?page=1&pageSize=4&orderBy=created_at&order=DESC&spicy=false&eventName=default&tiers=${partialCardData.Rarity}&name="${partialCardData.CardName}"&seriesName="${partialCardData.SeriesName}"`,
     {
       headers: {
-        'User-Agent': 'Lasagna-Bot/1.0 (@1marius)',
+        'User-Agent': 'Tanaka-Bot/1.0 (@Peachesmlg)',
         Accept: 'application/json',
       },
     },
