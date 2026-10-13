@@ -231,11 +231,21 @@ const handleCardSummon = async (
     handledCardSummonMessages.add(message.id);
   }
 
-  const cardInfo = (await Promise.all(cardUUIDs.map(getCardInfo))).filter(
-    (cardInfo) => cardInfo,
-  ) as CardDetails[];
+  const cardDetailsArray: CardDetails[] = parseData
+    .map((card, index) => ({
+      UUID: cardUUIDs[index],
+      CardName: card.name,
+      SeriesName: card.series,
+      Rarity: card.rarity,
+      EventName: 'default',
+    }))
+    .filter((card) => card.UUID !== 'N/A');
 
-  if (!cardInfo) {
+  //const cardInfo = (await Promise.all(cardUUIDs.map(getCardInfo))).filter(
+  //  (cardInfo) => cardInfo,
+  //) as CardDetails[];
+
+  if (!cardDetailsArray) {
     return;
   }
 
@@ -248,7 +258,7 @@ const handleCardSummon = async (
         message.interactionMetadata,
         message.channel,
       ),
-      Cards: cardInfo,
+      Cards: cardDetailsArray,
     },
     client,
     message,
